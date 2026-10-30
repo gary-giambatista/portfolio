@@ -30,6 +30,8 @@ export default defineConfig({
   trailingSlash: "ignore",
   integrations: [mdx(), sitemap()],
   build: { inlineStylesheets: "auto" },
+  // Keep the approved copy exactly as written (no automatic curly quotes).
+  markdown: { smartypants: false },
   // Fonts are downloaded at build time and served from this site, with metric-matched fallbacks.
   fonts: [
     { provider: fontProviders.google(), name: "Shippori Mincho B1", cssVariable: "--ff-mincho", weights: [500, 700, 800], styles: ["normal"], subsets: ["latin", "latin-ext"],

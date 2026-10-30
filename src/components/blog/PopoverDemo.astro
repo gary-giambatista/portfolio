@@ -1,0 +1,60 @@
+---
+/** Demo 4: drag a chip and watch the site's popover placement code, measured against this box. */
+---
+<figure class="demo" aria-labelledby="popCap">
+  <div class="demo-stage" id="play"><button type="button" id="chip">Drag me</button><div class="pop show" id="pop" role="tooltip"><b>Rebuy Engine</b><span>Feb 2026 – Jul 2026</span></div></div>
+  <div class="demo-bar">
+    <button class="btn" type="button" id="bMath" aria-pressed="true">Show the math</button>
+    <span class="readout" id="oPop">Placed above · centered</span>
+  </div>
+  <figcaption id="popCap">Live: the timeline's placement code, measured against this box instead of the window. Arrow keys move the chip too.</figcaption>
+</figure>
+
+<script>
+  import { placePopover } from "~/lib/placement";
+
+  const $ = (id: string) => document.getElementById(id)!;
+  const play = $("play"), chip = $("chip"), pop = $("pop");
+  let cx = .5, cy = .6, dragging: { dx: number; dy: number; x: number; y: number } | null = null, guides: HTMLElement[] = [];
+  function placePop() {
+    const W = play.clientWidth, H = play.clientHeight;
+    chip.style.left = cx * W + "px"; chip.style.top = cy * H + "px";
+    const r = chip.getBoundingClientRect(), pr = play.getBoundingClientRect();
+    const target = { left: r.left - pr.left, top: r.top - pr.top, width: r.width, bottom: r.bottom - pr.top };
+    const p = placePopover(target, pop.offsetWidth, pop.offsetHeight, W, 8);
+    pop.style.left = p.x + "px"; pop.style.top = p.top + "px";
+    pop.style.setProperty("--ax", p.ax + "px");
+    pop.classList.toggle("below", p.below);
+    const clamped = Math.abs(p.ideal - p.x) > .5, mid = target.left + target.width / 2;
+    $("oPop").textContent = `Placed ${p.below ? "below (no room above)" : "above"} · ${clamped ? `slid ${Math.round(Math.abs(p.ideal - p.x))}px to stay inside` : "centered"}`;
+    guides.forEach(g => g.remove()); guides = [];
+    if ($("bMath").getAttribute("aria-pressed") === "true") {
+      const add = (cls: string, style: Partial<CSSStyleDeclaration>, label: string, lstyle: Partial<CSSStyleDeclaration>) => {
+        const g = document.createElement("div"); g.className = "guide " + cls; Object.assign(g.style, style);
+        const em = document.createElement("em"); em.textContent = label; Object.assign(em.style, lstyle); g.append(em);
+        play.append(g); guides.push(g);
+      };
+      add("v", { left: mid + "px", top: "0", bottom: "0" }, "target center", { top: "6px", left: "4px" });
+      add("h", { top: "8px" }, "8px safe edge", { right: "6px", top: "2px" });
+      if (clamped) add("v", { left: (p.ideal < p.x ? 8 : W - 8) + "px", top: "0", bottom: "0" }, "clamped", { bottom: "6px", left: p.ideal < p.x ? "4px" : "auto", right: p.ideal < p.x ? "auto" : "4px" });
+    }
+  }
+  chip.addEventListener("pointerdown", e => { dragging = { dx: e.clientX, dy: e.clientY, x: cx, y: cy }; chip.setPointerCapture(e.pointerId); });
+  chip.addEventListener("pointermove", e => {
+    if (!dragging) return;
+    const W = play.clientWidth, H = play.clientHeight;
+    cx = Math.max(.08, Math.min(.92, dragging.x + (e.clientX - dragging.dx) / W));
+    cy = Math.max(.08, Math.min(.92, dragging.y + (e.clientY - dragging.dy) / H));
+    placePop();
+  });
+  chip.addEventListener("pointerup", () => { dragging = null; });
+  chip.addEventListener("keydown", e => {
+    const d = ({ ArrowLeft: [-.04, 0], ArrowRight: [.04, 0], ArrowUp: [0, -.06], ArrowDown: [0, .06] } as Record<string, number[]>)[e.key];
+    if (!d) return; e.preventDefault();
+    cx = Math.max(.08, Math.min(.92, cx + d[0])); cy = Math.max(.08, Math.min(.92, cy + d[1])); placePop();
+  });
+  $("bMath").addEventListener("click", e => { const b = e.currentTarget as HTMLElement; b.setAttribute("aria-pressed", String(b.getAttribute("aria-pressed") !== "true")); placePop(); });
+  placePop();
+  addEventListener("resize", placePop);
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(placePop);
+</script>

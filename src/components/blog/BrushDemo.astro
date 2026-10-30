@@ -1,0 +1,51 @@
+---
+/** Demo 1: the ensō brush with live controls. Same engine that paints the ensō on the timeline. */
+---
+<figure class="demo" aria-labelledby="brushCap">
+  <div class="demo-stage" id="brushStage"><canvas id="brushCanvas" role="img" aria-label="A brush-painted ensō circle that redraws as you change the controls"></canvas></div>
+  <div class="demo-bar">
+    <label class="ctl"><span>Brush width <output id="oWidth"></output></span><input type="range" id="sWidth" min="4" max="16" step=".5" value="8.5"></label>
+    <label class="ctl"><span>Runs dry at <output id="oDry"></output></span><input type="range" id="sDry" min=".35" max=".95" step=".01" value=".7"></label>
+    <label class="ctl"><span>Hair clumps <output id="oHairs"></output></span><input type="range" id="sHairs" min="3" max="40" step="1" value="22"></label>
+    <label class="ctl"><span>Wobble <output id="oWob"></output></span><input type="range" id="sWob" min="0" max=".18" step=".005" value=".07"></label>
+    <button class="btn primary" type="button" id="bPaint">Paint it again</button>
+    <button class="btn" type="button" id="bSeed">New seed</button>
+    <span class="readout">seed <b id="oSeed">23</b> · <b id="oStamps">0</b> stamps</span>
+  </div>
+  <figcaption id="brushCap">Live: the same engine that paints the ensō on the timeline. A seed fixes the randomness, so seed 23 always paints the same circle.</figcaption>
+</figure>
+
+<script>
+  import { buildEnso } from "~/lib/ink/builders";
+  import { fitCanvas, paint, paintIn } from "~/lib/ink/paint";
+  import { reduceMotion } from "~/lib/motion";
+  import { onThemeChange } from "~/lib/theme";
+
+  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+  const css = (n: string) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const bc = $<HTMLCanvasElement>("brushCanvas");
+  let seed = 23, cancel = () => {};
+  const val = (id: string) => +$<HTMLInputElement>(id).value;
+  const opts = () => ({ width: val("sWidth"), dry: val("sDry"), hairs: val("sHairs"), wob: val("sWob") });
+
+  function paintBrush(animate: boolean) {
+    cancel();
+    const o = opts();
+    $("oWidth").textContent = o.width.toFixed(1) + "%"; $("oDry").textContent = Math.round(o.dry * 100) + "%";
+    $("oHairs").textContent = String(o.hairs); $("oWob").textContent = Math.round(o.wob * 100) + "%"; $("oSeed").textContent = String(seed);
+    const [ctx, w, h] = fitCanvas(bc), segs = buildEnso(w, h, seed, o);
+    $("oStamps").textContent = segs.length.toLocaleString();
+    ctx.clearRect(0, 0, w, h); ctx.fillStyle = css("--brush");
+    if (!animate || reduceMotion) { paint(ctx, segs); return; }
+    cancel = paintIn(ctx, segs, 1300);
+  }
+  ["sWidth", "sDry", "sHairs", "sWob"].forEach(id => $(id).addEventListener("input", () => paintBrush(false)));
+  $("bPaint").addEventListener("click", () => paintBrush(true));
+  $("bSeed").addEventListener("click", () => { seed = Math.floor(Math.random() * 999) + 1; paintBrush(true); });
+  paintBrush(false);
+  let rz = 0;
+  addEventListener("resize", () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(() => paintBrush(false)); });
+  onThemeChange(() => paintBrush(false));
+  // paint the ensō in once it scrolls into view
+  if ("IntersectionObserver" in window) { const io = new IntersectionObserver(es => { if (es[0].isIntersecting) { io.disconnect(); paintBrush(true); } }, { threshold: .4 }); io.observe(bc); }
+</script>

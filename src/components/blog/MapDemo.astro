@@ -1,0 +1,42 @@
+---
+/** Demo 3: the Hoboken map from raw projected Natural Earth paths, simplified live in the browser. */
+---
+<figure class="demo" aria-labelledby="mapCap">
+  <div class="map-wrap">
+    <div class="demo-stage" style="border-bottom:0"><svg id="mapSvg" viewBox="0 0 180 220" role="img" aria-label="Map of the Hudson River at Hoboken, drawn with the selected level of detail"></svg></div>
+    <div>
+      <div class="demo-bar">
+        <label class="ctl"><span>Drop points closer than <output id="oTol"></output></span><input type="range" id="sTol" min="0" max="6" step=".1" value=".7"></label>
+        <button class="btn" type="button" id="bPts" aria-pressed="false">Show points</button>
+      </div>
+      <div class="bytes">
+        <span class="readout">path size <b id="oBytes"></b> of <b id="oRaw"></b> · <b id="oCount"></b> points</span>
+        <div class="meter"><i id="mBytes"></i></div>
+        <span class="readout">The timeline ships the 0.7px setting. Past about 2px, the Hudson's shoreline starts to look wrong.</span>
+      </div>
+    </div>
+  </div>
+  <figcaption id="mapCap">Live: Natural Earth 1:10m coastline and rivers around Hoboken, NJ, simplified in your browser.</figcaption>
+</figure>
+
+<script>
+  import MAP from "~/data/generated/map-hoboken-raw.json";
+  import { simplifyPath } from "~/lib/map-simplify";
+
+  const $ = (id: string) => document.getElementById(id)!;
+  const fmt = (n: number) => n >= 1000 ? (n / 1024).toFixed(1) + " KB" : n + " B";
+  const rawBytes = MAP.land.length + MAP.rivers.length;
+  function drawMap() {
+    const tol = +($("sTol") as HTMLInputElement).value, l = simplifyPath(MAP.land, tol), r = simplifyPath(MAP.rivers, tol);
+    const showPts = $("bPts").getAttribute("aria-pressed") === "true";
+    const pts = showPts ? (l.d + r.d).match(/-?\d+\.?\d*,-?\d+\.?\d*/g)!.map(s => { const [x, y] = s.split(","); return `<circle cx="${x}" cy="${y}" r=".9"/>`; }).join("") : "";
+    const [px, py] = MAP.pin;
+    $("mapSvg").innerHTML = `<defs><pattern id="g" width="22" height="22" patternUnits="userSpaceOnUse"><path class="grid" d="M22 0H0V22"/></pattern></defs><rect width="180" height="220" fill="url(#g)"/><path class="land" d="${l.d}"/><path class="river" d="${r.d}"/><g class="pts">${pts}</g><g class="pin" transform="translate(${px} ${py})"><path d="M0 0c-3.4-4.2-5.2-6.8-5.2-9.2a5.2 5.2 0 0 1 10.4 0c0 2.4-1.8 5-5.2 9.2z"/></g>`;
+    const bytes = l.d.length + r.d.length;
+    $("oTol").textContent = tol.toFixed(1) + "px"; $("oBytes").textContent = fmt(bytes); $("oRaw").textContent = fmt(rawBytes); $("oCount").textContent = (l.points + r.points).toLocaleString();
+    $("mBytes").style.width = (bytes / rawBytes * 100) + "%";
+  }
+  $("sTol").addEventListener("input", drawMap);
+  $("bPts").addEventListener("click", e => { const b = e.currentTarget as HTMLElement; b.setAttribute("aria-pressed", String(b.getAttribute("aria-pressed") !== "true")); drawMap(); });
+  drawMap();
+</script>

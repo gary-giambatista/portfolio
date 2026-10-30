@@ -1,0 +1,3 @@
+<pre><code><span class="tk-k">const</span> tip = tipPosition();                     <span class="tk-c">// one source of truth</span>
+ink.style.maskImage = <span class="tk-s">`linear-gradient(#000 ${tip - 26}px, transparent ${tip}px)`</span>;
+entries.forEach(e =&gt; e.classList.toggle(<span class="tk-s">"inked"</span>, nodeY(e) &lt;= tip));</code></pre>

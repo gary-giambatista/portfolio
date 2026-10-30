@@ -1,0 +1,3 @@
+<pre><code><span class="tk-k">const</span> x = clamp(cx - pw / 2, 8, W - pw - 8);    <span class="tk-c">// center on the target, but stay inside</span>
+<span class="tk-k">const</span> below = r.top - ph - gap &lt; 8;           <span class="tk-c">// no room above? flip</span>
+pop.style.setProperty(<span class="tk-s">"--ax"</span>, cx - x + <span class="tk-s">"px"</span>);  <span class="tk-c">// the arrow keeps pointing at the target</span></code></pre>

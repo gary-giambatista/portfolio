@@ -1,0 +1,46 @@
+---
+import { getCollection, render } from "astro:content";
+import Base from "~/layouts/Base.astro";
+import SubNav from "~/components/SubNav.astro";
+import { ROUTES } from "~/config/links";
+import "~/styles/subnav.css";
+import "~/styles/blog.css";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map(post => ({ params: { slug: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, description, published, readingTime, toc } = post.data;
+---
+<Base title={`${title} · Gary Giambatista`} description={description}>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-plane" viewBox="-26 -22 52 44"><path d="M1-3.2-7.5-20H-3L10.5-3.2ZM1 3.2-7.5 20H-3L10.5 3.2ZM-15.5-3.2-20.5-10.5H-17.5L-11.5-3.2ZM-15.5 3.2-20.5 10.5H-17.5L-11.5 3.2ZM-4.6-12.6h5.4v2.8h-5.4ZM-4.6 9.8h5.4v2.8h-5.4Z"/><path d="M-22 0C-22-2.6-18.5-3.4-12-3.4H13C19.5-3.4 24-1.8 25.5 0 24 1.8 19.5 3.4 13 3.4H-12C-18.5 3.4-22 2.6-22 0Z"/></symbol></svg>
+  <SubNav current="blog" />
+  <main class="wrap">
+    <article>
+      <div class="col">
+        <div class="eyebrow"><span>Blog</span><span>·</span><span>{published}</span><span>·</span><span>{readingTime}</span></div>
+        <h1><span class="title-ink">{title}<canvas class="ink" data-ink="dot-swash" data-seed="11" data-color="--indigo" aria-hidden="true"></canvas></span></h1>
+        <p class="dek">{description}</p>
+        <ol class="toc">{toc.map(t => <li><a href={`#${t.id}`}>{t.label}</a></li>)}</ol>
+      </div>
+      <div class="prose">
+        <Content />
+      </div>
+      <div class="col">
+        <div class="end-note"><span>Written by Gary Giambatista</span><a href={ROUTES.home}>← Back to the timeline</a></div>
+      </div>
+    </article>
+  </main>
+</Base>
+
+<script>
+  import { initThemeButton } from "~/lib/theme";
+  import { initInk } from "~/lib/ink/canvas";
+  import { initRanges } from "~/lib/blog/ranges";
+
+  initThemeButton();
+  initInk();
+  initRanges();
+</script>

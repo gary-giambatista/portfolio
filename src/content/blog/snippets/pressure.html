@@ -1,0 +1,5 @@
+<pre><code><span class="tk-c">// Pressure: a firm press, a wandering middle, then the brush lifts off</span>
+<span class="tk-k">let</span> p = (t &lt; .05 ? .75 + t * 8 : 1.1 - (t - .05) * .35) + press(t * 3) * .18;
+<span class="tk-k">if</span> (t &gt; .62) p *= 1 - (t - .62) * 1.25;
+<span class="tk-k">if</span> (t &lt; dry) stamp(x, y, width * p / 2);        <span class="tk-c">// wet: a solid disc of ink</span>
+<span class="tk-k">else</span> clumps.forEach(c =&gt; c.alive(t) &amp;&amp; c.stamp()); <span class="tk-c">// dry: only some hairs touch paper</span></code></pre>

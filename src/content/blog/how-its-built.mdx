@@ -1,0 +1,100 @@
+---
+title: How this site is built
+description: A tour of the brush engine, the ink that follows your scroll, the hand-built maps, and the small components underneath. Every demo below is live, so pull the sliders.
+published: October 2026
+readingTime: 9 min read
+toc:
+  - { id: brush, label: A brush made of code }
+  - { id: scroll, label: Ink that follows your scroll }
+  - { id: maps, label: Maps from real geographic data }
+  - { id: popover, label: One popover for everything }
+  - { id: flight, label: The flight path }
+  - { id: budget, label: Keeping it fast and accessible }
+---
+import Code from "~/components/blog/Code.astro";
+import BrushDemo from "~/components/blog/BrushDemo.astro";
+import ScrollDemo from "~/components/blog/ScrollDemo.astro";
+import MapDemo from "~/components/blog/MapDemo.astro";
+import PopoverDemo from "~/components/blog/PopoverDemo.astro";
+import FlightDemo from "~/components/blog/FlightDemo.astro";
+import pressure from "./snippets/pressure.html?raw";
+import mask from "./snippets/mask.html?raw";
+import placement from "./snippets/placement.html?raw";
+
+The timeline is plain HTML, CSS and JavaScript. There's no framework, no animation library and no images for the ink. Everything you see drawn is generated in the browser from a few hundred lines of code, and the whole page is about 60 KB compressed.
+
+<h2 id="brush"><span class="num">01</span>A brush made of code</h2>
+
+The circle around my photo is an *ensō*, the brush circle from Japanese calligraphy. I wanted it to look painted, not drawn by a computer, so it's built the way a real brush works: a round tip pressed onto paper again and again as it moves.
+
+The code walks around a slightly wobbly loop and stamps a small disc of ink at every step. Pressure changes along the way, so the stroke swells and thins. Near the end the brush "runs out of ink": the solid stamps stop and a handful of hair clumps carry on alone, each giving out at a different point. That's what makes the dry, streaky tail.
+
+<BrushDemo />
+
+Randomness comes from a tiny seeded generator (`mulberry32`), not `Math.random()`. A seed always produces the same sequence of numbers, so the stroke looks identical on every visit and every device. It also means the stroke can be rebuilt instantly when you switch to dark mode, just in a different ink color.
+
+<Code html={pressure} />
+
+The stamps are stored as a list first and drawn second. Drawing the whole list at once gives a finished stroke. Drawing a few more each frame gives the paint-in animation you see when the page loads, with no extra code.
+
+<h2 id="scroll"><span class="num">02</span>Ink that follows your scroll</h2>
+
+On the timeline, an ink stroke runs down the spine as you scroll, and each dot lights up the moment the ink reaches it. Keeping two separate animations in sync is fragile, so there's only one number here: the position of the ink's tip.
+
+<ul class="plain">
+  <li>The whole stroke is painted once, onto a tall canvas, with a little pool of ink at every dot.</li>
+  <li>On scroll, a CSS <code>mask-image</code> gradient reveals the canvas down to the tip and fades out its last 26px, so the edge looks wet instead of cut.</li>
+  <li>The highlight asks the same question, "is this dot above the tip?", so the two can never drift apart.</li>
+</ul>
+
+<ScrollDemo />
+
+<Code html={mask} />
+
+One extra problem: the last few dots sit too close to the bottom of the page to ever pass the 38% line. Over the final stretch of scrolling, the tip blends smoothly toward the end of the spine, so it lands on the last dot exactly when you hit the bottom. The stroke is also repainted whenever the page changes height, for example when an image loads or you rotate your phone. A `ResizeObserver` on the timeline handles that, so the pools always sit under their dots.
+
+<h2 id="maps"><span class="num">03</span>Maps from real geographic data</h2>
+
+The location cards show real coastlines, not a map service or an image. I took Natural Earth's high-detail coastline and river data, projected it with `d3-geo` (a Mercator projection fitted to each card), and saved the result as SVG paths. That runs once, when the site is built. The browser never loads a mapping library.
+
+A projected coastline has far more points than a 180-pixel card can show. Rounding to a tenth of a pixel and dropping points too close to their neighbor makes the paths several times smaller with no visible difference. Try it on the Hoboken map:
+
+<MapDemo />
+
+<h2 id="popover"><span class="num">04</span>One popover for everything</h2>
+
+Every hover note on the site, from the ruler dots to the stats to the map pins, is the same small component. Any element gets one by adding `data-tip` and optionally `data-tip-sub`. A single shared element follows whatever you're pointing at. It works with the keyboard (focus shows it, Escape hides it), and on touch screens you tap to open and tap anywhere else to close.
+
+The interesting part is placement. The popover centers itself above its target. If there isn't room above, it flips below. Near the sides it slides inward to stay on screen, and the arrow slides the other way so it still points at the target. Drag the chip around to watch it happen:
+
+<PopoverDemo />
+
+<Code html={placement} />
+
+<h2 id="flight"><span class="num">05</span>The flight path</h2>
+
+The two flights between New Jersey and Japan follow a curve shaped like a route on an airline map. As you scroll, the plane's position comes from the browser's own geometry functions: `getPointAtLength()` gives the spot along the curve, and a second point just ahead gives the direction it should face.
+
+Raw scroll progress moves at a constant speed, which feels mechanical. An ease-in-out curve makes the plane accelerate off the runway and slow down to land, and its size grows a little in the middle of the flight, as if it climbs toward you. Scrub it yourself:
+
+<FlightDemo />
+
+<h2 id="budget"><span class="num">06</span>Keeping it fast and accessible</h2>
+
+A portfolio full of effects is easy to make slow. I set a budget before adding anything and measured against it:
+
+<div class="stats">
+  <div class="stat"><b>60 KB</b><span>timeline page, compressed: all of its code, map data and kanji data</span></div>
+  <div class="stat"><b>0</b><span>frameworks or animation libraries</span></div>
+  <div class="stat"><b>11 KB</b><span>the one library: Hanzi Writer, for the kanji pad</span></div>
+  <div class="stat"><b>27</b><span>skill logos, defined once as SVG symbols and reused</span></div>
+  <div class="stat"><b>19 KB</b><span>stroke data for 15 kanji, built in, so the demo needs no network calls</span></div>
+  <div class="stat"><b>2</b><span>themes, both designed, both following your system setting</span></div>
+</div>
+
+<ul class="plain">
+  <li><b>Motion is optional.</b> With "reduce motion" turned on, the intro sweep, the paint-in, the pulsing pins and the flying items all turn off. The scroll-linked ink still works, because it only moves when you do.</li>
+  <li><b>The keyboard reaches everything.</b> Every popover target is focusable. The widgets use real buttons, switches and radio buttons, and changes like "Gift added" are read out to screen readers.</li>
+  <li><b>Expensive work happens once.</b> Strokes and maps are computed and painted once, then revealed or moved. Scrolling only updates a mask and a few transforms.</li>
+  <li><b>Lazy where it counts.</b> Project screenshots load as you reach them, and the kanji pad starts only when it scrolls into view.</li>
+</ul>
