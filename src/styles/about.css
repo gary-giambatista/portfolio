@@ -118,3 +118,6 @@ p { margin: 14px 0; text-wrap: pretty; }
 .ink-card.bloom::before { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .ink-card, .ink-card.bloom { --bloom: 0px; transition: none; } .ink-card::before { transition: none; } }
 .num.ink-card .sg { --rest: radial-gradient(circle at 100% 0, rgb(0 0 0 / .32), rgb(0 0 0 / .12) 48px, transparent 92px); }
+/* Keep the words clear of the pattern: a halo in the card's own color, so lines stop just short of each letter. */
+.ink-card { --halo: color-mix(in srgb, var(--surface) 95%, var(--wash)); }
+.ink-card :is(.kj, h3, p, b, span) { text-shadow: 2.6px 0 1px var(--halo), 2.3px 1.3px 1px var(--halo), 1.3px 2.3px 1px var(--halo), 0 2.6px 1px var(--halo), -1.3px 2.3px 1px var(--halo), -2.3px 1.3px 1px var(--halo), -2.6px 0 1px var(--halo), -2.3px -1.3px 1px var(--halo), -1.3px -2.3px 1px var(--halo), 0 -2.6px 1px var(--halo), 1.3px -2.3px 1px var(--halo), 2.3px -1.3px 1px var(--halo), 0 0 6px var(--halo), 0 0 10px var(--halo); }
