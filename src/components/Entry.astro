@@ -2,6 +2,8 @@
 import { Image } from "astro:assets";
 import { jaDates, SKILL_ICONS, type Entry } from "~/content/timeline";
 import KanjiPad from "./KanjiPad.astro";
+import BundleBuilder from "./widgets/BundleBuilder.astro";
+import GiftWithPurchase from "./widgets/GiftWithPurchase.astro";
 import T from "./T.astro";
 import youfilter from "~/assets/img/youfilter.webp";
 import spacedCards from "~/assets/img/spaced-cards.webp";
@@ -32,7 +34,8 @@ const isExternal = (h: string) => h.startsWith("http");
         </Fragment>
       )}
     </div>
-    {(e.shot === "gwp" || e.shot === "bb") && <div class="rw" id={`rw-${e.shot}`}></div>}
+    {e.shot === "gwp" && <GiftWithPurchase />}
+    {e.shot === "bb" && <BundleBuilder />}
     {e.shot === "demo" && <KanjiPad />}
     {photo && (
       <div class="shot-wrap">

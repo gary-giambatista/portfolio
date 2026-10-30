@@ -85,3 +85,5 @@
 .rw-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { .rw-card, .rw-line { animation: none; } .rw-bar .fill { transition: none; } }
 @media (max-width: 980px) { .rw { max-width: 520px; } }
+/* The progress message can wrap to two lines in a narrow cart; reserve both so the cart below never jumps. */
+@media (max-width: 560px) { .rw-prog p { min-height: calc(2em * 1.35); } }

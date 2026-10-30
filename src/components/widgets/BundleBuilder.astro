@@ -1,0 +1,22 @@
+---
+/**
+ * Bundle Builder demo, rendered in its first state so the page never shifts when the script starts.
+ * src/lib/widgets/bundle-builder.ts then updates only what changes.
+ */
+import { art, BUNDLE_FILTERS, BUNDLE_MAX, ICO_CART, ICO_CHECK, money, PRODUCTS } from "~/lib/widgets/catalog";
+---
+<div class="rw" id="rw-bb">
+  <div class="rw-top"><span>Demo store · Bundle Builder</span><span class="rw-cart" data-tip="Cart" data-tip-sub="Bundles added in this demo"><Fragment set:html={ICO_CART} /><b hidden>0</b></span></div>
+  <h3 class="rw-title">Build your brew kit</h3>
+  <span class="rw-pill" aria-live="polite">Pick 3 · save up to 15%</span>
+  <div class="rw-chips" role="group" aria-label="Filter products">{BUNDLE_FILTERS.map(f => <button type="button" aria-pressed={f === "All" ? "true" : "false"}>{f}</button>)}</div>
+  <div class="rw-grid">{PRODUCTS.map(p => (
+    <button type="button" class="rw-card" data-id={p.id} data-cat={p.cat} aria-pressed="false" aria-label={`${p.name}, ${money(p.price)}`}><Fragment set:html={art(p.art, p.c)} /><span class="nm">{p.name}</span><span class="pr">{money(p.price)}</span><span class="chk" set:html={ICO_CHECK}></span></button>
+  ))}</div>
+  <div class="rw-tray" aria-label="Your bundle">{Array.from({ length: BUNDLE_MAX }, (_, i) => <div class="rw-slot" data-slot={i}>{i + 1}</div>)}</div>
+  <label class="rw-switch"><button type="button" role="switch" aria-checked="false" aria-label="Subscribe and save"></button><span>Subscribe &amp; save<small>Delivered every 4 weeks · extra 5% off</small></span></label>
+  <div class="rw-total"><div><span class="now" data-v="0">$0.00</span><s></s></div><span class="save"></span></div>
+  <button type="button" class="rw-cta" disabled>Pick 2 more to add</button>
+  <span class="rw-sr" aria-live="polite"></span>
+  <span class="rw-note">Rebuilt from scratch to show how Bundle Builder works. Not Rebuy's code.</span>
+</div>

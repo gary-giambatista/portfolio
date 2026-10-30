@@ -33,7 +33,7 @@ function commands(): Cmd[] {
     })),
     { group: tryIt, icon: ICO.act, label: L("Write a kanji", "漢字を書いてみる"), sub: "Kanji Kaku", keys: "kanji demo draw write 漢字", run: () => jumpTo("kk") },
     { group: tryIt, icon: ICO.act, label: L("Build a bundle", "バンドルを作る"), sub: "Bundle Builder", keys: "rebuy shopify widget cart", run: () => jumpTo("rw-bb") },
-    { group: tryIt, icon: ICO.act, label: L("Unlock a free gift", "無料ギフトを選ぶ"), sub: "Gift with purchase", keys: "rebuy shopify widget cart gwp", run: () => jumpTo("rw-gwp") },
+    { group: tryIt, icon: ICO.act, label: L("Unlock a free gift", "無料ギフトを選ぶ"), sub: "Selectable gift with purchase", keys: "rebuy shopify widget cart gwp", run: () => jumpTo("rw-gwp") },
     { group: pages, icon: ICO.page, label: L("How this site is built", "このサイトの作り方"), sub: L("Blog", "ブログ"), keys: "blog article ink maps", run: () => openLink(ROUTES.blog) },
     { group: pages, icon: ICO.page, label: L("About me", "自己紹介"), sub: L("Story, habits and toolbox", "経歴・仕事の進め方・スキル"), keys: "about bio story me who", run: () => openLink(ROUTES.about) },
     { group: pages, icon: ICO.page, label: L("Resume", "履歴書"), sub: "PDF", keys: "cv resume pdf", run: () => openLink(RESUME) },
