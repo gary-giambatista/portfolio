@@ -29,7 +29,7 @@ export function buildWave(o: WaveSpec): WaveSegs {
   const wash: Seg[] = [], ink: Seg[] = [], foamEdge: Seg[] = [], foam: Seg[] = [];
   const span = o.x1 - o.x0, xa = o.x0 + span * .07, xb = o.x1 - span * .07, sea = o.yb - 3;
   const Hc = Math.min(o.height * .5, span * .26), cpos = o.dir > 0 ? .28 : .72, xc = xa + (xb - xa) * cpos;
-  const Lb = Hc * 1.9, Lf = Hc * .32; // back slope length; Lf only spaces the striations
+  const Lb = Hc * 1.9; // back slope length
   const swellAmp = Math.min(9, o.height * .035), swellLen = Math.max(46, span / 11), phase = R() * 6.28;
   const wob = smooth(R, 3, 2);
   const envelope = (x: number) => Math.pow(Math.max(0, Math.sin(Math.PI * (x - xa) / (xb - xa))), .6);
@@ -69,7 +69,9 @@ export function buildWave(o: WaveSpec): WaveSegs {
     stroke(left, 1.6, o.seed + 3, false, 4); stroke(right, 1.6, o.seed + 4, false, 4);
   }
 
-  // ---- the curling lip: a tightening spiral from the crest, forward and down into the barrel
+  // ---- the curling lip: a tightening spiral from the crest, forward and down into the barrel. The spiral is
+  // the lip's OUTER edge, so it leaves the crest exactly where the back slope arrives; the lip's thickness grows
+  // from nothing there, peeling off the surface instead of sitting on top of it.
   const top: P = [xc, surface(xc)], R0 = Hc * .46, thMax = Math.PI * 1.02;
   const C: P = [xc, top[1] + R0];
   const lipAt = (t: number) => { // t in 0–1 along the lip
@@ -77,8 +79,11 @@ export function buildWave(o: WaveSpec): WaveSegs {
     return { x: C[0] + r * Math.cos(phi), y: C[1] + r * Math.sin(phi), nx: Math.cos(phi), ny: Math.sin(phi), r };
   };
   const lipW = Hc * .12;
-  const lipPts: BrushPt[] = Array.from({ length: 90 }, (_, i) => { const t = i / 89, q = lipAt(t); return { x: q.x, y: q.y, p: Math.max(.08, 1 - Math.pow(t, 1.1) * .92) }; });
-  const inner = Array.from({ length: 60 }, (_, i) => { const t = i / 59, q = lipAt(t), p = Math.max(.08, 1 - Math.pow(t, 1.1) * .92); return [q.x - q.nx * lipW * p * .95, q.y - q.ny * lipW * p * .95] as P; });
+  /** Lip thickness at t: zero at the crest, full by ~20% along, thinning toward the tip. */
+  const thick = (t: number) => lipW * 1.9 * Math.pow(Math.min(1, t / .2), .75) * Math.max(.08, 1 - Math.pow(t, 1.1) * .92);
+  const lipT = Array.from({ length: 90 }, (_, i) => i / 89);
+  const outer = lipT.map(t => { const q = lipAt(t); return [q.x, q.y] as P; });
+  const inner = lipT.map(t => { const q = lipAt(t), w = thick(t); return [q.x - q.nx * w, q.y - q.ny * w] as P; });
   const curlEnd = inner[inner.length - 1], foot: P = [curlEnd[0] + o.dir * Hc * .05, sea];
 
   // ---- the water mass: one outline, layered translucent copies, like pigment pooling
@@ -93,10 +98,10 @@ export function buildWave(o: WaveSpec): WaveSegs {
   stroke([curlEnd, [(curlEnd[0] + foot[0]) / 2 + o.dir * 2, (curlEnd[1] + foot[1]) / 2], foot], 1.6, o.seed + 62, false, 4);
 
   // ---- the surface line, and striations that follow the water's shape
-  stroke(backPts, 2.1, o.seed + 5, true, 8, .9);
+  stroke([...backPts, ...outer.slice(1)], 2.2, o.seed + 5, true, 8, .9);
   stroke(frontPts, 1.8, o.seed + 6, true, 6, .9);
   for (let k = 1; k <= 5; k++) {
-    const from = xc - o.dir * Lb * (.95 - k * .08), to = xc + o.dir * Lf * (.2 - k * .05);
+    const from = xc - o.dir * Lb * (.95 - k * .08), to = xc - o.dir * Hc * (.04 + k * .05);
     const pts: P[] = [];
     for (let i = 0; i <= 40; i++) { const x = from + (to - from) * i / 40; const y = surface(x) + k * Math.max(5, Hc * .075); if (y < sea) pts.push([x, y]); }
     if (pts.length > 6) stroke(pts, 1.3, o.seed + 10 + k, true, 4, .7);
@@ -115,23 +120,20 @@ export function buildWave(o: WaveSpec): WaveSegs {
     if (run.length > 8) stroke(run, 1.1, o.seed + 40 + k, true, 3, .6);
   }
 
-  // the lip's body in wash, then ink along its outer and inner edges
-  for (let l = 0; l < 3; l++) wash.push(...buildBrush(lipPts.map(p => ({ ...p, x: p.x + gauss() * .5, y: p.y + gauss() * .5 })), lipW * 2, o.seed + 50 + l, 1, 2).map(s => ({ ...s, a: .45 })) as Seg[]);
-  const edge = (side: 1 | -1) => lipPts.map((p, i) => {
-    const q = lipAt(i / 89), off = side * lipW * p.p * .95; return [q.x + q.nx * off, q.y + q.ny * off] as P;
-  });
-  stroke(edge(1), 2.2, o.seed + 60, true, 6, .85);
-  stroke(edge(-1), 1.4, o.seed + 61, true, 4, .7);
-  for (let k = 1; k <= 2; k++) { // striations inside the lip
-    const pts: P[] = Array.from({ length: 50 }, (_, i) => { const t = i / 49 * .75, q = lipAt(t), off = (k * .32 - .1) * lipW; return [q.x - q.nx * off, q.y - q.ny * off]; });
+  // the lip's body in wash, then ink along its inner edge (the outer edge is the surface stroke above)
+  const lipBody = [...outer, ...[...inner].reverse()];
+  for (let l = 0; l < 4; l++) wash.push({ path: lipBody.map(([x, y]) => [x + gauss() * .5, y + gauss() * .5]), a: .16 });
+  stroke(inner.slice(8), 1.4, o.seed + 61, true, 4, .7);
+  for (let k = 1; k <= 2; k++) { // striations inside the lip, fanning out of the crest
+    const pts: P[] = Array.from({ length: 50 }, (_, i) => { const t = .04 + i / 49 * .71, q = lipAt(t), off = thick(t) * (k * .33); return [q.x - q.nx * off, q.y - q.ny * off]; });
     stroke(pts, 1, o.seed + 70 + k, true, 3, .6);
   }
 
   // ---- foam claws reaching off the lip's outer edge
   const scale = Math.max(.7, Hc / 100);
   for (let c = 0; c < 11; c++) {
-    const t = .1 + c * .075, q = lipAt(t), off = lipW * Math.max(.15, 1 - Math.pow(t, 1.1) * .92);
-    let x = q.x + q.nx * off, y = q.y + q.ny * off;
+    const t = .1 + c * .075, q = lipAt(t);
+    let x = q.x + q.nx, y = q.y + q.ny;
     // grow outward, bending forward the way the wave is breaking
     let ang = Math.atan2(q.ny, q.nx) + o.dir * (.5 + R() * .3);
     const fingers = 2 + (R() < .6 ? 1 : 0);
