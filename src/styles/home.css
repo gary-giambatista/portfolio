@@ -290,11 +290,20 @@ kbd { font: 500 10.5px/1 var(--font-mono); padding: 3px 5px; border-radius: 5px;
   .links a { padding: 6px 6px; }
   .links .sep { display: none; }
   .hero { padding-block: 44px 28px; }
-  .hero .wrap { grid-template-columns: minmax(0, 1fr); }
-  .portrait { order: -1; width: 112px; }
-  .portrait img { border-radius: 14px; }
-  .portrait .wash { left: -24px; top: -16px; width: calc(100% + 60px); height: calc(100% + 50px); }
-  .portrait .enso { left: -24px; top: -26px; width: calc(100% + 48px); height: calc(100% + 52px); }
+  /* The ensō becomes the photo's frame: a round portrait inside the brush circle, beside the stacked name.
+     The photo scales with the screen so the ring never crowds the name on narrow phones. */
+  .hero .wrap { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "hello hello" "name photo" "kana kana" "lede lede"; gap: 0 14px; align-items: center; }
+  .hero .wrap > div:first-child { display: contents; }
+  .hello { grid-area: hello; }
+  .hero h1 { grid-area: name; margin: 34px 0 22px; }
+  .name-kana { grid-area: kana; }
+  .lede { grid-area: lede; }
+  .hero .name-ink { width: min-content; } /* the swash hugs the longest line, not the whole column */
+  /* The ring starts just right of the swash (its edge sits ~265px in at 40px type); 1.237 = half the photo plus the ring. */
+  .portrait { grid-area: photo; width: clamp(48px, calc((100vw - 305px) / 1.237), 100px); margin: 14px 16px 0 0; }
+  .portrait img { aspect-ratio: 1; border-radius: 50%; object-position: 74% 40%; }
+  .portrait .enso { left: -23%; top: -23%; width: 146%; height: 146%; }
+  .portrait .wash { left: -24%; top: -4%; width: 152%; height: 139%; }
 
   .legend { display: none; }
   .timeline { padding-block: 36px 100px; }
@@ -313,4 +322,17 @@ kbd { font: 500 10.5px/1 var(--font-mono); padding: 3px 5px; border-radius: 5px;
   .socials { gap: 6px; }
   .socials a { width: 32px; height: 32px; }
   .theme-btn { display: none; }
+}
+/* Narrow phones: a slightly smaller name keeps the portrait from crowding it, and a tighter nav fits on one line. */
+@media (max-width: 380px) {
+  .hero h1 { font-size: 36px; }
+  .portrait { width: clamp(48px, calc((100vw - 282px) / 1.237), 100px); }
+  .socials { gap: 3px; }
+  .socials a { width: 29px; height: 29px; }
+  .socials svg { width: 15px; height: 15px; }
+}
+@media (max-width: 340px) {
+  .hero h1 { font-size: 32px; }
+  .socials a[aria-label="Resume (PDF)"] { display: none; } /* still in the contact card and the ⌘K menu */
+  .links a { padding: 6px 2px; }
 }
