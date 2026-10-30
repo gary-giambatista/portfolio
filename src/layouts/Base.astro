@@ -40,7 +40,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     if (store.theme === "light" || store.theme === "dark") root.dataset.theme = store.theme;
     if (bilingual) root.lang = store.lang || ((navigator.language || "").toLowerCase().startsWith("ja") ? "ja" : "en");
   </script>
-  <Font cssVariable="--ff-mincho" preload={[{ weight: 800, subset: "latin" }]} />
+  <Font cssVariable="--ff-mincho" preload={[{ weight: 800, subset: "latin" }, { weight: 700, subset: "latin" }]} />
   <Font cssVariable="--ff-plex-sans" preload={[{ weight: 400, subset: "latin" }]} />
   <Font cssVariable="--ff-plex-mono" preload={[{ weight: 400, subset: "latin" }]} />
   <slot name="head" />

@@ -4,11 +4,9 @@
  * nears the viewport.
  */
 import type HanziWriterType from "hanzi-writer";
-import { esc } from "./esc";
+import { padLabel, readingOf, storyHtml, strokeCount, type KanjiText } from "./kanji-text";
 import { onThemeChange } from "./theme";
 
-type Seg = { t: "k" | "t" | "p"; x: string; g?: string; m?: string };
-type KanjiText = { c: string; m: string; p: string; on: string[]; n: number; s: Seg[] };
 type StrokeData = { strokes: string[]; medians: number[][][]; radStrokes: number[] };
 
 const TOLERANCE: Record<string, number> = { strict: .75, standard: 1, relaxed: 1.5, forgiving: 2 };
@@ -30,11 +28,10 @@ export function initKanjiPad(root: HTMLElement | null) {
   function renderPrompt() {
     const k = cur();
     $(".kk-meaning").textContent = k.m;
-    $(".kk-reading").textContent = `${k.p} · ${k.on[0] || ""}`;
-    count.textContent = `Stroke 0 of ${k.n}`;
-    pad.setAttribute("aria-label", `Writing pad. Draw ${k.c}, ${k.m}, in ${k.n} strokes.`);
-    $(".kk-story").innerHTML = k.s.map(seg => seg.t === "k" ? `<b>${esc(seg.x)}</b>`
-      : seg.t === "p" ? `<span class="prim" tabindex="0" data-tip="${esc(seg.g)} · ${esc(seg.m)}" data-tip-sub="Primitive: a building block reused across kanji">${esc(seg.x)}</span>` : esc(seg.x)).join("");
+    $(".kk-reading").textContent = readingOf(k);
+    count.textContent = strokeCount(0, k);
+    pad.setAttribute("aria-label", padLabel(k));
+    $(".kk-story").innerHTML = storyHtml(k);
     picker.querySelectorAll("button").forEach((b, i) => b.setAttribute("aria-pressed", String(i === idx)));
   }
 
@@ -43,7 +40,7 @@ export function initKanjiPad(root: HTMLElement | null) {
     pad.classList.remove("miss", "win");
     if (nextBtn) { nextBtn.remove(); nextBtn = null; }
     const k = cur(), leniency = TOLERANCE[tolSel.value];
-    count.textContent = `Stroke 0 of ${k.n}`;
+    count.textContent = strokeCount(0, k);
     say("Write the strokes in order.");
     guide ? writer.showOutline() : writer.hideOutline();
     writer.quiz({
@@ -52,7 +49,7 @@ export function initKanjiPad(root: HTMLElement | null) {
         pad.classList.add("miss"); setTimeout(() => pad.classList.remove("miss"), 450);
         say(d.mistakesOnStroke >= 2 && !guide ? "Try that stroke again. The guide or Watch can help." : "Try that stroke again.", "bad");
       },
-      onCorrectStroke: d => { count.textContent = `Stroke ${d.strokeNum + 1} of ${k.n}`; say(d.strokesRemaining ? "Keep going." : ""); },
+      onCorrectStroke: d => { count.textContent = strokeCount(d.strokeNum + 1, k); say(d.strokesRemaining ? "Keep going." : ""); },
       onComplete: sum => {
         pad.classList.add("win");
         picker.children[idx].classList.add("done");
