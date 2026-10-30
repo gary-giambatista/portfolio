@@ -3,6 +3,6 @@
   "include": [".astro/types.d.ts", "**/*"],
   "exclude": ["dist", "prototype", ".cache"],
   "compilerOptions": {
-    "paths": { "~/*": ["src/*"] }
+    "paths": { "~/*": ["./src/*"] }
   }
 }

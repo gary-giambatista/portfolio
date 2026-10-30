@@ -1,5 +1,5 @@
 /**
- * Builds the location-card maps from Natural Earth 1:10m data (land, minor islands, lakes, rivers),
+ * Builds the location-card maps from Natural Earth 1:10m data (land, lakes, rivers),
  * projected with d3-geo (Mercator) into a 180×220 card and saved as SVG path strings.
  * Runs once, at build time; the browser never loads a mapping library or map data service.
  *
@@ -10,6 +10,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { geoMercator, geoPath, type GeoPermissibleObjects } from "d3-geo";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
+import { simplifyPath } from "../src/lib/map-simplify.ts";
 
 const NE = "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson";
 const CACHE = ".cache/ne";
@@ -70,22 +71,8 @@ function touches(f: Feature<Geometry | null>, [x0, y0, x1, y1]: MapConfig["bbox"
   return !!g && "coordinates" in g && walk(g.coordinates);
 }
 
-/** Round to 0.1px and drop points that sit too close to the last one kept. */
-export function simplify(d: string, tol: number, fixed = false): string {
-  let out = "", px = NaN, py = NaN;
-  const num = (n: number) => fixed ? n.toFixed(1) : String(+n.toFixed(1));
-  for (const cmd of d.match(/[MLZ][^MLZ]*/g) || []) {
-    if (cmd[0] === "Z") { out += "Z"; continue; }
-    const [x, y] = cmd.slice(1).split(",").map(Number);
-    if (cmd[0] === "L" && Math.hypot(x - px, y - py) < tol) continue;
-    out += cmd[0] + num(x) + "," + num(y);
-    px = x; py = y;
-  }
-  return out;
-}
-
-const [land, minor, lakes, rivers, riversNA] = await Promise.all([
-  "ne_10m_land", "ne_10m_minor_islands", "ne_10m_lakes", "ne_10m_rivers_lake_centerlines", "ne_10m_rivers_north_america",
+const [land, lakes, rivers, riversNA] = await Promise.all([
+  "ne_10m_land", "ne_10m_lakes", "ne_10m_rivers_lake_centerlines", "ne_10m_rivers_north_america",
 ].map(layer));
 
 /**
@@ -98,7 +85,7 @@ function render(cfg: MapConfig, tol: number, fixed = false) {
   const path = geoPath(proj).digits(3);
   const draw = (...fcs: FeatureCollection[]) => {
     const features = fcs.flatMap(fc => fc.features.filter(f => touches(f, cfg.bbox) && (fc !== land || isBaseLand(f))));
-    return simplify(path({ type: "FeatureCollection", features } as GeoPermissibleObjects) || "", tol, fixed);
+    return simplifyPath(path({ type: "FeatureCollection", features } as GeoPermissibleObjects) || "", tol, fixed).d;
   };
   return {
     land: draw(land),
