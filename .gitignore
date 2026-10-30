@@ -1,0 +1,18 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.astro/
+
+# local reference copy of the design prototype (stale by design)
+prototype/
+
+# caches for build-time data downloads
+.cache/
+
+# env and OS
+.env
+.env.*
+.DS_Store
+*.log
