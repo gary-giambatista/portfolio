@@ -14,6 +14,7 @@
   --wash: #4A5E8E;       /* watercolor wash pigment */
   --kk-guide: #D2D8E0;   /* faint outline in the writing pad */
   --bad: #C2412D;        /* rejected stroke */
+  --foam: #FFFFFF;       /* wave foam and Fuji's snow */
   --code-bg: #EBEFEC; --c-com: #636B78; --c-str: #2E7853; --c-kw: #2A4A8C; /* code colors darkened from the prototype to meet 4.5:1 */
   --font-display: var(--ff-mincho);
   --font-body: var(--ff-plex-sans);
@@ -22,9 +23,9 @@
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --paper: #0E131C; --surface: #151C28; --ink: #E4E8EE; --muted: #97A1B1; --rule: #283244;
-  --indigo: #94AEEA; --indigo-soft: #1B2740; --japan: #172030; --land: #222C3B; --river: #3A4D74; --brush: #B4C3E6; --wash: #7F98D6; --kk-guide: #2C3750; --bad: #F08A78;
+  --indigo: #94AEEA; --indigo-soft: #1B2740; --japan: #172030; --land: #222C3B; --river: #3A4D74; --brush: #B4C3E6; --wash: #7F98D6; --kk-guide: #2C3750; --bad: #F08A78; --foam: #DCE4F4;
   --code-bg: #121924; --c-com: #788396; --c-str: #8FD0A8; --c-kw: #A9C0F2; color-scheme: dark; } }
 :root[data-theme="dark"] {
   --paper: #0E131C; --surface: #151C28; --ink: #E4E8EE; --muted: #97A1B1; --rule: #283244;
-  --indigo: #94AEEA; --indigo-soft: #1B2740; --japan: #172030; --land: #222C3B; --river: #3A4D74; --brush: #B4C3E6; --wash: #7F98D6; --kk-guide: #2C3750; --bad: #F08A78;
+  --indigo: #94AEEA; --indigo-soft: #1B2740; --japan: #172030; --land: #222C3B; --river: #3A4D74; --brush: #B4C3E6; --wash: #7F98D6; --kk-guide: #2C3750; --bad: #F08A78; --foam: #DCE4F4;
   --code-bg: #121924; --c-com: #788396; --c-str: #8FD0A8; --c-kw: #A9C0F2; color-scheme: dark; }

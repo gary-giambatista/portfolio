@@ -6,7 +6,9 @@ interface Props { flight: NonNullable<Era["flight"]> }
 const { from, to, year } = Astro.props.flight;
 const labelEn = `Moved from ${from} to ${to} in ${year}`;
 ---
-<div class="flight" role="img" aria-label={labelEn} data-label-en={labelEn} data-label-ja={`${year}年 ${JA_PLACE[from]}から${JA_PLACE[to]}へ`}>
+<div class="flight" role="img" aria-label={labelEn} data-label-en={labelEn} data-label-ja={`${year}年 ${JA_PLACE[from]}から${JA_PLACE[to]}へ`}
+  data-wave-dir={to === "Japan" ? "1" : "-1"} data-fuji={to === "Japan" ? ".82" : ".18"}>
+  <div class="wave" aria-hidden="true"><canvas class="wave-wash"></canvas><canvas class="wave-ink"></canvas></div>
   <svg aria-hidden="true" class="route">
     <path class="track" /><path class="trail" /><circle class="end" r="4" /><circle class="end" r="4" />
     <text class="lbl"><tspan class="l-en">{from}</tspan><tspan class="l-ja">{JA_PLACE[from]}</tspan></text>
