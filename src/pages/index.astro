@@ -26,12 +26,14 @@ const index = {
 <Base title="Gary Giambatista · Software Engineer" description="Software engineer in Hoboken, NJ. I build front ends people enjoy using, from Shopify widgets that moved millions in sales to a kanji-writing app for iOS and Android." bilingual>
   <IconSprite />
   <HomeNav />
-  <Hero />
-  <RulerBar />
-  <main class="wrap">
-    <Timeline />
+  <main>
+    <Hero />
+    <RulerBar />
+    <div class="wrap tl-wrap">
+      <Timeline />
+    </div>
+    <Contact />
   </main>
-  <Contact />
   <Footer />
   <script type="application/json" id="timeline-data" set:html={JSON.stringify(index)}></script>
 </Base>

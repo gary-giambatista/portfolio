@@ -195,7 +195,7 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 .place-wash { left: calc(var(--spine-x) - 140px); top: -36px; width: 290px; height: 300px; z-index: 1; }
 @media (prefers-reduced-motion: reduce) { .wash, .wash.wait { transition: none; opacity: .7; transform: none; } }
 .place-wash { opacity: .55; }
-main.wrap { overflow-x: clip; }
+.tl-wrap { overflow-x: clip; }
 .hero { overflow-x: clip; }
 .spine-drop { left: calc(var(--spine-x) - 40px); bottom: 26px; width: 80px; height: 110px; opacity: .22; transition: opacity .6s ease; }
 .spine-drop.filled { opacity: 1; }
