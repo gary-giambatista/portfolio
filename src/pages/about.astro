@@ -34,6 +34,8 @@ import "~/styles/about.css";
     </div>
   </section>
 
+  <div class="wrap"><div class="sea-divider" id="seaDivider" aria-hidden="true"><div class="wave"><canvas class="wave-wash"></canvas><canvas class="wave-ink"></canvas></div></div></div>
+
   <section>
     <div class="wrap">
       <div class="col" style="max-width:none">
@@ -123,9 +125,11 @@ import "~/styles/about.css";
   import { initThemeButton } from "~/lib/theme";
   import { initInk } from "~/lib/ink/canvas";
   import { initCopyEmail } from "~/lib/copy-email";
+  import { initSeaDivider } from "~/lib/about-wave";
 
   initPopover({ top: 66 });
   initThemeButton();
   initInk();
   initCopyEmail(document.getElementById("copyEmail"), document.getElementById("copied"));
+  initSeaDivider(document.getElementById("seaDivider"));
 </script>
