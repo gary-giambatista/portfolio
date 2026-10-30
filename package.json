@@ -12,9 +12,9 @@
     "preview": "astro preview",
     "check": "astro check",
     "data:maps": "tsx scripts/build-maps.ts",
-    "data:icons": "tsx scripts/build-icons.ts",
     "data:kanji": "tsx scripts/sync-kanji.ts",
-    "data": "npm run data:maps && npm run data:icons"
+    "data": "npm run data:maps && npm run data:fonts",
+    "data:fonts": "tsx scripts/build-cjk-fonts.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.1.2",
