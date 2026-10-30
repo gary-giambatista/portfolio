@@ -1,0 +1,17 @@
+---
+/** A scroll-driven flight between eras. The route is laid out in the browser to fit the column. */
+import { JA_PLACE, type Era } from "~/content/timeline";
+
+interface Props { flight: NonNullable<Era["flight"]> }
+const { from, to, year } = Astro.props.flight;
+const labelEn = `Moved from ${from} to ${to} in ${year}`;
+---
+<div class="flight" role="img" aria-label={labelEn} data-label-en={labelEn} data-label-ja={`${year}年 ${JA_PLACE[from]}から${JA_PLACE[to]}へ`}>
+  <svg aria-hidden="true" class="route">
+    <path class="track" /><path class="trail" /><circle class="end" r="4" /><circle class="end" r="4" />
+    <text class="lbl"><tspan class="l-en">{from}</tspan><tspan class="l-ja">{JA_PLACE[from]}</tspan></text>
+    <text class="lbl" text-anchor="end"><tspan class="l-en">{to}</tspan><tspan class="l-ja">{JA_PLACE[to]}</tspan></text>
+    <text class="lbl yr" text-anchor="middle">{year}</text>
+    <use class="plane" href="#i-plane" x="-26" y="-22" width="52" height="44" />
+  </svg>
+</div>

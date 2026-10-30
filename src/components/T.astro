@@ -1,0 +1,6 @@
+---
+/** Both languages in the DOM; CSS shows the active one. Without `ja`, renders the English alone. */
+interface Props { en: string; ja?: string | null; html?: boolean }
+const { en, ja, html = false } = Astro.props;
+---
+{ja ? (html ? <><span class="l-en" set:html={en} /><span class="l-ja" lang="ja" set:html={ja} /></> : <><span class="l-en">{en}</span><span class="l-ja" lang="ja">{ja}</span></>) : (html ? <Fragment set:html={en} /> : en)}

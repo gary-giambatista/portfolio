@@ -1,0 +1,27 @@
+---
+/**
+ * SVG symbols defined once and reused: skill logos (generated from simple-icons at build time),
+ * a few custom glyphs for skills without a brand logo, and the plane.
+ */
+import * as si from "simple-icons";
+import { SKILL_ICONS } from "~/content/timeline";
+
+const bySlug = new Map(Object.values(si).filter((x): x is si.SimpleIcon => !!x && typeof x === "object" && "slug" in x).map(x => [x.slug, x]));
+const CUSTOM: Record<string, string> = {
+  "c-spark": '<path fill="currentColor" d="M12 2.5l2.2 6.6 6.8 2.4-6.8 2.4L12 20.5l-2.2-6.6L3 11.5l6.8-2.4z"/>',
+  "c-cycle": '<path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="M20 12a8 8 0 1 1-2.3-5.7M20 3.5V8h-4.5"/>',
+  "c-brush": '<path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" d="M14.5 4.5l5 5L10 19l-6 1.5L5.5 14.5z"/>',
+  "c-drop": '<path fill="currentColor" d="M12 2.5c4.4 5.3 6.6 9 6.6 11.9a6.6 6.6 0 0 1-13.2 0C5.4 11.5 7.6 7.8 12 2.5z"/>',
+  "c-bug": '<g fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M8 9.5h8v5a4 4 0 0 1-8 0z"/><path d="M9.5 6.5l1 2.5M14.5 6.5l-1 2.5M4.5 12.5H8M16 12.5h3.5M5 18.5l3-1.5M19 18.5l-3-1.5"/></g>',
+};
+interface Props { skills?: boolean }
+const { skills = true } = Astro.props;
+const slugs = skills ? [...new Set(Object.values(SKILL_ICONS))] : [];
+const symbols = slugs.map(slug => {
+  const body = CUSTOM[slug] ?? (bySlug.get(slug) ? `<path fill="currentColor" d="${bySlug.get(slug)!.path}"/>` : null);
+  if (!body) throw new Error(`No icon for ${slug}`);
+  return `<symbol id="i-${slug}" viewBox="0 0 24 24">${body}</symbol>`;
+}).join("");
+const plane = '<symbol id="i-plane" viewBox="-26 -22 52 44"><path d="M1-3.2-7.5-20H-3L10.5-3.2ZM1 3.2-7.5 20H-3L10.5 3.2ZM-15.5-3.2-20.5-10.5H-17.5L-11.5-3.2ZM-15.5 3.2-20.5 10.5H-17.5L-11.5 3.2ZM-4.6-12.6h5.4v2.8h-5.4ZM-4.6 9.8h5.4v2.8h-5.4Z"/><path d="M-22 0C-22-2.6-18.5-3.4-12-3.4H13C19.5-3.4 24-1.8 25.5 0 24 1.8 19.5 3.4 13 3.4H-12C-18.5 3.4-22 2.6-22 0Z"/><path d="M15 -1.6h4" fill="none"/></symbol>';
+---
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" set:html={symbols + plane}></svg>

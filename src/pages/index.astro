@@ -1,0 +1,65 @@
+---
+import Base from "~/layouts/Base.astro";
+import Contact from "~/components/Contact.astro";
+import Footer from "~/components/Footer.astro";
+import Hero from "~/components/Hero.astro";
+import HomeNav from "~/components/HomeNav.astro";
+import IconSprite from "~/components/IconSprite.astro";
+import RulerBar from "~/components/RulerBar.astro";
+import Timeline from "~/components/Timeline.astro";
+import { flatEntries, jaDates, NOW, RULER_MAX, RULER_MIN, startLabel } from "~/content/timeline";
+import "~/styles/home.css";
+import "~/styles/kanji-pad.css";
+import "~/styles/widgets.css";
+
+// The slice of the timeline the browser needs for the ruler, readout and command palette.
+const index = {
+  now: NOW, min: RULER_MIN, max: RULER_MAX,
+  entries: flatEntries.map(e => ({
+    id: e.id, type: e.type, start: e.start, end: e.end,
+    title: e.title, titleJa: e.ja?.title ?? e.title, kind: e.kind, kindJa: e.ja?.kind ?? e.kind,
+    dates: e.dates, datesJa: jaDates(e), startEn: startLabel(e).en, startJa: startLabel(e).ja,
+    skills: e.skills ?? [], era: e.era.name, eraJa: e.era.ja.name,
+  })),
+};
+---
+<Base title="Gary Giambatista · Software Engineer" description="Software engineer in Hoboken, NJ. I build front ends people enjoy using, from Shopify widgets that moved millions in sales to a kanji-writing app for iOS and Android." bilingual>
+  <IconSprite />
+  <HomeNav />
+  <Hero />
+  <RulerBar />
+  <main class="wrap">
+    <Timeline />
+  </main>
+  <Contact />
+  <Footer />
+  <script type="application/json" id="timeline-data" set:html={JSON.stringify(index)}></script>
+</Base>
+
+<script>
+  import { initLangToggle } from "~/lib/i18n";
+  import { initPopover } from "~/lib/popover";
+  import { initThemeButton } from "~/lib/theme";
+  import { initInk } from "~/lib/ink/canvas";
+  import { initCopyEmail } from "~/lib/copy-email";
+  import { initSpine } from "~/lib/home/spine";
+  import { initFlights } from "~/lib/home/flights";
+  import { initTimeline } from "~/lib/home/timeline";
+  import { initPalette } from "~/lib/home/palette";
+  import { initKanjiPad } from "~/lib/kanji-pad";
+  import { initBundleBuilder } from "~/lib/widgets/bundle-builder";
+  import { initGiftWithPurchase } from "~/lib/widgets/gift-with-purchase";
+
+  initPopover({ top: 70 });
+  initThemeButton();
+  initLangToggle();
+  initInk();
+  initSpine();
+  initFlights();
+  initKanjiPad(document.getElementById("kk"));
+  initBundleBuilder(document.getElementById("rw-bb"));
+  initGiftWithPurchase(document.getElementById("rw-gwp"));
+  initCopyEmail(document.getElementById("copyEmail"), document.getElementById("copied"));
+  initPalette();
+  initTimeline();
+</script>

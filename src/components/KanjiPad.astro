@@ -1,0 +1,26 @@
+---
+/**
+ * Kanji Kaku writing pad. The picker and prompt text render here; stroke data and Hanzi Writer load
+ * lazily when the pad nears the viewport (src/lib/kanji-pad.ts).
+ */
+import kanji from "~/data/generated/kanji-lesson1.json";
+
+const text = kanji.map(({ c, m, p, on, n, s }) => ({ c, m, p, on, n, s }));
+const start = text.findIndex(k => k.c === "日");
+---
+<div class="kk" id="kk">
+  <div class="kk-top"><span>Lesson 1 · Numbers & simple forms</span><span class="kk-live"><i></i>Try it</span></div>
+  <div class="kk-picker" aria-label="Choose a kanji from Lesson 1">{text.map((k, i) => <button type="button" data-i={String(i)} aria-pressed={i === start ? "true" : "false"} aria-label={`${k.c}, ${k.m}`} data-tip={k.m} data-tip-sub={`${k.n} stroke${k.n > 1 ? "s" : ""} · ${k.p}`}>{k.c}</button>)}</div>
+  <div class="kk-prompt"><div><span class="kk-meaning"></span><span class="kk-reading"></span></div><span class="kk-count"></span></div>
+  <div class="kk-pad" role="img"><svg class="kk-grid" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><line x1="50" y1="0" x2="50" y2="100" /><line x1="0" y1="50" x2="100" y2="50" /><line class="d" x1="0" y1="0" x2="100" y2="100" /><line class="d" x1="100" y1="0" x2="0" y2="100" /></svg><div class="kk-writer"></div></div>
+  <p class="kk-msg" aria-live="polite"></p>
+  <div class="kk-tools">
+    <button type="button" class="kk-btn" data-kk="watch" data-tip="Watch the stroke order"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.5v9l7.5-4.5z" fill="currentColor" /></svg>Watch</button>
+    <button type="button" class="kk-btn" data-kk="guide" aria-pressed="true" data-tip="Show or hide the faint outline">Guide</button>
+    <button type="button" class="kk-btn" data-kk="reset">Reset</button>
+    <label class="kk-tol" data-tip="How closely strokes must match" data-tip-sub="Same tolerance settings as the app">Tolerance <select id="kkTol"><option value="strict">Strict</option><option value="standard">Standard</option><option value="relaxed" selected>Relaxed</option><option value="forgiving">Forgiving</option></select></label>
+  </div>
+  <p class="kk-story"></p>
+  <span class="kk-credit">Stroke data: hanzi-writer-data-jp (animCJK, Make Me a Hanzi) · checking: Hanzi Writer</span>
+  <script type="application/json" class="kk-data" set:html={JSON.stringify(text)}></script>
+</div>

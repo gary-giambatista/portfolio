@@ -1,0 +1,19 @@
+---
+import Ruler from "./Ruler.astro";
+---
+<div class="ruler-bar">
+  <div class="wrap">
+    <div class="ruler-head">
+      <div class="readout" id="readout" aria-live="polite"><b>Now</b> · Kanji Kaku · Hoboken, NJ</div>
+      <div class="controls">
+        <div class="legend"><span><i></i><span class="l-en">Work</span><span class="l-ja" lang="ja">仕事</span></span><span><i class="sq"></i><span class="l-en">Project</span><span class="l-ja" lang="ja">個人開発</span></span><span><i class="ring"></i><span class="l-en">Learning</span><span class="l-ja" lang="ja">学び</span></span></div>
+        <button class="chipbtn" type="button" data-filter="all" aria-pressed="true"><span class="l-en">All</span><span class="l-ja" lang="ja">すべて</span></button>
+        <button class="chipbtn" type="button" data-filter="work" aria-pressed="false"><span class="l-en">Work</span><span class="l-ja" lang="ja">仕事</span></button>
+        <button class="chipbtn" type="button" data-filter="project" aria-pressed="false"><span class="l-en">Projects</span><span class="l-ja" lang="ja">個人開発</span></button>
+        <button class="chipbtn icon" type="button" id="replay" aria-label="Replay timeline intro" data-tip="Replay intro" data-tip-sub="Sweep from 2016 to now" data-tip-ja="イントロを再生" data-tip-sub-ja="2016年から現在までをたどります">↻</button>
+        <span class="kbd-hint" tabindex="0" data-tip="Step through time" data-tip-sub="J for older · K for newer" data-tip-ja="時間をたどる" data-tip-sub-ja="J で過去へ · K で現在へ"><kbd>J</kbd><kbd>K</kbd></span>
+      </div>
+    </div>
+    <Ruler />
+  </div>
+</div>

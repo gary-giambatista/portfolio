@@ -1,0 +1,59 @@
+---
+import { Image } from "astro:assets";
+import { jaDates, SKILL_ICONS, type Entry } from "~/content/timeline";
+import KanjiPad from "./KanjiPad.astro";
+import T from "./T.astro";
+import youfilter from "~/assets/img/youfilter.webp";
+import spacedCards from "~/assets/img/spaced-cards.webp";
+import katacard from "~/assets/img/katacard.webp";
+
+interface Props { entry: Entry; first: boolean }
+const { entry: e, first } = Astro.props;
+const J = e.ja ?? {};
+const ex = e.extra ?? {};
+const IMAGES = { youfilter, "spaced-cards": spacedCards, katacard };
+const photo = typeof e.shot === "object" ? e.shot : null;
+const isExternal = (h: string) => h.startsWith("http");
+---
+<article class:list={["entry", e.type, { compact: e.compact, first }]} id={e.id} data-type={e.type}>
+  <span class="node" aria-hidden="true"></span>
+  <div class="entry-grid">
+    <div>
+      <div class="eyebrow"><span class="kind"><T en={e.kind} ja={J.kind} /></span><span><T en={e.dates} ja={jaDates(e)} /></span></div>
+      <h2><T en={e.title} ja={J.title} /></h2><p class="sub"><T en={e.sub} ja={J.sub} html /></p>
+      {e.compact ? <p><T en={e.text!} ja={J.text} /></p> : (
+        <Fragment>
+          <ul class="points">{e.points!.map((p, i) => <li><T en={p} ja={J.points?.[i]} /></li>)}</ul>
+          <div class="skills-label"><T en="Skills" ja="スキル" /></div>
+          <div class="skills">{e.skills!.map(s => <span class="skill">{SKILL_ICONS[s] && <svg class="ico" aria-hidden="true"><use href={`#i-${SKILL_ICONS[s]}`} /></svg>}{s}</span>)}</div>
+        </Fragment>
+      )}
+    </div>
+    {(e.shot === "gwp" || e.shot === "bb") && <div class="rw" id={`rw-${e.shot}`}></div>}
+    {e.shot === "demo" && <KanjiPad />}
+    {photo && (
+      <div class="shot-wrap">
+        <figure class:list={["shot photo", { tall: photo.tall }]} style="margin:0">
+          <Image src={IMAGES[photo.img]} alt={photo.alt} loading="lazy" decoding="async"
+            widths={photo.tall ? [286, 520, 600] : [380, 520, 760, 1040].filter(w => w <= IMAGES[photo.img].width)}
+            sizes={photo.tall ? "(max-width: 980px) 286px, 286px" : "(max-width: 980px) min(520px, calc(100vw - 66px)), 380px"} />
+        </figure>
+      </div>
+    )}
+    {!e.compact && (ex.stats || ex.links) && (
+      <div class="extra">
+        {(ex.stats ?? []).map(([n, l, tip], i) => {
+          const jt = J.tips?.[i];
+          return tip
+            ? <span class="stat" tabindex="0" data-tip={tip[0]} data-tip-sub={tip[1]} data-tip-ja={jt?.[0]} data-tip-sub-ja={jt?.[1]}><b>{n}</b><span><T en={l} ja={J.stats?.[i]} /></span></span>
+            : <span class="stat"><b>{n}</b><span><T en={l} ja={J.stats?.[i]} /></span></span>;
+        })}
+        {ex.stats && ex.links && <span class="divider"></span>}
+        {(ex.links ?? []).map(([l, h], i) => h
+          ? <a href={h} {...(isExternal(h) ? { target: "_blank", rel: "noopener" } : {})}><T en={l} ja={J.links?.[i]} /></a>
+          : <span class="soon mono">{l.replace(" ↗", "")} · link soon</span>)}
+        {ex.note && <span class="note">{ex.note}</span>}
+      </div>
+    )}
+  </div>
+</article>
