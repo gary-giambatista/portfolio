@@ -159,6 +159,10 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 /* ---------- Footer ---------- */
 .foot { border-top: 1px solid var(--rule); padding-block: 28px 48px; font: 400 13px/1.5 var(--font-mono); color: var(--muted); }
 .foot .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.foot-meta { display: grid; justify-items: end; text-align: right; }
+@media (max-width: 720px) { .foot-meta { justify-items: start; text-align: left; } }
+.foot a { text-underline-offset: 3px; }
+.foot a:hover { color: var(--indigo); }
 
 /* Intro sweep: the timeline content stays visible; only the ruler animates. */
 .ruler.playing .dot { transition: opacity .18s, background .18s, transform .18s; }

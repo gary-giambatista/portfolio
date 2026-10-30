@@ -1,9 +1,24 @@
 ---
-import { EMAIL } from "~/config/links";
+/**
+ * Footer: contact, credit, and when the site last changed. The date is the latest commit's, read at build
+ * time, so every deploy updates it; it links to the commit history.
+ */
+import { execFileSync } from "node:child_process";
+import { EMAIL, SITE_HISTORY } from "~/config/links";
+
+let updated = new Date();
+try { updated = new Date(execFileSync("git", ["log", "-1", "--format=%cI"], { encoding: "utf8" }).trim()); } catch { /* not a git checkout: use the build date */ }
+const iso = updated.toISOString().slice(0, 10);
+const en = updated.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", timeZone: "America/New_York" });
+const [y, m, d] = iso.split("-").map(Number);
+const ja = `${y}年${m}月${d}日`;
 ---
 <footer class="foot">
   <div class="wrap">
     <span>{EMAIL}</span>
-    <span><span class="l-en">Design prototype · placeholder art marks where screenshots and photos go</span><span class="l-ja" lang="ja">デザインプロトタイプ · 一部の画像は仮のものです</span></span>
+    <span class="foot-meta">
+      <span><span class="l-en">Designed and built by Gary Giambatista and Claude in October 2026</span><span class="l-ja" lang="ja">2026年10月、Gary GiambatistaとClaudeがデザイン・制作</span></span>
+      <a href={SITE_HISTORY} target="_blank" rel="noopener"><span class="l-en">Updated </span><span class="l-ja" lang="ja">最終更新 </span><time datetime={iso}><span class="l-en">{en}</span><span class="l-ja" lang="ja">{ja}</span></time></a>
+    </span>
   </div>
 </footer>

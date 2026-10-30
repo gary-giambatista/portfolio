@@ -4,6 +4,8 @@
  */
 export const EMAIL = "gary.giambatista@gmail.com";
 export const RESUME = "/gary-giambatista-resume-public.pdf";
+/** The site's own commit history, linked from the footer's "Updated" date. */
+export const SITE_HISTORY = "https://github.com/gary-giambatista/portfolio/commits/main/";
 
 export const TESTFLIGHT = "https://testflight.apple.com/join/y8edJzEH";
 export const ANDROID_BUILD = "https://expo.dev/accounts/ggg3/projects/kanji-kaku/builds/67bfec0e-2f7b-43ac-9d3d-0a977bfa4b80";
