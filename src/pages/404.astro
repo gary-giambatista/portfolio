@@ -1,0 +1,19 @@
+---
+import Base from "~/layouts/Base.astro";
+import { ROUTES } from "~/config/links";
+import "~/styles/not-found.css";
+---
+<Base title="Page Not Found · Gary Giambatista" description="This page wandered off. The timeline is a much better place to be.">
+<main>
+  <div class="mark" aria-hidden="true"><canvas class="ink" data-ink="open-enso" data-seed="404" data-color="--brush" data-dur="1400"></canvas><span class="kanji" lang="ja">迷子</span><span class="kana" lang="ja">まいご</span></div>
+  <span class="code">Error 404</span>
+  <h1>This page wandered off.</h1>
+  <p><span lang="ja">迷子</span> (maigo) means a lost child, which is how this page feels. The timeline is a much better place to be.</p>
+  <div class="actions"><a class="btn primary" href={ROUTES.home}>← Back to the timeline</a><a class="btn" href={ROUTES.blog}>How this site is built</a></div>
+</main>
+</Base>
+
+<script>
+  import { initInk } from "~/lib/ink/canvas";
+  initInk();
+</script>

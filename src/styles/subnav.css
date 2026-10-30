@@ -1,0 +1,9 @@
+/* Nav on the inner pages: back to the timeline, page links, theme. */
+.nav { view-transition-name: site-nav; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.nav .wrap { height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 12px; font: 500 14px/1 var(--font-mono); }
+.nav a { color: var(--ink); text-decoration: none; padding: 6px 8px; border-radius: 6px; }
+.nav a:hover { background: var(--indigo-soft); color: var(--indigo); }
+.nav .links { display: flex; align-items: center; gap: 2px; }
+.nav .here { color: var(--indigo); }
+.theme-btn { margin-left: 6px; width: 32px; height: 32px; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); border-radius: 50%; cursor: pointer; display: grid; place-items: center; }
+.theme-btn svg { width: 15px; height: 15px; }

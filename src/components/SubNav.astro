@@ -1,0 +1,20 @@
+---
+/** Nav for the inner pages: back to the timeline, page links, and the theme toggle. */
+import { ROUTES } from "~/config/links";
+import ThemeButton from "./ThemeButton.astro";
+
+interface Props { current?: "blog" | "about" }
+const { current } = Astro.props;
+const here = (page: Props["current"]) => current === page ? { class: "here", "aria-current": "page" as const } : {};
+---
+<header class="nav">
+  <div class="wrap">
+    <a href={ROUTES.home}>← Timeline</a>
+    <div class="links">
+      <a href={ROUTES.blog} {...here("blog")}>Blog</a>
+      <a href={ROUTES.about} {...here("about")}>About</a>
+      <a href={ROUTES.contact}>Contact</a>
+      <ThemeButton />
+    </div>
+  </div>
+</header>
