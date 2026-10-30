@@ -1,0 +1,30 @@
+/* Design tokens shared by every page. Light is the default; dark follows the system unless the visitor picked one. */
+:root {
+  --paper: #F3F5F4;      /* cool washi-paper ground */
+  --surface: #FFFFFF;
+  --ink: #17202D;
+  --muted: #5B6575;
+  --rule: #D3D9DF;
+  --indigo: #2A4A8C;     /* aizome indigo: projects + accent */
+  --indigo-soft: #E2E8F4;
+  --japan: #E9ECE4;      /* band marking the Japan years */
+  --land: #E3E8DE;       /* map land; water is the card surface */
+  --river: #A9B8D8;
+  --brush: #1A2130;      /* sumi ink */
+  --wash: #4A5E8E;       /* watercolor wash pigment */
+  --kk-guide: #D2D8E0;   /* faint outline in the writing pad */
+  --bad: #C2412D;        /* rejected stroke */
+  --code-bg: #EBEFEC; --c-com: #7A8494; --c-str: #2F7A55; --c-kw: #2A4A8C;
+  --font-display: var(--ff-mincho);
+  --font-body: var(--ff-plex-sans);
+  --font-mono: var(--ff-plex-mono);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #0E131C; --surface: #151C28; --ink: #E4E8EE; --muted: #97A1B1; --rule: #283244;
+  --indigo: #94AEEA; --indigo-soft: #1B2740; --japan: #172030; --land: #222C3B; --river: #3A4D74; --brush: #B4C3E6; --wash: #7F98D6; --kk-guide: #2C3750; --bad: #F08A78;
+  --code-bg: #121924; --c-com: #6F7B8F; --c-str: #8FD0A8; --c-kw: #A9C0F2; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #0E131C; --surface: #151C28; --ink: #E4E8EE; --muted: #97A1B1; --rule: #283244;
+  --indigo: #94AEEA; --indigo-soft: #1B2740; --japan: #172030; --land: #222C3B; --river: #3A4D74; --brush: #B4C3E6; --wash: #7F98D6; --kk-guide: #2C3750; --bad: #F08A78;
+  --code-bg: #121924; --c-com: #6F7B8F; --c-str: #8FD0A8; --c-kw: #A9C0F2; color-scheme: dark; }
