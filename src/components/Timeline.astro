@@ -20,5 +20,8 @@ import T from "./T.astro";
       {era.flight && <Flight flight={era.flight} />}
     </Fragment>
   ))}
-  <canvas class="ink spine-drop" data-ink="drop" data-color="--ink" data-seed="5" aria-hidden="true"></canvas>
+  <div class="spine-drop" aria-hidden="true">
+    <canvas class="ink" data-ink="drop" data-color="--ink" data-seed="5"></canvas>
+    <canvas class="ink drop-fill" data-ink="drop" data-color="--brush" data-seed="5"></canvas>
+  </div>
 </div>
