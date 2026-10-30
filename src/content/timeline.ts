@@ -18,7 +18,7 @@ export type Stat = [string, string, [string, string]?];
 export type Link = [string, string];
 export type Shot =
   | "demo" | "gwp" | "bb"
-  | { img: "youfilter" | "spaced-cards" | "katacard"; alt: string; tall?: boolean };
+  | { img: "youfilter" | "spaced-cards" | "katacard" | "rebuy-merchandising-widgets" | "rebuy-smart-cart"; alt: string; tall?: boolean };
 
 export type EntryJa = {
   title?: string; kind?: string; sub?: string; text?: string;
@@ -137,6 +137,7 @@ export const eras: Era[] = [
         points: ["Launched 200+ custom merchant builds on Shopify with Vue 3, JavaScript, CSS, and Liquid."],
         skills: ["Vue 3", "JavaScript", "CSS", "Liquid", "Shopify"],
         extra: { stats: [["200+", "merchant launches"]] },
+        shot: { img: "rebuy-merchandising-widgets", alt: "A Shopify product page with a Rebuy widget offering a matching hair oil at 25% off" },
         ja: { kind: "ローンチエンジニア", sub: "<b>ローンチエンジニア</b> · リモート",
           points: ["Vue 3、JavaScript、CSS、Liquidを使い、200件以上のストア向けカスタム実装をShopify上でローンチしました。"], stats: ["ストアのローンチ"] } },
       { id: "katacard", type: "project", title: "Katacard", start: D(2023, 5), end: D(2023, 7),
@@ -153,6 +154,7 @@ export const eras: Era[] = [
         points: ["Closed 300+ tickets with a 95% satisfaction rating, handling storefront customizations, app customizations, debugging, and integrations."],
         skills: ["JavaScript", "CSS", "Liquid", "Debugging"],
         extra: { stats: [["300+", "tickets closed"], ["95%", "satisfaction", ["Customer satisfaction", "Across 300+ support tickets"]]] },
+        shot: { img: "rebuy-smart-cart", alt: "A Rebuy Smart Cart with a free-shipping progress bar, a free gift offer and a subscription upgrade" },
         ja: { kind: "サポートエンジニア", sub: "<b>サポートエンジニア</b> · リモート",
           points: ["ストアのカスタマイズ、アプリのカスタマイズ、デバッグ、外部連携など、300件以上の問い合わせを顧客満足度95%で解決しました。"],
           stats: ["解決した問い合わせ", "顧客満足度"], tips: [null, ["顧客満足度", "300件以上の問い合わせでの評価"]] } },

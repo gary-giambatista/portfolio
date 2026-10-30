@@ -6,12 +6,15 @@ import T from "./T.astro";
 import youfilter from "~/assets/img/youfilter.webp";
 import spacedCards from "~/assets/img/spaced-cards.webp";
 import katacard from "~/assets/img/katacard.webp";
+import rebuyWidgets from "~/assets/img/rebuy-merchandising-widgets.png";
+import rebuyCart from "~/assets/img/rebuy-smart-cart.png";
 
 interface Props { entry: Entry; first: boolean }
 const { entry: e, first } = Astro.props;
 const J = e.ja ?? {};
 const ex = e.extra ?? {};
-const IMAGES = { youfilter, "spaced-cards": spacedCards, katacard };
+// Rebuy images are product shots from rebuyengine.com/product/cart-merchandising.
+const IMAGES = { youfilter, "spaced-cards": spacedCards, katacard, "rebuy-merchandising-widgets": rebuyWidgets, "rebuy-smart-cart": rebuyCart };
 const photo = typeof e.shot === "object" ? e.shot : null;
 const isExternal = (h: string) => h.startsWith("http");
 ---
@@ -34,7 +37,7 @@ const isExternal = (h: string) => h.startsWith("http");
     {photo && (
       <div class="shot-wrap">
         <figure class:list={["shot photo", { tall: photo.tall }]} style="margin:0">
-          <Image src={IMAGES[photo.img]} alt={photo.alt} loading="lazy" decoding="async"
+          <Image src={IMAGES[photo.img]} alt={photo.alt} format="webp" loading="lazy" decoding="async"
             widths={photo.tall ? [286, 520, 600] : [380, 520, 760, 1040].filter(w => w <= IMAGES[photo.img].width)}
             sizes={photo.tall ? "(max-width: 980px) 286px, 286px" : "(max-width: 980px) min(520px, calc(100vw - 66px)), 380px"} />
         </figure>
