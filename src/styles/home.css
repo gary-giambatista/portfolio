@@ -130,6 +130,18 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 .learning .kind .mon::before { background-image: var(--mon-learning); }
 .entry.inked .kind .mon::before { clip-path: circle(75% at 35% 65%); opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .kind .mon, .kind .mon::before { transition: none; } }
+/* The entry you're reading gets a faint wash of its badge's pattern behind its header, dissolving at the edges
+   like dye bleeding into cloth. Only one is active at a time, so it follows you down the timeline. */
+.entry-head { position: relative; isolation: isolate; width: fit-content; max-width: 100%; }
+.entry-head::before { content: ""; position: absolute; inset: -34px -40px -22px -48px; z-index: -1; pointer-events: none;
+  background: var(--mon-work) 0 0 / 36px 20px; opacity: 0; transition: opacity .9s ease;
+  -webkit-mask-image: radial-gradient(closest-side, #000 35%, transparent); mask-image: radial-gradient(closest-side, #000 35%, transparent); }
+.project .entry-head::before { background-image: var(--mon-project); background-size: 22px 38px; }
+.learning .entry-head::before { background-image: var(--mon-learning); background-size: 24px 12px; }
+.entry.active .entry-head::before { opacity: var(--head-wash, .2); }
+@media (prefers-reduced-motion: reduce) { .entry-head::before { transition: none; } }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .entry { --head-wash: .3; } }
+:root[data-theme="dark"] .entry { --head-wash: .3; }
 .entry h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(26px, 3.2vw, 34px); line-height: 1.12; margin: 12px 0 2px; text-wrap: balance; }
 .entry .sub { font-size: 16px; color: var(--muted); margin: 0 0 14px; }
 .entry .sub b { color: var(--ink); font-weight: 500; }
@@ -354,3 +366,4 @@ kbd { font: 500 10.5px/1 var(--font-mono); padding: 3px 5px; border-radius: 5px;
 /* on phones the badge's dyed cap slims down so dates still fit beside the badge */
 @media (max-width: 560px) { .kind { --cap: 14px; --cap-gap: 6px; padding-right: 7px; } }
 @media (max-width: 380px) { .kind { --cap: 11px; --cap-gap: 5px; letter-spacing: .05em; } }
+@media (max-width: 560px) { .entry-head::before { inset: -26px -18px -16px -14px; } } /* clear of the spine */
