@@ -5,6 +5,7 @@
  */
 import { execFileSync } from "node:child_process";
 import { EMAIL, ROUTES, SITE_HISTORY } from "~/config/links";
+import "~/styles/ink-cards.css";
 
 let updated = new Date();
 try { updated = new Date(execFileSync("git", ["log", "-1", "--format=%cI"], { encoding: "utf8" }).trim()); } catch { /* not a git checkout: use the build date */ }
@@ -13,7 +14,8 @@ const en = updated.toLocaleDateString("en-US", { year: "numeric", month: "short"
 const [y, m, d] = iso.split("-").map(Number);
 const ja = `${y}年${m}月${d}日`;
 ---
-<footer class="foot">
+<footer class="foot ink-card band">
+  <canvas class="sg" aria-hidden="true"></canvas>
   <div class="wrap">
     <span class="foot-contact">
       <span>{EMAIL}</span>

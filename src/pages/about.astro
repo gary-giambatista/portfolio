@@ -6,9 +6,10 @@ import portrait from "~/assets/img/gary-harbor.webp";
 import { EMAIL, RESUME, SOCIAL } from "~/config/links";
 import "~/styles/subnav.css";
 import "~/styles/about.css";
+import "~/styles/ink-cards.css";
 ---
 <Base title="About Gary Giambatista" description="I'm a software engineer in Hoboken, New Jersey, focused on the front end. I care about the people on the other side of the screen, and I love turning hard problems into things that feel simple.">
-<SubNav current="about" />
+<SubNav current="about" ink />
 <main>
   <section class="hero">
     <div class="wrap">
@@ -34,6 +35,8 @@ import "~/styles/about.css";
     </div>
   </section>
 
+  <div class="wrap"><div class="sea-divider" id="seaDivider" aria-hidden="true"><div class="wave"><canvas class="wave-wash"></canvas><canvas class="wave-ink"></canvas></div></div></div>
+
   <section>
     <div class="wrap">
       <div class="col" style="max-width:none">
@@ -41,10 +44,10 @@ import "~/styles/about.css";
         <h2>Four habits I bring to every team.</h2>
       </div>
       <div class="principles">
-        <article class="pr"><div class="kj" lang="ja">人<small>HITO · PEOPLE</small></div><h3>Start with the people</h3><p>Every project starts with one question: what purpose does this serve? Understanding the person behind the problem is how I avoid building the wrong thing well.</p></article>
-        <article class="pr"><div class="kj" lang="ja">責任<small>SEKININ · OWNERSHIP</small></div><h3>Own the whole problem</h3><p>From a support ticket to a brand-new product, I treat the problem as mine until it's solved. Three years of triaging merchant issues taught me to follow a bug all the way to its root.</p></article>
-        <article class="pr"><div class="kj" lang="ja">設計<small>SEKKEI · DESIGN</small></div><h3>Design the system</h3><p>As AI changed how software gets written, my work shifted toward architecture: shaping the data, the boundaries and the tests, then directing agents to build inside them.</p></article>
-        <article class="pr"><div class="kj" lang="ja">丁寧<small>TEINEI · CARE</small></div><h3>Sweat the details</h3><p>Teaching kindergarten in a second language taught me patience and clarity. I bring the same care to interfaces: every state, every edge case, accessibility, and motion that helps instead of distracts.</p></article>
+        <article class="pr ink-card"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">人<small>HITO · PEOPLE</small></div><h3>Start with the people</h3><p>Every project starts with one question: what purpose does this serve? Understanding the person behind the problem is how I avoid building the wrong thing well.</p></article>
+        <article class="pr ink-card"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">責任<small>SEKININ · OWNERSHIP</small></div><h3>Own the whole problem</h3><p>From a support ticket to a brand-new product, I treat the problem as mine until it's solved. Three years of triaging merchant issues taught me to follow a bug all the way to its root.</p></article>
+        <article class="pr ink-card"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">設計<small>SEKKEI · DESIGN</small></div><h3>Design the system</h3><p>As AI changed how software gets written, my work shifted toward architecture: shaping the data, the boundaries and the tests, then directing agents to build inside them.</p></article>
+        <article class="pr ink-card"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">丁寧<small>TEINEI · CARE</small></div><h3>Sweat the details</h3><p>Teaching kindergarten in a second language taught me patience and clarity. I bring the same care to interfaces: every state, every edge case, accessibility, and motion that helps instead of distracts.</p></article>
       </div>
     </div>
   </section>
@@ -78,12 +81,12 @@ import "~/styles/about.css";
       <div class="eyebrow">By the numbers</div>
       <h2>A few things I'm proud of.</h2>
       <div class="numbers">
-        <div class="num"><b>4 roles</b><span>in three years at Rebuy, Support Engineer to Software Engineer 1</span></div>
-        <div class="num"><b>$6M</b><span>a month in merchant revenue through Bundle Builder, which I co-developed</span></div>
-        <div class="num"><b>8,400+</b><span>Shopify merchants served by the widgets and cart I worked on</span></div>
-        <div class="num"><b>200+</b><span>custom storefront launches as a Launch Engineer</span></div>
-        <div class="num"><b>95%</b><span>customer satisfaction across 300+ support tickets</span></div>
-        <div class="num"><b>620+</b><span>students taught in Japan, ages 1 to 55</span></div>
+        <div class="num ink-card"><canvas class="sg" aria-hidden="true"></canvas><b>4 roles</b><span>in three years at Rebuy, Support Engineer to Software Engineer 1</span></div>
+        <div class="num ink-card"><canvas class="sg" aria-hidden="true"></canvas><b>$6M</b><span>a month in merchant revenue through Bundle Builder, which I co-developed</span></div>
+        <div class="num ink-card"><canvas class="sg" aria-hidden="true"></canvas><b>8,400+</b><span>Shopify merchants served by the widgets and cart I worked on</span></div>
+        <div class="num ink-card"><canvas class="sg" aria-hidden="true"></canvas><b>200+</b><span>custom storefront launches as a Launch Engineer</span></div>
+        <div class="num ink-card"><canvas class="sg" aria-hidden="true"></canvas><b>95%</b><span>customer satisfaction across 300+ support tickets</span></div>
+        <div class="num ink-card"><canvas class="sg" aria-hidden="true"></canvas><b>620+</b><span>students taught in Japan, ages 1 to 55</span></div>
       </div>
     </div>
   </section>
@@ -102,7 +105,8 @@ import "~/styles/about.css";
   </section>
 
   <div class="wrap">
-    <section class="cta" aria-labelledby="ctaTitle">
+    <section class="cta ink-card quiet" aria-labelledby="ctaTitle">
+      <canvas class="sg" aria-hidden="true"></canvas>
       <canvas class="ink" data-ink="stroke-enso" data-seed="9" data-color="--wash" data-dur="1300" data-delay="150" data-start="visible" aria-hidden="true"></canvas>
       <span class="status"><i></i>Open to software engineering roles</span>
       <h2 id="ctaTitle">Let's build something people enjoy using.</h2>
@@ -123,9 +127,13 @@ import "~/styles/about.css";
   import { initThemeButton } from "~/lib/theme";
   import { initInk } from "~/lib/ink/canvas";
   import { initCopyEmail } from "~/lib/copy-email";
+  import { initSeaDivider } from "~/lib/about-wave";
+  import { initInkCards } from "~/lib/ink-cards";
 
   initPopover({ top: 66 });
   initThemeButton();
   initInk();
   initCopyEmail(document.getElementById("copyEmail"), document.getElementById("copied"));
+  initSeaDivider(document.getElementById("seaDivider"));
+  initInkCards(document.querySelectorAll(".ink-card"));
 </script>

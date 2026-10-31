@@ -3,11 +3,12 @@
 import { ROUTES } from "~/config/links";
 import ThemeButton from "./ThemeButton.astro";
 
-interface Props { current?: "blog" | "about" }
-const { current } = Astro.props;
+interface Props { current?: "blog" | "about"; /** The seigaiha ripple on hover (lib/ink-cards.ts). */ ink?: boolean }
+const { current, ink = false } = Astro.props;
 const here = (page: Props["current"]) => current === page ? { class: "here", "aria-current": "page" as const } : {};
 ---
-<header class="nav">
+<header class:list={["nav", { "ink-card band": ink }]}>
+  {ink && <canvas class="sg" aria-hidden="true"></canvas>}
   <div class="wrap">
     <a href={ROUTES.home}>← Timeline</a>
     <div class="links">

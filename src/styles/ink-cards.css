@@ -1,0 +1,39 @@
+/* Ink cards (About's cards, both contact boxes): a seigaiha patch rests in the corner. On hover, ink spreads
+   from the pointer until the pattern fills the card, and ripples run out from the cursor through the scales
+   (drawn in lib/ink-cards.ts). */
+@property --bloom { syntax: "<length>"; inherits: true; initial-value: 0px; }
+@property --hk { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --halo { syntax: "<color>"; inherits: true; initial-value: transparent; }
+.ink-card { --sg-line: var(--indigo); --sg-deep: var(--brush); --mx: 100%; --my: 0px; isolation: isolate; transition: --bloom .6s cubic-bezier(.4, 0, .7, .4), --hk .6s ease, --halo .6s ease, border-color .4s; }
+.ink-card > :not(.sg, .ink) { position: relative; z-index: 1; }
+.ink-card::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .6s ease;
+  background: radial-gradient(circle at var(--mx) var(--my), color-mix(in srgb, var(--wash) 8%, transparent), transparent 560px); }
+.ink-card .sg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none;
+  --rest: radial-gradient(circle at 100% 0, rgb(0 0 0 / .76), rgb(0 0 0 / .33) 70px, transparent 128px);
+  --fill: radial-gradient(circle at var(--mx) var(--my), rgb(0 0 0 / .58) calc(var(--bloom) - 80px), rgb(0 0 0 / 1) calc(var(--bloom) - 30px), transparent var(--bloom));
+  -webkit-mask-image: var(--rest), var(--fill); mask-image: var(--rest), var(--fill);
+  -webkit-mask-composite: source-over; mask-composite: add; }
+.ink-card.bloom { --bloom: 1100px; border-color: color-mix(in srgb, var(--indigo) 45%, var(--rule)); transition: --bloom 1.4s cubic-bezier(.2, .6, .35, 1), --hk .5s ease, --halo .5s ease, border-color .4s; }
+.ink-card.bloom::before { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .ink-card, .ink-card.bloom { transition: none; } .ink-card::before { transition: none; } }
+/* Keep the words clear of the pattern: a halo in the card's own color, so lines stop just short of each letter. */
+/* Small and in the card's exact color at rest; on hover it grows and takes the wash's tint. --hk scales it. */
+.ink-card { --hk: .45; --halo: var(--surface); }
+.ink-card.bloom { --hk: 1; --halo: color-mix(in srgb, var(--surface) 95%, var(--wash)); }
+.ink-card :is(.kj, h2, h3, p, .num b, .num > span, .band > .wrap) { text-shadow: calc(1.8px * var(--hk)) 0 calc(1px * var(--hk)) var(--halo), calc(1.27px * var(--hk)) calc(1.27px * var(--hk)) calc(1px * var(--hk)) var(--halo), 0 calc(1.8px * var(--hk)) calc(1px * var(--hk)) var(--halo), calc(-1.27px * var(--hk)) calc(1.27px * var(--hk)) calc(1px * var(--hk)) var(--halo), calc(-1.8px * var(--hk)) 0 calc(1px * var(--hk)) var(--halo), calc(-1.27px * var(--hk)) calc(-1.27px * var(--hk)) calc(1px * var(--hk)) var(--halo), 0 calc(-1.8px * var(--hk)) calc(1px * var(--hk)) var(--halo), calc(1.27px * var(--hk)) calc(-1.27px * var(--hk)) calc(1px * var(--hk)) var(--halo), calc(3.6px * var(--hk)) 0 calc(1.5px * var(--hk)) var(--halo), calc(3.33px * var(--hk)) calc(1.38px * var(--hk)) calc(1.5px * var(--hk)) var(--halo), calc(2.55px * var(--hk)) calc(2.55px * var(--hk)) calc(1.5px * var(--hk)) var(--halo), calc(1.38px * var(--hk)) calc(3.33px * var(--hk)) calc(1.5px * var(--hk)) var(--halo), 0 calc(3.6px * var(--hk)) calc(1.5px * var(--hk)) var(--halo), calc(-1.38px * var(--hk)) calc(3.33px * var(--hk)) calc(1.5px * var(--hk)) var(--halo), calc(-2.55px * var(--hk)) calc(2.55px * var(--hk)) calc(1.5px * var(--hk)) var(--halo), calc(-3.33px * var(--hk)) calc(1.38px * var(--hk)) calc(1.5px * var(--hk)) var(--halo), calc(-3.6px * var(--hk)) 0 calc(1.5px * var(--hk)) var(--halo), calc(-3.33px * var(--hk)) calc(-1.38px * var(--hk)) calc(1.5px * var(--hk)) var(--halo), calc(-2.55px * var(--hk)) calc(-2.55px * var(--hk)) calc(1.5px * var(--hk)) var(--halo), calc(-1.38px * var(--hk)) calc(-3.33px * var(--hk)) calc(1.5px * var(--hk)) var(--halo), 0 calc(-3.6px * var(--hk)) calc(1.5px * var(--hk)) var(--halo), calc(1.38px * var(--hk)) calc(-3.33px * var(--hk)) calc(1.5px * var(--hk)) var(--halo), calc(2.55px * var(--hk)) calc(-2.55px * var(--hk)) calc(1.5px * var(--hk)) var(--halo), calc(3.33px * var(--hk)) calc(-1.38px * var(--hk)) calc(1.5px * var(--hk)) var(--halo), 0 0 calc(8px * var(--hk)) var(--halo), 0 0 calc(14px * var(--hk)) var(--halo), 0 0 calc(20px * var(--hk)) var(--halo); }
+/* in dark mode the ripple catches the light instead of deepening */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ink-card { --sg-deep: var(--foam); } }
+:root[data-theme="dark"] .ink-card { --sg-deep: var(--foam); }
+/* Contact boxes: the ensō owns the corner, so no resting patch, and it stays above the pattern. */
+.ink-card.quiet .sg { --rest: linear-gradient(transparent, transparent); }
+.ink-card.cta > .ink { z-index: 0; }
+.ink-card.cta.bloom { border-color: var(--ink); }
+/* Bands (the About nav, the Home footer): the pattern shows across the whole strip at rest, so the halo is full
+   size from the start and matches the page's paper. On hover the ink spreads from the pointer and deepens it;
+   it travels farther across these full-width strips. */
+.ink-card.band { --hk: 1; --halo: var(--paper); overflow: hidden; }
+.ink-card.foot { position: relative; } /* the nav stays sticky */
+.ink-card.band .sg { --rest: linear-gradient(rgb(0 0 0 / .5), rgb(0 0 0 / .5)); }
+.ink-card.band.bloom { --hk: 1; --bloom: 1900px; --halo: color-mix(in srgb, var(--paper) 95%, var(--wash)); }
+/* a hovered nav link has its own chip, so it drops the halo */
+.ink-card.nav a:hover { text-shadow: none; }
