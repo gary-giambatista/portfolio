@@ -1,0 +1,19 @@
+---
+/**
+ * The timeline badges' textures, generated at build time and dyed in each theme's indigo: kikkō hanabishi for
+ * work, bishamon kikkō for personal projects, seigaiha for learning. Emitted as CSS variables, so the badges
+ * swap with the theme and the page ships no pattern code.
+ */
+import { bishamon, kikko, seigaiha, url, type Dye } from "~/lib/patterns";
+
+// From tokens.css: light ground is --indigo with --paper resist lines; dark ground is --indigo-soft with --indigo lines.
+const light: Dye = { ground: "#2A4A8C", mid: "#6F86BF", line: "#F3F5F4" };
+const dark: Dye = { ground: "#1B2740", mid: "#3A4D74", line: "#94AEEA" };
+// Dark tiles are written once and selected by both dark-mode rules.
+const darkVars = `--mon-work-d: ${url(kikko(dark))}; --mon-project-d: ${url(bishamon(dark))}; --mon-learning-d: ${url(seigaiha(dark))};`;
+const useDark = "--mon-work: var(--mon-work-d); --mon-project: var(--mon-project-d); --mon-learning: var(--mon-learning-d);";
+const css = `:root { --mon-work: ${url(kikko(light))}; --mon-project: ${url(bishamon(light))}; --mon-learning: ${url(seigaiha(light))}; ${darkVars} }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { ${useDark} } }
+:root[data-theme="dark"] { ${useDark} }`;
+---
+<style is:inline set:html={css}></style>

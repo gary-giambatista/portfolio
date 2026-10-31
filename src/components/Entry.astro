@@ -24,7 +24,7 @@ const isExternal = (h: string) => h.startsWith("http");
   <span class="node" aria-hidden="true"></span>
   <div class="entry-grid">
     <div>
-      <div class="eyebrow"><span class="kind"><T en={e.kind} ja={J.kind} /></span><span><T en={e.dates} ja={jaDates(e)} /></span></div>
+      <div class="eyebrow"><span class="kind"><span class="mon" aria-hidden="true"></span><T en={e.kind} ja={J.kind} /></span><span><T en={e.dates} ja={jaDates(e)} /></span></div>
       <h2><T en={e.title} ja={J.title} /></h2><p class="sub"><T en={e.sub} ja={J.sub} html /></p>
       {e.compact ? <p><T en={e.text!} ja={J.text} /></p> : (
         <Fragment>

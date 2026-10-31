@@ -117,8 +117,16 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 
 .entry-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 380px); gap: 20px 40px; align-items: start; }
 .eyebrow { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font: 500 12px/1 var(--font-mono); color: var(--muted); letter-spacing: .03em; }
-.kind { padding: 4px 8px; border-radius: 5px; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); text-transform: uppercase; letter-spacing: .08em; font-size: 10.5px; }
+.kind { display: inline-flex; align-items: center; gap: 7px; padding: 4px 8px 4px 0; border-radius: 5px; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); text-transform: uppercase; letter-spacing: .08em; font-size: 10.5px; overflow: hidden; }
 .project .kind { background: var(--indigo-soft); color: var(--indigo); border-color: transparent; }
+/* The badge's dyed end-cap: kikkō hanabishi for work, bishamon kikkō for projects, seigaiha for learning
+   (tiles from PatternDyes.astro). It's pressed in like a stamp when the spine ink reaches the entry. */
+.kind .mon { position: relative; align-self: stretch; width: 26px; margin-block: -4px; background: color-mix(in srgb, var(--indigo) 10%, transparent); }
+.kind .mon::before { content: ""; position: absolute; inset: 0; background: var(--mon-work) 0 0 / auto; clip-path: circle(0% at 35% 65%); opacity: .4; transition: clip-path .7s cubic-bezier(.2, .7, .3, 1), opacity .4s; }
+.project .kind .mon::before { background-image: var(--mon-project); }
+.learning .kind .mon::before { background-image: var(--mon-learning); }
+.entry.inked .kind .mon::before { clip-path: circle(75% at 35% 65%); opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .kind .mon::before { transition: none; } }
 .entry h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(26px, 3.2vw, 34px); line-height: 1.12; margin: 12px 0 2px; text-wrap: balance; }
 .entry .sub { font-size: 16px; color: var(--muted); margin: 0 0 14px; }
 .entry .sub b { color: var(--ink); font-weight: 500; }
@@ -340,3 +348,6 @@ kbd { font: 500 10.5px/1 var(--font-mono); padding: 3px 5px; border-radius: 5px;
   .socials a[aria-label="Resume (PDF)"] { display: none; } /* still in the contact card and the ⌘K menu */
   .links a { padding: 6px 2px; }
 }
+/* on phones the badge's dyed cap slims down so dates still fit beside the badge */
+@media (max-width: 560px) { .kind { gap: 6px; padding-right: 7px; } .kind .mon { width: 14px; } }
+@media (max-width: 380px) { .kind { gap: 5px; letter-spacing: .05em; } .kind .mon { width: 11px; } }
