@@ -125,19 +125,22 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 .kind .mon { position: relative; align-self: stretch; width: 0; margin: -4px 0; overflow: hidden;
   transition: width .55s cubic-bezier(.3, .7, .3, 1), margin .55s cubic-bezier(.3, .7, .3, 1); }
 .entry.inked .kind .mon { width: var(--cap); margin: -4px var(--cap-gap) -4px -8px; }
-.kind .mon::before { content: ""; position: absolute; inset: 0; background: var(--mon-work) 0 0 / auto; clip-path: circle(0% at 35% 65%); opacity: .4; transition: clip-path .7s cubic-bezier(.2, .7, .3, 1) .12s, opacity .4s .12s; }
-.project .kind .mon::before { background-image: var(--mon-project); }
-.learning .kind .mon::before { background-image: var(--mon-learning); }
+.kind .mon::before { content: ""; position: absolute; inset: 0; background: 0 0 / auto; clip-path: circle(0% at 35% 65%); opacity: .4; transition: clip-path .7s cubic-bezier(.2, .7, .3, 1) .12s, opacity .4s .12s; }
 .entry.inked .kind .mon::before { clip-path: circle(75% at 35% 65%); opacity: 1; }
-@media (prefers-reduced-motion: reduce) { .kind .mon, .kind .mon::before { transition: none; } }
+/* a logo instead of the pattern: the icon on a soft tile, settling in just after the cap opens */
+.kind .mon.logo { display: grid; place-items: center; background: color-mix(in srgb, var(--indigo) 8%, var(--surface)); }
+.kind .mon.logo::before { content: none; }
+.kind .mon.logo img { width: 14px; height: 14px; border-radius: 3px; object-fit: contain; opacity: 0; transform: scale(.6); transition: opacity .4s .2s, transform .5s cubic-bezier(.3, 1.4, .5, 1) .2s; }
+.entry.inked .kind .mon.logo img { opacity: 1; transform: none; }
+@media (max-width: 560px) { .kind .mon.logo img { width: 12px; height: 12px; } }
+@media (max-width: 380px) { .kind .mon.logo img { width: 10px; height: 10px; } }
+@media (prefers-reduced-motion: reduce) { .kind .mon, .kind .mon::before, .kind .mon.logo img { transition: none; } }
 /* The entry you're reading gets a faint wash of its badge's pattern behind its header, dissolving at the edges
    like dye bleeding into cloth. Only one is active at a time, so it follows you down the timeline. */
 .entry-head { position: relative; isolation: isolate; width: fit-content; max-width: 100%; }
 .entry-head::before { content: ""; position: absolute; inset: -34px -40px -22px -48px; z-index: -1; pointer-events: none;
-  background: var(--mon-work) 0 0 / 36px 20px; opacity: 0; transition: opacity .9s ease;
+  background-position: 0 0; opacity: 0; transition: opacity .9s ease;
   -webkit-mask-image: radial-gradient(closest-side, #000 35%, transparent); mask-image: radial-gradient(closest-side, #000 35%, transparent); }
-.project .entry-head::before { background-image: var(--mon-project); background-size: 22px 38px; }
-.learning .entry-head::before { background-image: var(--mon-learning); background-size: 24px 12px; }
 .entry.active .entry-head::before { opacity: var(--head-wash, .2); }
 @media (prefers-reduced-motion: reduce) { .entry-head::before { transition: none; } }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .entry { --head-wash: .3; } }

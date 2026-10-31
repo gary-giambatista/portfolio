@@ -1,7 +1,6 @@
 /**
- * Traditional Japanese patterns as seamless SVG tiles, generated at build time for the timeline's badges:
- * kikkō hanabishi (tortoiseshell hexagons with a flower: work), bishamon kikkō (three hexagons nested around a
- * point: personal projects) and seigaiha (wave scales: learning). Each tile is drawn in a theme's colors like
+ * Traditional Japanese patterns as seamless SVG tiles, generated at build time for the timeline: each entry
+ * kind gets one, chosen for what it traditionally means (see MON). Each tile is drawn in a theme's colors like
  * indigo-dyed cloth: a dyed ground with pale resist lines.
  */
 export type Dye = { ground: string; mid: string; line: string };
@@ -82,6 +81,61 @@ export function seigaiha(d: Dye, R = 6) {
   }
   return svg(W, H, body, d.ground);
 }
+
+/** Asanoha: the hemp-leaf star. A triangular lattice with every triangle's corners joined to its centre. */
+export function asanoha(d: Dye, a = 9) {
+  const h = a * SQ3 / 2, W = a, H = 2 * h;
+  let tri = "", leaf = "";
+  for (let j = -1; j <= 2; j++) for (let i = -2; i <= 2; i++) {
+    const x0 = i * a + (j % 2 ? a / 2 : 0), y0 = j * h;
+    for (const t of [[[x0, y0], [x0 + a, y0], [x0 + a / 2, y0 + h]], [[x0 + a / 2, y0 + h], [x0 + a * 1.5, y0 + h], [x0 + a, y0]]]) {
+      tri += poly(t);
+      const cx = (t[0][0] + t[1][0] + t[2][0]) / 3, cy = (t[0][1] + t[1][1] + t[2][1]) / 3;
+      leaf += t.map(([x, y]) => `M${f(cx)} ${f(cy)}L${f(x)} ${f(y)}`).join("");
+    }
+  }
+  return svg(W, H, `<path d="${tri}${leaf}" fill="none" stroke="${d.line}" stroke-width="${f(a * .06)}" stroke-linecap="round"/>`, d.ground);
+}
+
+/** Ichimatsu: a checkerboard of plain and striped squares. */
+export function ichimatsu(d: Dye, c = 8) {
+  let stripes = "";
+  for (const [x, y] of [[0, 0], [c, c]]) for (let k = 0; k < 4; k++) stripes += `<rect x="${x}" y="${f(y + c * (.08 + k * .24))}" width="${c}" height="${f(c * .12)}"/>`;
+  return svg(2 * c, 2 * c, `<rect x="${c}" y="0" width="${c}" height="${c}" fill="${d.mid}"/><rect x="0" y="${c}" width="${c}" height="${c}" fill="${d.mid}"/><g fill="${d.line}">${stripes}</g>`, d.ground);
+}
+
+/** Sakura: five-petal cherry blossoms, each petal notched at its tip, scattered on a staggered grid. */
+export function sakura(d: Dye, s = 16) {
+  const r = s * .3;
+  const flower = (cx: number, cy: number, rot: number) => {
+    let petals = "", notches = "";
+    for (let k = 0; k < 5; k++) {
+      const a = rot + k * 2 * Math.PI / 5, deg = f(a * 180 / Math.PI + 90);
+      const px = cx + Math.cos(a) * r * .55, py = cy + Math.sin(a) * r * .55;
+      petals += `<ellipse cx="${f(px)}" cy="${f(py)}" rx="${f(r * .36)}" ry="${f(r * .5)}" transform="rotate(${deg} ${f(px)} ${f(py)})"/>`;
+      const tx = cx + Math.cos(a) * r * 1.02, ty = cy + Math.sin(a) * r * 1.02, n = r * .16, b = a + Math.PI / 2;
+      notches += poly([[tx + Math.cos(b) * n, ty + Math.sin(b) * n], [tx - Math.cos(b) * n, ty - Math.sin(b) * n], [cx + Math.cos(a) * r * .8, cy + Math.sin(a) * r * .8]]);
+    }
+    return `<g fill="${d.line}">${petals}</g><path d="${notches}" fill="${d.ground}"/><circle cx="${f(cx)}" cy="${f(cy)}" r="${f(r * .16)}" fill="${d.mid}"/>`;
+  };
+  let body = "";
+  for (const [x, y] of [[0, 0], [s, 0], [0, s], [s, s]]) body += flower(x, y, -Math.PI / 2);
+  body += flower(s / 2, s / 2, -Math.PI / 2 + Math.PI / 5);
+  return svg(s, s, body, d.ground);
+}
+
+/**
+ * Which pattern each entry kind wears, for what it means: the tortoiseshell for a long, steady career; the
+ * guardian Bishamon's hexagons for things built on my own; waves for learning; hemp leaves, which grow fast and
+ * strong and were sewn into children's clothes, for teaching children; ichimatsu, which a kabuki actor made the
+ * talk of Edo, for marketing; and the cherry blossoms that open on the first day of school, for university.
+ */
+export const MON = { work: kikko, project: bishamon, learning: seigaiha, teaching: asanoha, marketing: ichimatsu, education: sakura };
+export type Mon = keyof typeof MON;
+export const monFor = (type: string, kind: string): Mon =>
+  ({ Teaching: "teaching", Marketing: "marketing", Education: "education" } as Record<string, Mon>)[kind] ?? (type === "project" ? "project" : type === "learning" ? "learning" : "work");
+/** The tile's pixel size, read back from its svg. */
+export const tileSize = (svgText: string) => (svgText.match(/width="(\d+)" height="(\d+)"/) ?? []).slice(1).map(Number);
 
 /** A compact data URL: single quotes inside, and only the characters URLs need escaped. */
 export const url = (s: string) => `url("data:image/svg+xml,${s.replace(/"/g, "'").replace(/[%#<>{}\n]/g, c => encodeURIComponent(c))}")`;
