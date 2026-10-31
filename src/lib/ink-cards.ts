@@ -20,7 +20,7 @@ type Card = {
 const R0 = 22, RINGS = 4;
 /** Resting lines are drawn at this strength, leaving headroom for the ripple to lift them toward full ink. */
 const BASE = .55;
-const RIPPLE = { amp: 3.4, sigma: 120, wave: 58, speed: 3.6 };
+const RIPPLE = { amp: 3.4, sigma: 120, wave: 58, speed: 2 };
 
 const rgb = (hex: string) => {
   const m = hex.trim().match(/^#([0-9a-f]{6})$/i);
