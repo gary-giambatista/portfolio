@@ -7,7 +7,7 @@ interface Props { current?: "blog" | "about"; /** The seigaiha ripple on hover (
 const { current, ink = false } = Astro.props;
 const here = (page: Props["current"]) => current === page ? { class: "here", "aria-current": "page" as const } : {};
 ---
-<header class:list={["nav", { "ink-card": ink }]}>
+<header class:list={["nav", { "ink-card band": ink }]}>
   {ink && <canvas class="sg" aria-hidden="true"></canvas>}
   <div class="wrap">
     <a href={ROUTES.home}>← Timeline</a>
