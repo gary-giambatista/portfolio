@@ -101,25 +101,24 @@ p { margin: 14px 0; text-wrap: pretty; }
 @media (max-width: 480px) { .nav a { padding: 6px 4px; font-size: 13px; } }
 
 /* Ink cards: a seigaiha patch rests in the corner. On hover, ink spreads from the pointer until the pattern
-   fills the card, and a clear, softly lit spotlight follows the cursor through it. */
+   fills the card, and ripples run out from the cursor through the scales (drawn in ink-cards.ts). */
 @property --bloom { syntax: "<length>"; inherits: true; initial-value: 0px; }
-@property --lamp { syntax: "<length>"; inherits: true; initial-value: 0px; }
-.ink-card { --sg-line: var(--indigo); --mx: 100%; --my: 0px; --lx: 50%; --ly: 50%; isolation: isolate; transition: --bloom .6s cubic-bezier(.4, 0, .7, .4), --lamp .45s ease, border-color .4s; }
+.ink-card { --sg-line: var(--indigo); --sg-deep: var(--brush); --mx: 100%; --my: 0px; isolation: isolate; transition: --bloom .6s cubic-bezier(.4, 0, .7, .4), border-color .4s; }
 .ink-card > :not(.sg) { position: relative; z-index: 1; }
 .ink-card::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .6s ease;
   background: radial-gradient(circle at var(--mx) var(--my), color-mix(in srgb, var(--wash) 8%, transparent), transparent 560px); }
-/* the spotlight: a soft disc of the card's own color laid over the pattern, under the text */
-.ink-card::after { content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(circle var(--lamp) at var(--lx) var(--ly), var(--halo) 48%, color-mix(in srgb, var(--halo) 65%, transparent) 72%, transparent); }
 .ink-card .sg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none;
-  --rest: radial-gradient(circle at 100% 0, rgb(0 0 0 / .42), rgb(0 0 0 / .18) 70px, transparent 128px);
-  --fill: radial-gradient(circle at var(--mx) var(--my), rgb(0 0 0 / .32) calc(var(--bloom) - 80px), rgb(0 0 0 / .55) calc(var(--bloom) - 30px), transparent var(--bloom));
+  --rest: radial-gradient(circle at 100% 0, rgb(0 0 0 / .76), rgb(0 0 0 / .33) 70px, transparent 128px);
+  --fill: radial-gradient(circle at var(--mx) var(--my), rgb(0 0 0 / .58) calc(var(--bloom) - 80px), rgb(0 0 0 / 1) calc(var(--bloom) - 30px), transparent var(--bloom));
   -webkit-mask-image: var(--rest), var(--fill); mask-image: var(--rest), var(--fill);
   -webkit-mask-composite: source-over; mask-composite: add; }
-.ink-card.bloom { --bloom: 1100px; --lamp: 135px; border-color: color-mix(in srgb, var(--indigo) 45%, var(--rule)); transition: --bloom 1.4s cubic-bezier(.2, .6, .35, 1), --lamp .6s ease .2s, border-color .4s; }
+.ink-card.bloom { --bloom: 1100px; border-color: color-mix(in srgb, var(--indigo) 45%, var(--rule)); transition: --bloom 1.4s cubic-bezier(.2, .6, .35, 1), border-color .4s; }
 .ink-card.bloom::before { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .ink-card, .ink-card.bloom { transition: none; } .ink-card::before { transition: none; } }
-.num.ink-card .sg { --rest: radial-gradient(circle at 100% 0, rgb(0 0 0 / .32), rgb(0 0 0 / .12) 48px, transparent 92px); }
+.num.ink-card .sg { --rest: radial-gradient(circle at 100% 0, rgb(0 0 0 / .58), rgb(0 0 0 / .22) 48px, transparent 92px); }
 /* Keep the words clear of the pattern: a halo in the card's own color, so lines stop just short of each letter. */
 .ink-card { --halo: color-mix(in srgb, var(--surface) 95%, var(--wash)); }
 .ink-card :is(.kj, h3, p, b, span) { text-shadow: 2.6px 0 1px var(--halo), 2.3px 1.3px 1px var(--halo), 1.3px 2.3px 1px var(--halo), 0 2.6px 1px var(--halo), -1.3px 2.3px 1px var(--halo), -2.3px 1.3px 1px var(--halo), -2.6px 0 1px var(--halo), -2.3px -1.3px 1px var(--halo), -1.3px -2.3px 1px var(--halo), 0 -2.6px 1px var(--halo), 1.3px -2.3px 1px var(--halo), 2.3px -1.3px 1px var(--halo), 0 0 6px var(--halo), 0 0 10px var(--halo); }
+/* in dark mode the ripple catches the light instead of deepening */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ink-card { --sg-deep: var(--foam); } }
+:root[data-theme="dark"] .ink-card { --sg-deep: var(--foam); }
