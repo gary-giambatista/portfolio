@@ -6,6 +6,7 @@ import portrait from "~/assets/img/gary-harbor.webp";
 import { EMAIL, RESUME, SOCIAL } from "~/config/links";
 import "~/styles/subnav.css";
 import "~/styles/about.css";
+import "~/styles/ink-cards.css";
 ---
 <Base title="About Gary Giambatista" description="I'm a software engineer in Hoboken, New Jersey, focused on the front end. I care about the people on the other side of the screen, and I love turning hard problems into things that feel simple.">
 <SubNav current="about" />
@@ -104,7 +105,8 @@ import "~/styles/about.css";
   </section>
 
   <div class="wrap">
-    <section class="cta" aria-labelledby="ctaTitle">
+    <section class="cta ink-card quiet" aria-labelledby="ctaTitle">
+      <canvas class="sg" aria-hidden="true"></canvas>
       <canvas class="ink" data-ink="stroke-enso" data-seed="9" data-color="--wash" data-dur="1300" data-delay="150" data-start="visible" aria-hidden="true"></canvas>
       <span class="status"><i></i>Open to software engineering roles</span>
       <h2 id="ctaTitle">Let's build something people enjoy using.</h2>

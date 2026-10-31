@@ -1,8 +1,10 @@
 ---
 import { EMAIL, RESUME, ROUTES, SOCIAL } from "~/config/links";
+import "~/styles/ink-cards.css";
 ---
 <section class="contact wrap" aria-labelledby="contactTitle">
-  <div class="cta" id="contact">
+  <div class="cta ink-card quiet" id="contact">
+    <canvas class="sg" aria-hidden="true"></canvas>
     <canvas class="ink" data-ink="enso" data-color="--wash" data-seed="9" aria-hidden="true"></canvas>
     <span class="status"><i></i><span class="l-en">Open to software engineering roles</span><span class="l-ja" lang="ja">ソフトウェアエンジニア職を探しています</span></span>
     <h2 id="contactTitle"><span class="l-en">Let's build something people enjoy using.</span><span class="l-ja" lang="ja">使う人が楽しめるものを、一緒に作りましょう。</span></h2>

@@ -53,6 +53,7 @@ const index = {
   import { initThemeButton } from "~/lib/theme";
   import { initInk } from "~/lib/ink/canvas";
   import { initCopyEmail } from "~/lib/copy-email";
+  import { initInkCards } from "~/lib/ink-cards";
   import { initSpine } from "~/lib/home/spine";
   import { initFlights } from "~/lib/home/flights";
   import { initTimeline } from "~/lib/home/timeline";
@@ -71,6 +72,7 @@ const index = {
   initBundleBuilder(document.getElementById("rw-bb"));
   initGiftWithPurchase(document.getElementById("rw-gwp"));
   initCopyEmail(document.getElementById("copyEmail"), document.getElementById("copied"));
+  initInkCards(document.querySelectorAll(".ink-card"));
   initPalette();
   initTimeline();
 </script>
