@@ -46,8 +46,7 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 
 /* ---------- Time ruler (sticky) ---------- */
 .ruler-bar { position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--nav-h)); z-index: 15; background: var(--paper); border-bottom: 1px solid var(--rule); transition: background .5s ease; }
-/* Once the hero has scrolled away (.stuck), the bar comes forward: its own surface, stronger marks and the ink line,
-   and the nav above it takes on the current entry's pattern. */
+/* Once the hero has scrolled away (.stuck), the bar comes forward: its own surface, stronger marks and the ink line. */
 .ruler-bar.stuck { background: var(--surface); }
 .ruler-head { grid-column: 1 / -1; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .readout { font-family: var(--font-mono); font-size: 13px; color: var(--muted); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -62,7 +61,10 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 /* the ink: from today back to the point you've scrolled to */
 .ruler .track::after { content: ""; position: absolute; left: var(--at, 100%); right: 0; top: -1px; height: 3px; border-radius: 3px; background: var(--indigo); opacity: 0; transition: left .35s ease, opacity .5s ease; }
 .stuck .ruler .track::after { opacity: 1; }
-.ruler .band { position: absolute; top: 4px; bottom: 4px; background: var(--japan); border-radius: 4px; }
+.ruler .band { position: absolute; top: 4px; bottom: 4px; background: var(--japan); border-radius: 4px; transition: background .5s ease; }
+/* In dark mode the bar's surface nearly matches --japan, so the band brightens with it. */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .stuck .ruler .band { background: color-mix(in srgb, var(--indigo) 17%, var(--surface)); } }
+:root[data-theme="dark"] .stuck .ruler .band { background: color-mix(in srgb, var(--indigo) 17%, var(--surface)); }
 .ruler .band span { position: absolute; left: 16px; top: -1px; font: 500 10px/1 var(--font-mono); color: var(--muted); letter-spacing: .08em; text-transform: uppercase; padding-top: 4px; }
 .ruler .tick { position: absolute; top: 28px; font: 400 10px/1 var(--font-mono); color: var(--muted); transform: translateX(-50%); font-variant-numeric: tabular-nums; }
 .ruler .tick::before { content: ""; position: absolute; left: 50%; top: -8px; width: 1px; height: 5px; background: var(--rule); }
@@ -379,14 +381,3 @@ kbd { font: 500 10.5px/1 var(--font-mono); padding: 3px 5px; border-radius: 5px;
 @media (max-width: 560px) { .entry-head::before { inset: -26px -18px -16px -14px; } } /* clear of the spine */
 .stuck .ruler .dot:not(.lit, :hover) { opacity: .75; }
 @media (prefers-reduced-motion: reduce) { .ruler-bar, .ruler .track, .ruler .track::after { transition: none; } }
-/* The nav's cloth: the current entry's pattern, very faint, crossfading between sections, with a halo keeping the
-   links clear. Tiles from PatternDyes. */
-.nav { --hk: 0; --halo: var(--paper); transition: --hk .5s ease; }
-.nav.stuck { --hk: 1; }
-.nav-dye { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 1s ease; }
-.nav.stuck .nav-dye.on { opacity: var(--nav-cloth, .11); }
-.nav > .wrap { position: relative; z-index: 1; }
-.nav .links a:hover { text-shadow: none; } /* a hovered link has its own chip */
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .nav { --nav-cloth: .18; } }
-:root[data-theme="dark"] .nav { --nav-cloth: .18; }
-@media (prefers-reduced-motion: reduce) { .nav, .nav-dye { transition: none; } }

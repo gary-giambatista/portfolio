@@ -17,17 +17,7 @@ const readout = document.getElementById("readout")!;
 const dots = [...ruler.querySelectorAll<HTMLButtonElement>(".dot")];
 const dotById = Object.fromEntries(dots.map(d => [d.dataset.id!, d]));
 
-const bar = ruler.closest<HTMLElement>(".ruler-bar")!, nav = document.querySelector<HTMLElement>(".nav")!;
-/** The nav's two pattern layers: the new section's pattern fades in over the old one as the old fades out. */
-const dyes = [...nav.querySelectorAll<HTMLElement>(".nav-dye")];
-let dyeFront = 0;
-function dyeNav(mon: string | undefined) {
-  if (!mon || dyes[dyeFront].dataset.mon === mon) return;
-  const next = dyes[1 - dyeFront];
-  next.dataset.mon = mon;
-  next.classList.add("on"); dyes[dyeFront].classList.remove("on");
-  dyeFront = 1 - dyeFront;
-}
+const bar = ruler.closest<HTMLElement>(".ruler-bar")!;
 /** Moves the cursor, and the ink behind it that runs from today back to this point. */
 const moveCursor = (y: number) => { cursor.style.left = pct(y) + "%"; ruler.style.setProperty("--at", pct(y) + "%"); };
 
@@ -37,7 +27,6 @@ const say = (e: EntryIndex, label: string) => { readout.innerHTML = `<b>${esc(la
 
 function setCurrent(e: EntryIndex) {
   moveCursor(e.end === null ? NOW : e.start);
-  dyeNav(entryEl(e.id).dataset.mon);
   dots.forEach(d => d.classList.toggle("current", d.dataset.id === e.id));
   say(e, yearLabel(e));
 }
@@ -122,8 +111,9 @@ export function stepEntry(dir: 1 | -1) {
 export const replayIntro = () => { scrollTo({ top: 0 }); setTimeout(playIntro, 50); };
 
 export function initTimeline() {
-  // The bar sticks under the nav exactly as the hero leaves; that's when it and the nav come forward.
-  new IntersectionObserver(([e]) => [bar, nav].forEach(el => el.classList.toggle("stuck", !e.isIntersecting)), { rootMargin: `-${nav.offsetHeight}px 0px 0px` }).observe(document.querySelector(".hero")!);
+  // The bar sticks under the nav exactly as the hero leaves; that's when it comes forward.
+  const navH = document.querySelector<HTMLElement>(".nav")!.offsetHeight;
+  new IntersectionObserver(([e]) => bar.classList.toggle("stuck", !e.isIntersecting), { rootMargin: `-${navH}px 0px 0px` }).observe(document.querySelector(".hero")!);
   ruler.addEventListener("click", ev => {
     const d = (ev.target as Element).closest<HTMLElement>(".dot"); if (!d) return;
     document.getElementById(d.dataset.id!)!.scrollIntoView({ block: "start" });
