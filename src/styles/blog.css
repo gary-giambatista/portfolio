@@ -4,7 +4,7 @@ body { font: 400 17px/1.7 var(--font-body); }
 a { color: var(--indigo); text-underline-offset: 3px; }
 
 /* article */
-article { padding-block: 56px 96px; }
+article { padding-block: 56px; }
 .col { max-width: 680px; margin: 0 auto; }
 .eyebrow { font: 500 12px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; }
 h1 { font: 800 clamp(38px, 6vw, 60px)/1.05 var(--font-display); letter-spacing: -.02em; margin: 16px 0 18px; text-wrap: balance; }

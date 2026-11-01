@@ -1,0 +1,8 @@
+/* The footer, shared by every page. */
+.foot { border-top: 1px solid var(--rule); padding-block: 28px 48px; font: 400 13px/1.5 var(--font-mono); color: var(--muted); }
+.foot .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.foot-contact { display: grid; justify-items: start; }
+.foot-meta { display: grid; justify-items: end; text-align: right; }
+@media (max-width: 720px) { .foot-meta { justify-items: start; text-align: left; } }
+.foot a { color: inherit; text-underline-offset: 3px; }
+.foot a:hover { color: var(--indigo); }

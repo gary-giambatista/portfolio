@@ -2,6 +2,7 @@
 import { getCollection, render } from "astro:content";
 import Base from "~/layouts/Base.astro";
 import SubNav from "~/components/SubNav.astro";
+import Footer from "~/components/Footer.astro";
 import { ROUTES } from "~/config/links";
 import "~/styles/subnav.css";
 import "~/styles/blog.css";
@@ -33,14 +34,17 @@ const { title, description, published, readingTime, toc } = post.data;
       </div>
     </article>
   </main>
+  <Footer />
 </Base>
 
 <script>
   import { initThemeButton } from "~/lib/theme";
   import { initInk } from "~/lib/ink/canvas";
   import { initRanges } from "~/lib/blog/ranges";
+  import { initInkCards } from "~/lib/ink-cards";
 
   initThemeButton();
   initInk();
   initRanges();
+  initInkCards(document.querySelectorAll(".ink-card"));
 </script>

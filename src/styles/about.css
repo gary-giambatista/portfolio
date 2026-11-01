@@ -79,7 +79,7 @@ p { margin: 14px 0; text-wrap: pretty; }
 .langs b { color: var(--ink); font-weight: 600; }
 
 /* call to action */
-.cta { margin: 40px auto 96px; max-width: 900px; border: 1.5px solid var(--ink); border-radius: 26px; background: var(--surface); padding: clamp(24px, 5vw, 48px); position: relative; overflow: hidden; }
+.cta { margin: 40px auto 56px; max-width: 900px; border: 1.5px solid var(--ink); border-radius: 26px; background: var(--surface); padding: clamp(24px, 5vw, 48px); position: relative; overflow: hidden; }
 .cta canvas.ink { right: -60px; top: -40px; width: 300px; height: 300px; opacity: .55; }
 .cta .status { display: inline-flex; align-items: center; gap: 8px; font: 500 12.5px/1 var(--font-mono); padding: 6px 11px; border-radius: 99px; border: 1px solid var(--rule); background: var(--paper); }
 .cta .status i { width: 7px; height: 7px; border-radius: 50%; background: #2F9E6A; box-shadow: 0 0 0 3px color-mix(in srgb, #2F9E6A 22%, transparent); }
