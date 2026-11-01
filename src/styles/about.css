@@ -98,6 +98,5 @@ p { margin: 14px 0; text-wrap: pretty; }
   .st .dot { position: absolute; margin: 0; transform: translate(-34px, 4px); }
   .st { position: relative; }
 }
-@media (max-width: 480px) { .nav a { padding: 6px 4px; font-size: 13px; } }
 
 .num.ink-card .sg { --rest: radial-gradient(circle at 100% 0, rgb(0 0 0 / .58), rgb(0 0 0 / .22) 48px, transparent 92px); }

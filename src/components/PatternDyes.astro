@@ -1,0 +1,28 @@
+---
+/**
+ * The timeline's textures, generated at build time and dyed in each theme's indigo: one traditional pattern per
+ * entry kind (MON in lib/patterns.ts). Emitted as CSS variables plus one rule per pattern for the badge cap, the
+ * active header's wash and the ruler's readout (both drawn at twice the tile size), so the page ships no pattern code.
+ */
+import { MON, tileSize, url, type Dye } from "~/lib/patterns";
+
+// From tokens.css: light ground is --indigo with --paper resist lines; dark ground is --indigo-soft with --indigo lines.
+const light: Dye = { ground: "#2A4A8C", mid: "#6F86BF", line: "#F3F5F4" };
+const dark: Dye = { ground: "#1B2740", mid: "#3A4D74", line: "#94AEEA" };
+
+let lightVars = "", darkVars = "", useDark = "", rules = "";
+for (const [name, draw] of Object.entries(MON)) {
+  const tile = draw(light), [w, h] = tileSize(tile);
+  lightVars += `--mon-${name}: ${url(tile)}; `;
+  darkVars += `--mon-${name}-d: ${url(draw(dark))}; `;
+  useDark += `--mon-${name}: var(--mon-${name}-d); `;
+  rules += `[data-mon="${name}"] .kind .mon::before { background-image: var(--mon-${name}); }
+[data-mon="${name}"] .entry-head::before, .readout-dye[data-mon="${name}"] { background-image: var(--mon-${name}); background-size: ${w * 2}px ${h * 2}px; }
+`;
+}
+const css = `:root { ${lightVars}${darkVars}}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { ${useDark}} }
+:root[data-theme="dark"] { ${useDark}}
+${rules}`;
+---
+<style is:inline set:html={css}></style>

@@ -15,7 +15,14 @@ body {
 a { color: inherit; }
 
 /* ---------- Nav ---------- */
-.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--paper); }
+/* Once the ruler comes forward, the nav and ruler are one header: a single fade from the page's own color down to the
+   raised surface, so there's no seam above the ruler's buttons. Each holds half the fade. */
+@property --head-a { syntax: "<color>"; inherits: false; initial-value: transparent; }
+@property --head-b { syntax: "<color>"; inherits: false; initial-value: transparent; }
+.nav, .ruler-bar { --head-a: var(--paper); --head-b: var(--paper); --head-mid: color-mix(in srgb, var(--surface) 50%, var(--paper)); background: linear-gradient(var(--head-a), var(--head-b)); transition: --head-a .5s ease, --head-b .5s ease; }
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; }
+.nav.stuck { --head-a: var(--paper); --head-b: var(--head-mid); }
+.ruler-bar.stuck { --head-a: var(--head-mid); --head-b: var(--surface); }
 .nav .wrap { height: var(--nav-h); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .socials { display: flex; gap: 10px; }
 .socials a {
@@ -45,21 +52,39 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 .portrait img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border: 1.5px solid var(--ink); border-radius: 16px; background: var(--land); }
 
 /* ---------- Time ruler (sticky) ---------- */
-.ruler-bar { position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--nav-h)); z-index: 15; background: var(--paper); border-bottom: 1px solid var(--rule); }
-.ruler-bar .wrap { padding-block: 10px 12px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 24px; align-items: center; }
+.ruler-bar { overflow-x: clip; position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--nav-h)); z-index: 15; border-bottom: 1px solid var(--rule); }
+/* Once the hero has scrolled away (.stuck), the bar comes forward: the header's fade, stronger marks and the ink line. */
 .ruler-head { grid-column: 1 / -1; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.readout { font-family: var(--font-mono); font-size: 13px; color: var(--muted); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Once the bar comes forward, the readout sits on the current section's pattern, dissolving on every side. */
+.readout-cloth { position: relative; isolation: isolate; display: flex; min-width: 0; --hk: 0; --halo: var(--head-mid); transition: --hk .5s ease; }
+.stuck .readout-cloth { --hk: 1; }
+.readout-dye { position: absolute; inset: -4px -46px; /* its fade ends inside the bar (the nav above would cut it off); past the screen's edge, the bar clips it */ z-index: -1; pointer-events: none; opacity: 0; transition: opacity 1s ease;
+  --across: linear-gradient(to right, transparent, rgb(0 0 0 / .1) 12px, rgb(0 0 0 / .38) 24px, rgb(0 0 0 / .76) 36px, #000 46px, #000 calc(100% - 46px), rgb(0 0 0 / .76) calc(100% - 36px), rgb(0 0 0 / .38) calc(100% - 24px), rgb(0 0 0 / .1) calc(100% - 12px), transparent);
+  --down: linear-gradient(transparent, rgb(0 0 0 / .12) 16%, rgb(0 0 0 / .5) 32%, #000 50%, rgb(0 0 0 / .5) 68%, rgb(0 0 0 / .12) 84%, transparent);
+  -webkit-mask-image: var(--across), var(--down); mask-image: var(--across), var(--down); -webkit-mask-composite: source-in; mask-composite: intersect; }
+.stuck .readout-dye.on { opacity: var(--readout-cloth, .24); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .readout-cloth { --readout-cloth: .38; } }
+:root[data-theme="dark"] .readout-cloth { --readout-cloth: .38; }
+.readout { font-family: var(--font-mono); font-size: 13px; color: var(--muted); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-block: 5px; margin-block: -5px; }
 .readout b { color: var(--ink); font-weight: 500; }
 .controls { display: flex; gap: 6px; align-items: center; }
 .chipbtn { font: 500 12px/1 var(--font-mono); padding: 7px 11px; border-radius: 99px; border: 1px solid var(--rule); background: var(--surface); color: var(--muted); cursor: pointer; }
 .chipbtn[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 .chipbtn.icon { padding: 6px 9px; }
 .ruler { position: relative; height: 46px; grid-column: 1 / -1; }
-.ruler .track { position: absolute; left: 0; right: 0; top: 23px; height: 1px; background: var(--rule); }
-.ruler .band { position: absolute; top: 4px; bottom: 4px; background: var(--japan); border-radius: 4px; }
+.ruler .track { position: absolute; left: 0; right: 0; top: 23px; height: 1px; background: var(--rule); transition: background .5s ease; }
+.stuck .ruler .track { background: color-mix(in srgb, var(--muted) 55%, transparent); }
+/* the ink: from today back to the point you've scrolled to */
+.ruler .track::after { content: ""; position: absolute; left: var(--at, 100%); right: 0; top: -1px; height: 3px; border-radius: 3px; background: var(--indigo); opacity: 0; transition: left .35s ease, opacity .5s ease; }
+.stuck .ruler .track::after { opacity: 1; }
+.ruler .band { position: absolute; top: 4px; bottom: 4px; background: var(--japan); border-radius: 4px; transition: background .5s ease; }
+/* In dark mode the bar's surface nearly matches --japan, so the band brightens with it. */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .stuck .ruler .band { background: color-mix(in srgb, var(--indigo) 17%, var(--surface)); } }
+:root[data-theme="dark"] .stuck .ruler .band { background: color-mix(in srgb, var(--indigo) 17%, var(--surface)); }
 .ruler .band span { position: absolute; left: 16px; top: -1px; font: 500 10px/1 var(--font-mono); color: var(--muted); letter-spacing: .08em; text-transform: uppercase; padding-top: 4px; }
 .ruler .tick { position: absolute; top: 28px; font: 400 10px/1 var(--font-mono); color: var(--muted); transform: translateX(-50%); font-variant-numeric: tabular-nums; }
 .ruler .tick::before { content: ""; position: absolute; left: 50%; top: -8px; width: 1px; height: 5px; background: var(--rule); }
+.stuck .ruler .tick::before { background: var(--muted); }
 .ruler .dot {
   position: absolute; width: 11px; height: 11px; transform: translate(-50%, -50%); border: 0; padding: 0; cursor: pointer;
   background: var(--muted); border-radius: 50%; opacity: .35; transition: opacity .25s, transform .25s, background .25s;
@@ -113,12 +138,46 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 .ruler .span { position: absolute; top: 33px; height: 2px; border-radius: 2px; background: repeating-linear-gradient(90deg, var(--muted) 0 4px, transparent 4px 7px); opacity: .7; }
 .entry.project .node { border-radius: 4px; border-color: var(--indigo); background: var(--indigo-soft); transform: translateX(-50%) rotate(45deg); }
 .entry.first .node { display: none; }
+/* Each event's date on the spine: to the left of its dot, the content to the right. */
+.node-date { position: absolute; left: calc(var(--spine-x) - var(--content-x) - 20px); top: 15px; transform: translate(-100%, -50%); font: 400 11px/1 var(--font-mono); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; transition: color .35s ease; }
+.node-date .short { display: none; }
+.entry.project .node-date { left: calc(var(--spine-x) - var(--content-x) - 24px); }
+.entry.inked .node-date { color: var(--ink); }
+.entry.active .node-date { color: var(--ink); font-weight: 500; }
+.entry.project.active .node-date { color: var(--indigo); }
+.entry.first .node-date { display: none; }
 .entry.hidden { display: none; }
 
 .entry-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 380px); gap: 20px 40px; align-items: start; }
 .eyebrow { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font: 500 12px/1 var(--font-mono); color: var(--muted); letter-spacing: .03em; }
-.kind { padding: 4px 8px; border-radius: 5px; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); text-transform: uppercase; letter-spacing: .08em; font-size: 10.5px; }
+.kind { --cap: 26px; --cap-gap: 7px; display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 5px; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); text-transform: uppercase; letter-spacing: .08em; font-size: 10.5px; overflow: hidden; }
 .project .kind { background: var(--indigo-soft); color: var(--indigo); border-color: transparent; }
+/* The badge's dyed end-cap: kikkō hanabishi for work, bishamon kikkō for projects, seigaiha for learning
+   (tiles from PatternDyes.astro). Until the spine ink reaches the entry the badge is plain; then the cap grows
+   out of its left edge and the pattern presses in like a stamp. */
+.kind .mon { position: relative; align-self: stretch; width: 0; margin: -4px 0; overflow: hidden;
+  transition: width .55s cubic-bezier(.3, .7, .3, 1), margin .55s cubic-bezier(.3, .7, .3, 1); }
+.entry.inked .kind .mon { width: var(--cap); margin: -4px var(--cap-gap) -4px -8px; }
+.kind .mon::before { content: ""; position: absolute; inset: 0; background: 0 0 / auto; clip-path: circle(0% at 35% 65%); opacity: .4; transition: clip-path .7s cubic-bezier(.2, .7, .3, 1) .12s, opacity .4s .12s; }
+.entry.inked .kind .mon::before { clip-path: circle(75% at 35% 65%); opacity: 1; }
+/* a logo instead of the pattern: the icon on a soft tile, settling in just after the cap opens */
+.kind .mon.logo { display: grid; place-items: center; background: color-mix(in srgb, var(--indigo) 8%, var(--surface)); }
+.kind .mon.logo::before { content: none; }
+.kind .mon.logo img { width: 14px; height: 14px; border-radius: 3px; object-fit: contain; opacity: 0; transform: scale(.6); transition: opacity .4s .2s, transform .5s cubic-bezier(.3, 1.4, .5, 1) .2s; }
+.entry.inked .kind .mon.logo img { opacity: 1; transform: none; }
+@media (max-width: 560px) { .kind .mon.logo img { width: 12px; height: 12px; } }
+@media (max-width: 380px) { .kind .mon.logo img { width: 10px; height: 10px; } }
+@media (prefers-reduced-motion: reduce) { .kind .mon, .kind .mon::before, .kind .mon.logo img { transition: none; } }
+/* The entry you're reading gets a faint wash of its badge's pattern behind its header, dissolving at the edges
+   like dye bleeding into cloth. Only one is active at a time, so it follows you down the timeline. */
+.entry-head { position: relative; isolation: isolate; width: fit-content; max-width: 100%; }
+.entry-head::before { content: ""; position: absolute; inset: -42px -52px -30px -60px; z-index: -1; pointer-events: none;
+  background-position: 0 0; opacity: 0; transition: opacity .9s ease;
+  -webkit-mask-image: radial-gradient(closest-side, #000 8%, rgb(0 0 0 / .82) 24%, rgb(0 0 0 / .56) 42%, rgb(0 0 0 / .3) 60%, rgb(0 0 0 / .12) 76%, rgb(0 0 0 / .03) 90%, transparent); mask-image: radial-gradient(closest-side, #000 8%, rgb(0 0 0 / .82) 24%, rgb(0 0 0 / .56) 42%, rgb(0 0 0 / .3) 60%, rgb(0 0 0 / .12) 76%, rgb(0 0 0 / .03) 90%, transparent); }
+.entry.active .entry-head::before { opacity: var(--head-wash, .2); }
+@media (prefers-reduced-motion: reduce) { .entry-head::before { transition: none; } }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .entry { --head-wash: .3; } }
+:root[data-theme="dark"] .entry { --head-wash: .3; }
 .entry h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(26px, 3.2vw, 34px); line-height: 1.12; margin: 12px 0 2px; text-wrap: balance; }
 .entry .sub { font-size: 16px; color: var(--muted); margin: 0 0 14px; }
 .entry .sub b { color: var(--ink); font-weight: 500; }
@@ -319,6 +378,14 @@ kbd { font: 500 10.5px/1 var(--font-mono); padding: 3px 5px; border-radius: 5px;
   .place-wash { display: none; }
   .place .meta { position: static; border: 0; padding: 0; flex: 1; min-width: 0; }
   .entry.first .node { display: block; }
+  /* the readout touches the nav on phones; the spare room below it lets the pattern's fade finish inside the bar */
+  .readout-cloth { translate: 0 5px; }
+  .readout-dye { inset-block: -5px; }
+  /* no room beside the dot on phones: a short year above it, breaking the spine like a tick */
+  .node-date, .entry.project .node-date { left: calc(var(--spine-x) - var(--content-x)); top: -13px; transform: translateX(-50%); padding: 2px 1px; background: var(--paper); font-size: 10px; z-index: 1; }
+  .entry.first .node-date { display: block; }
+  .node-date .full { display: none; }
+  .node-date .short { display: inline; }
   .entries { gap: 80px; }
   .shot { aspect-ratio: 1 / 1; }
 }
@@ -340,3 +407,10 @@ kbd { font: 500 10.5px/1 var(--font-mono); padding: 3px 5px; border-radius: 5px;
   .socials a[aria-label="Resume (PDF)"] { display: none; } /* still in the contact card and the ⌘K menu */
   .links a { padding: 6px 2px; }
 }
+/* on phones the badge's dyed cap slims down so dates still fit beside the badge */
+@media (max-width: 560px) { .kind { --cap: 14px; --cap-gap: 6px; padding-right: 7px; } }
+@media (max-width: 380px) { .kind { --cap: 11px; --cap-gap: 5px; letter-spacing: .05em; } }
+@media (max-width: 560px) { .entry-head::before { inset: -26px -18px -16px -14px; } } /* clear of the spine */
+.stuck .ruler .dot:not(.lit, :hover) { opacity: .75; }
+@media (prefers-reduced-motion: reduce) { .nav, .ruler-bar, .ruler .track, .ruler .track::after { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .readout-cloth, .readout-dye, .node-date { transition: none; } }
