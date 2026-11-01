@@ -1,6 +1,6 @@
 ---
 import { Image } from "astro:assets";
-import { jaDates, SKILL_ICONS, type Entry } from "~/content/timeline";
+import { jaDates, SKILL_ICONS, startLabel, type Entry } from "~/content/timeline";
 import KanjiPad from "./KanjiPad.astro";
 import BundleBuilder from "./widgets/BundleBuilder.astro";
 import GiftWithPurchase from "./widgets/GiftWithPurchase.astro";
@@ -38,6 +38,7 @@ const logo = LOGOS[e.id];
 ---
 <article class:list={["entry", e.type, { compact: e.compact, first }]} id={e.id} data-type={e.type} data-mon={monFor(e.type, e.kind)}>
   <span class="node" aria-hidden="true"></span>
+  <span class="node-date" aria-hidden="true"><span class="full"><T en={startLabel(e).en} ja={startLabel(e).ja} /></span><span class="short">'{startLabel(e).en.slice(-2)}</span></span>
   <div class="entry-grid">
     <div class:list={{ "ink-card mon-card compact-card": e.compact }}>
       {e.compact && <canvas class="sg" aria-hidden="true"></canvas>}

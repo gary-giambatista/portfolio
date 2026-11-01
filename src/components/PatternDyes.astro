@@ -1,8 +1,8 @@
 ---
 /**
  * The timeline's textures, generated at build time and dyed in each theme's indigo: one traditional pattern per
- * entry kind (MON in lib/patterns.ts). Emitted as CSS variables plus one rule per pattern for the badge cap and
- * the active header's wash (drawn at twice the tile size), so the page ships no pattern code.
+ * entry kind (MON in lib/patterns.ts). Emitted as CSS variables plus one rule per pattern for the badge cap, the
+ * active header's wash and the ruler's readout (both drawn at twice the tile size), so the page ships no pattern code.
  */
 import { MON, tileSize, url, type Dye } from "~/lib/patterns";
 
@@ -17,7 +17,7 @@ for (const [name, draw] of Object.entries(MON)) {
   darkVars += `--mon-${name}-d: ${url(draw(dark))}; `;
   useDark += `--mon-${name}: var(--mon-${name}-d); `;
   rules += `[data-mon="${name}"] .kind .mon::before { background-image: var(--mon-${name}); }
-[data-mon="${name}"] .entry-head::before { background-image: var(--mon-${name}); background-size: ${w * 2}px ${h * 2}px; }
+[data-mon="${name}"] .entry-head::before, .readout-dye[data-mon="${name}"] { background-image: var(--mon-${name}); background-size: ${w * 2}px ${h * 2}px; }
 `;
 }
 const css = `:root { ${lightVars}${darkVars}}

@@ -55,7 +55,16 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 .ruler-bar { position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--nav-h)); z-index: 15; border-bottom: 1px solid var(--rule); }
 /* Once the hero has scrolled away (.stuck), the bar comes forward: the header's fade, stronger marks and the ink line. */
 .ruler-head { grid-column: 1 / -1; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.readout { font-family: var(--font-mono); font-size: 13px; color: var(--muted); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Once the bar comes forward, the readout sits on the current section's pattern, dissolving on every side. */
+.readout-cloth { position: relative; isolation: isolate; display: flex; min-width: 0; --hk: 0; --halo: var(--head-mid); transition: --hk .5s ease; }
+.stuck .readout-cloth { --hk: 1; }
+.readout-dye { position: absolute; inset: -8px -30px; z-index: -1; pointer-events: none; opacity: 0; transition: opacity 1s ease;
+  --across: linear-gradient(to right, transparent, #000 30px, #000 calc(100% - 30px), transparent); --down: linear-gradient(transparent, #000 40%, #000 60%, transparent);
+  -webkit-mask-image: var(--across), var(--down); mask-image: var(--across), var(--down); -webkit-mask-composite: source-in; mask-composite: intersect; }
+.stuck .readout-dye.on { opacity: var(--readout-cloth, .24); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .readout-cloth { --readout-cloth: .38; } }
+:root[data-theme="dark"] .readout-cloth { --readout-cloth: .38; }
+.readout { font-family: var(--font-mono); font-size: 13px; color: var(--muted); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-block: 5px; margin-block: -5px; }
 .readout b { color: var(--ink); font-weight: 500; }
 .controls { display: flex; gap: 6px; align-items: center; }
 .chipbtn { font: 500 12px/1 var(--font-mono); padding: 7px 11px; border-radius: 99px; border: 1px solid var(--rule); background: var(--surface); color: var(--muted); cursor: pointer; }
@@ -128,6 +137,14 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 .ruler .span { position: absolute; top: 33px; height: 2px; border-radius: 2px; background: repeating-linear-gradient(90deg, var(--muted) 0 4px, transparent 4px 7px); opacity: .7; }
 .entry.project .node { border-radius: 4px; border-color: var(--indigo); background: var(--indigo-soft); transform: translateX(-50%) rotate(45deg); }
 .entry.first .node { display: none; }
+/* Each event's date on the spine: to the left of its dot, the content to the right. */
+.node-date { position: absolute; left: calc(var(--spine-x) - var(--content-x) - 20px); top: 15px; transform: translate(-100%, -50%); font: 400 11px/1 var(--font-mono); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; transition: color .35s ease; }
+.node-date .short { display: none; }
+.entry.project .node-date { left: calc(var(--spine-x) - var(--content-x) - 24px); }
+.entry.inked .node-date { color: var(--ink); }
+.entry.active .node-date { color: var(--ink); font-weight: 500; }
+.entry.project.active .node-date { color: var(--indigo); }
+.entry.first .node-date { display: none; }
 .entry.hidden { display: none; }
 
 .entry-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 380px); gap: 20px 40px; align-items: start; }
@@ -360,6 +377,11 @@ kbd { font: 500 10.5px/1 var(--font-mono); padding: 3px 5px; border-radius: 5px;
   .place-wash { display: none; }
   .place .meta { position: static; border: 0; padding: 0; flex: 1; min-width: 0; }
   .entry.first .node { display: block; }
+  /* no room beside the dot on phones: a short year above it, breaking the spine like a tick */
+  .node-date, .entry.project .node-date { left: calc(var(--spine-x) - var(--content-x)); top: -13px; transform: translateX(-50%); padding: 2px 1px; background: var(--paper); font-size: 10px; z-index: 1; }
+  .entry.first .node-date { display: block; }
+  .node-date .full { display: none; }
+  .node-date .short { display: inline; }
   .entries { gap: 80px; }
   .shot { aspect-ratio: 1 / 1; }
 }
@@ -387,3 +409,4 @@ kbd { font: 500 10.5px/1 var(--font-mono); padding: 3px 5px; border-radius: 5px;
 @media (max-width: 560px) { .entry-head::before { inset: -26px -18px -16px -14px; } } /* clear of the spine */
 .stuck .ruler .dot:not(.lit, :hover) { opacity: .75; }
 @media (prefers-reduced-motion: reduce) { .nav, .ruler-bar, .ruler .track, .ruler .track::after { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .readout-cloth, .readout-dye, .node-date { transition: none; } }
