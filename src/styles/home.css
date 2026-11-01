@@ -52,13 +52,13 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 .portrait img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border: 1.5px solid var(--ink); border-radius: 16px; background: var(--land); }
 
 /* ---------- Time ruler (sticky) ---------- */
-.ruler-bar { position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--nav-h)); z-index: 15; border-bottom: 1px solid var(--rule); }
+.ruler-bar { overflow-x: clip; position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--nav-h)); z-index: 15; border-bottom: 1px solid var(--rule); }
 /* Once the hero has scrolled away (.stuck), the bar comes forward: the header's fade, stronger marks and the ink line. */
 .ruler-head { grid-column: 1 / -1; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 /* Once the bar comes forward, the readout sits on the current section's pattern, dissolving on every side. */
 .readout-cloth { position: relative; isolation: isolate; display: flex; min-width: 0; --hk: 0; --halo: var(--head-mid); transition: --hk .5s ease; }
 .stuck .readout-cloth { --hk: 1; }
-.readout-dye { position: absolute; inset: -4px -46px; /* its fade ends inside the bar: the nav above would cut it off */ z-index: -1; pointer-events: none; opacity: 0; transition: opacity 1s ease;
+.readout-dye { position: absolute; inset: -4px -46px; /* its fade ends inside the bar (the nav above would cut it off); past the screen's edge, the bar clips it */ z-index: -1; pointer-events: none; opacity: 0; transition: opacity 1s ease;
   --across: linear-gradient(to right, transparent, rgb(0 0 0 / .1) 12px, rgb(0 0 0 / .38) 24px, rgb(0 0 0 / .76) 36px, #000 46px, #000 calc(100% - 46px), rgb(0 0 0 / .76) calc(100% - 36px), rgb(0 0 0 / .38) calc(100% - 24px), rgb(0 0 0 / .1) calc(100% - 12px), transparent);
   --down: linear-gradient(transparent, rgb(0 0 0 / .12) 16%, rgb(0 0 0 / .5) 32%, #000 50%, rgb(0 0 0 / .5) 68%, rgb(0 0 0 / .12) 84%, transparent);
   -webkit-mask-image: var(--across), var(--down); mask-image: var(--across), var(--down); -webkit-mask-composite: source-in; mask-composite: intersect; }
