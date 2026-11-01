@@ -15,15 +15,14 @@ body {
 a { color: inherit; }
 
 /* ---------- Nav ---------- */
-/* Once the ruler comes forward, the nav and ruler are one header: a single fade from the raised surface down to the
-   page's own color, so there's no seam above the ruler's buttons. Each holds half the fade. */
+/* Once the ruler comes forward, the nav and ruler are one header: a single fade from the page's own color down to the
+   raised surface, so there's no seam above the ruler's buttons. Each holds half the fade. */
 @property --head-a { syntax: "<color>"; inherits: false; initial-value: transparent; }
 @property --head-b { syntax: "<color>"; inherits: false; initial-value: transparent; }
 .nav, .ruler-bar { --head-a: var(--paper); --head-b: var(--paper); --head-mid: color-mix(in srgb, var(--surface) 50%, var(--paper)); background: linear-gradient(var(--head-a), var(--head-b)); transition: --head-a .5s ease, --head-b .5s ease; }
 .nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; }
-.nav.stuck { --head-a: var(--surface); --head-b: var(--head-mid); }
-.ruler-bar.stuck { --head-a: var(--head-mid); --head-b: var(--paper); }
-body:has(.nav.stuck)::before { background: var(--surface); } /* and the strip under a phone's notch */
+.nav.stuck { --head-a: var(--paper); --head-b: var(--head-mid); }
+.ruler-bar.stuck { --head-a: var(--head-mid); --head-b: var(--surface); }
 .nav .wrap { height: var(--nav-h); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .socials { display: flex; gap: 10px; }
 .socials a {
