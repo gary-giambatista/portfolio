@@ -17,7 +17,7 @@ for (const [name, draw] of Object.entries(MON)) {
   darkVars += `--mon-${name}-d: ${url(draw(dark))}; `;
   useDark += `--mon-${name}: var(--mon-${name}-d); `;
   rules += `[data-mon="${name}"] .kind .mon::before { background-image: var(--mon-${name}); }
-[data-mon="${name}"] .entry-head::before, .nav[data-mon="${name}"]::before { background-image: var(--mon-${name}); background-size: ${w * 2}px ${h * 2}px; }
+[data-mon="${name}"] .entry-head::before, .nav-dye[data-mon="${name}"] { background-image: var(--mon-${name}); background-size: ${w * 2}px ${h * 2}px; }
 `;
 }
 const css = `:root { ${lightVars}${darkVars}}

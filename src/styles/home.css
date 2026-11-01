@@ -379,13 +379,14 @@ kbd { font: 500 10.5px/1 var(--font-mono); padding: 3px 5px; border-radius: 5px;
 @media (max-width: 560px) { .entry-head::before { inset: -26px -18px -16px -14px; } } /* clear of the spine */
 .stuck .ruler .dot:not(.lit, :hover) { opacity: .75; }
 @media (prefers-reduced-motion: reduce) { .ruler-bar, .ruler .track, .ruler .track::after { transition: none; } }
-/* The nav's cloth: the current entry's pattern, faint, with a halo keeping the links clear. Tiles from PatternDyes. */
+/* The nav's cloth: the current entry's pattern, very faint, crossfading between sections, with a halo keeping the
+   links clear. Tiles from PatternDyes. */
 .nav { --hk: 0; --halo: var(--paper); transition: --hk .5s ease; }
 .nav.stuck { --hk: 1; }
-.nav::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .5s ease; }
-.nav.stuck::before { opacity: var(--nav-cloth, .2); }
+.nav-dye { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 1s ease; }
+.nav.stuck .nav-dye.on { opacity: var(--nav-cloth, .11); }
 .nav > .wrap { position: relative; z-index: 1; }
 .nav .links a:hover { text-shadow: none; } /* a hovered link has its own chip */
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .nav { --nav-cloth: .32; } }
-:root[data-theme="dark"] .nav { --nav-cloth: .32; }
-@media (prefers-reduced-motion: reduce) { .nav, .nav::before { transition: none; } }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .nav { --nav-cloth: .18; } }
+:root[data-theme="dark"] .nav { --nav-cloth: .18; }
+@media (prefers-reduced-motion: reduce) { .nav, .nav-dye { transition: none; } }
