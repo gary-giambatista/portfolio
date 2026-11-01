@@ -46,12 +46,9 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 
 /* ---------- Time ruler (sticky) ---------- */
 .ruler-bar { position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--nav-h)); z-index: 15; background: var(--paper); border-bottom: 1px solid var(--rule); transition: background .5s ease; }
-/* Once the hero has scrolled away (.stuck), the bar comes forward: its own surface, stronger marks, the ink line,
-   and a ribbon of the current entry's pattern hanging from its edge. */
+/* Once the hero has scrolled away (.stuck), the bar comes forward: its own surface, stronger marks and the ink line,
+   and the nav above it takes on the current entry's pattern. */
 .ruler-bar.stuck { background: var(--surface); }
-.ruler-bar::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 5px; box-shadow: 0 5px 12px -7px rgb(0 0 0 / .45); pointer-events: none; opacity: 0; transform: scaleY(0); transform-origin: top; transition: opacity .4s ease, transform .4s ease; }
-.ruler-bar.stuck::after { opacity: 1; transform: none; }
-.ruler-bar .wrap { padding-block: 10px 12px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 24px; align-items: center; }
 .ruler-head { grid-column: 1 / -1; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .readout { font-family: var(--font-mono); font-size: 13px; color: var(--muted); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .readout b { color: var(--ink); font-weight: 500; }
@@ -381,4 +378,14 @@ kbd { font: 500 10.5px/1 var(--font-mono); padding: 3px 5px; border-radius: 5px;
 @media (max-width: 380px) { .kind { --cap: 11px; --cap-gap: 5px; letter-spacing: .05em; } }
 @media (max-width: 560px) { .entry-head::before { inset: -26px -18px -16px -14px; } } /* clear of the spine */
 .stuck .ruler .dot:not(.lit, :hover) { opacity: .75; }
-@media (prefers-reduced-motion: reduce) { .ruler-bar, .ruler-bar::after, .ruler .track, .ruler .track::after { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .ruler-bar, .ruler .track, .ruler .track::after { transition: none; } }
+/* The nav's cloth: the current entry's pattern, faint, with a halo keeping the links clear. Tiles from PatternDyes. */
+.nav { --hk: 0; --halo: var(--paper); transition: --hk .5s ease; }
+.nav.stuck { --hk: 1; }
+.nav::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .5s ease; }
+.nav.stuck::before { opacity: var(--nav-cloth, .2); }
+.nav > .wrap { position: relative; z-index: 1; }
+.nav .links a:hover { text-shadow: none; } /* a hovered link has its own chip */
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .nav { --nav-cloth: .32; } }
+:root[data-theme="dark"] .nav { --nav-cloth: .32; }
+@media (prefers-reduced-motion: reduce) { .nav, .nav::before { transition: none; } }
