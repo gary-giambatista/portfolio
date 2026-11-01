@@ -69,18 +69,33 @@ function draw(item: Item, animate: boolean) {
 export function initInk(root: ParentNode = document) {
   const items: Item[] = [...root.querySelectorAll<HTMLCanvasElement>("canvas.ink[data-ink]")].map(c => ({ c, started: false }));
   const start = (item: Item) => { item.started = true; draw(item, true); };
+  const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
   const io = "IntersectionObserver" in window ? new IntersectionObserver(es => es.forEach(e => {
     const item = items.find(i => i.c === e.target);
     if (e.isIntersecting && item && !item.started) { io!.unobserve(e.target); start(item); }
   }), { threshold: .25 }) : null;
 
-  // Washes below the fold fade in as they arrive.
-  if ("IntersectionObserver" in window && !reduceMotion) {
-    const waitIo = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.remove("wait"); waitIo.unobserve(e.target); } }), { rootMargin: "0px 0px -10% 0px" });
-    items.forEach(({ c }) => { if (c.classList.contains("wash") && c.getBoundingClientRect().top > innerHeight) { c.classList.add("wait"); waitIo.observe(c); } });
+  // Washes wait until they near the screen to paint, and those that start below it fade in as they arrive. An observer
+  // answers without forcing the whole page to lay out, which measuring each one here would do.
+  const washes = "IntersectionObserver" in window ? new Map(items.filter(i => i.c.classList.contains("wash")).map(i => [i.c as Element, i])) : new Map<Element, Item>();
+  if (washes.size) {
+    const near = new IntersectionObserver(es => es.forEach(e => {
+      const item = washes.get(e.target)!;
+      if (e.isIntersecting && !item.started) { near.unobserve(e.target); fontsReady.then(() => start(item)); }
+    }), { rootMargin: "800px 0px" });
+    washes.forEach((_, c) => near.observe(c));
+    if (!reduceMotion) {
+      let first = true;
+      const arrive = new IntersectionObserver(es => {
+        es.forEach(e => { if (e.isIntersecting) { e.target.classList.remove("wait"); if (!first) arrive.unobserve(e.target); } else if (first) e.target.classList.add("wait"); });
+        first = false;
+      }, { rootMargin: "0px 0px -40px" });
+      washes.forEach((_, c) => arrive.observe(c));
+    }
   }
 
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => items.forEach(item => {
+  fontsReady.then(() => items.forEach(item => {
+    if (washes.has(item.c)) return;
     if (item.c.dataset.start === "visible" && io) io.observe(item.c); else start(item);
   }));
   const redraw = () => items.forEach(item => { if (item.started) draw(item, false); });
