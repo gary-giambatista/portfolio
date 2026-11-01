@@ -1,0 +1,86 @@
+---
+import { Image } from "astro:assets";
+import { jaDates, SKILL_ICONS, startLabel, type Entry } from "~/content/timeline";
+import KanjiPad from "./KanjiPad.astro";
+import BundleBuilder from "./widgets/BundleBuilder.astro";
+import GiftWithPurchase from "./widgets/GiftWithPurchase.astro";
+import T from "./T.astro";
+import youfilter from "~/assets/img/youfilter.webp";
+import spacedCards from "~/assets/img/spaced-cards.webp";
+import katacard from "~/assets/img/katacard.webp";
+import rebuyWidgets from "~/assets/img/rebuy-merchandising-widgets.png";
+import rebuyCart from "~/assets/img/rebuy-smart-cart.png";
+import { monFor } from "~/lib/patterns";
+import logoRebuy from "~/assets/logos/rebuy.png";
+import logoKanji from "~/assets/logos/kanji.png";
+import logoYoufilter from "~/assets/logos/youfilter.png";
+import logoSpaced from "~/assets/logos/spaced.png";
+import logoKatacard from "~/assets/logos/katacard.png";
+import logoAmity from "~/assets/logos/amity.png";
+import logoCb from "~/assets/logos/cb.png";
+import logoMsu from "~/assets/logos/msu.png";
+
+interface Props { entry: Entry; first: boolean }
+const { entry: e, first } = Astro.props;
+const J = e.ja ?? {};
+const ex = e.extra ?? {};
+// Rebuy images are product shots from rebuyengine.com/product/cart-merchandising.
+const IMAGES = { youfilter, "spaced-cards": spacedCards, katacard, "rebuy-merchandising-widgets": rebuyWidgets, "rebuy-smart-cart": rebuyCart };
+const photo = typeof e.shot === "object" ? e.shot : null;
+const isExternal = (h: string) => h.startsWith("http");
+// The badge cap shows the organization's or project's own icon (from its site; Kanji Kaku's from the app);
+// entries without one keep their pattern.
+const LOGOS: Record<string, ImageMetadata> = {
+  "kanji-kaku": logoKanji, se1: logoRebuy, assoc: logoRebuy, launch: logoRebuy, support: logoRebuy,
+  youfilter: logoYoufilter, spaced: logoSpaced, katacard: logoKatacard, amity: logoAmity, cb: logoCb, msu: logoMsu,
+};
+const logo = LOGOS[e.id];
+---
+<article class:list={["entry", e.type, { compact: e.compact, first }]} id={e.id} data-type={e.type} data-mon={monFor(e.type, e.kind)}>
+  <span class="node" aria-hidden="true"></span>
+  <span class="node-date" aria-hidden="true"><span class="full"><T en={startLabel(e).en} ja={startLabel(e).ja} /></span><span class="short">'{startLabel(e).en.slice(-2)}</span></span>
+  <div class="entry-grid">
+    <div class:list={{ "ink-card mon-card compact-card": e.compact }}>
+      {e.compact && <canvas class="sg" aria-hidden="true"></canvas>}
+      <header class="entry-head">
+        <div class="eyebrow"><span class="kind"><span class:list={["mon", { logo }]} aria-hidden="true">{logo && <Image src={logo} alt="" width={16} height={16} densities={[1, 2]} loading="lazy" decoding="async" />}</span><T en={e.kind} ja={J.kind} /></span><span><T en={e.dates} ja={jaDates(e)} /></span></div>
+        <h2><T en={e.title} ja={J.title} /></h2><p class="sub"><T en={e.sub} ja={J.sub} html /></p>
+      </header>
+      {e.compact ? <p><T en={e.text!} ja={J.text} /></p> : (
+        <Fragment>
+          <ul class="points">{e.points!.map((p, i) => <li><T en={p} ja={J.points?.[i]} /></li>)}</ul>
+          <div class="skills-label"><T en="Skills" ja="スキル" /></div>
+          <div class="skills">{e.skills!.map(s => <span class="skill">{SKILL_ICONS[s] && <svg class="ico" aria-hidden="true"><use href={`#i-${SKILL_ICONS[s]}`} /></svg>}{s}</span>)}</div>
+        </Fragment>
+      )}
+    </div>
+    {e.shot === "gwp" && <GiftWithPurchase />}
+    {e.shot === "bb" && <BundleBuilder />}
+    {e.shot === "demo" && <KanjiPad />}
+    {photo && (
+      <div class="shot-wrap">
+        <figure class:list={["shot photo", { tall: photo.tall }]} style="margin:0">
+          <Image src={IMAGES[photo.img]} alt={photo.alt} format="webp" loading="lazy" decoding="async"
+            widths={photo.tall ? [286, 520, 600] : [380, 520, 760, 1040].filter(w => w <= IMAGES[photo.img].width)}
+            sizes={photo.tall ? "(max-width: 980px) 286px, 286px" : "(max-width: 980px) min(520px, calc(100vw - 66px)), 380px"} />
+        </figure>
+      </div>
+    )}
+    {!e.compact && (ex.stats || ex.links) && (
+      <div class="extra ink-card mon-card">
+        <canvas class="sg" aria-hidden="true"></canvas>
+        {(ex.stats ?? []).map(([n, l, tip], i) => {
+          const jt = J.tips?.[i];
+          return tip
+            ? <span class="stat" tabindex="0" data-tip={tip[0]} data-tip-sub={tip[1]} data-tip-ja={jt?.[0]} data-tip-sub-ja={jt?.[1]}><b>{n}</b><span><T en={l} ja={J.stats?.[i]} /></span></span>
+            : <span class="stat"><b>{n}</b><span><T en={l} ja={J.stats?.[i]} /></span></span>;
+        })}
+        {ex.stats && ex.links && <span class="divider"></span>}
+        {(ex.links ?? []).map(([l, h], i) => h
+          ? <a href={h} {...(isExternal(h) ? { target: "_blank", rel: "noopener" } : {})}><T en={l} ja={J.links?.[i]} /></a>
+          : <span class="soon mono">{l.replace(" ↗", "")} · link soon</span>)}
+        {ex.note && <span class="note">{ex.note}</span>}
+      </div>
+    )}
+  </div>
+</article>

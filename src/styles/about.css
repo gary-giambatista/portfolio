@@ -1,0 +1,118 @@
+/* About page. Layout: hero with portrait, a reading column for the story, then full-width bands (principles, path, numbers, toolbox) and a closing call to action. */
+:root { --wrap-max: 1060px; }
+body { font: 400 17px/1.7 var(--font-body); }
+a { color: var(--indigo); text-underline-offset: 3px; }
+.eyebrow { font: 500 12px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+
+/* hero */
+.hero { padding-block: 64px 24px; overflow-x: clip; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 48px; align-items: center; }
+h1 { font: 800 clamp(44px, 7vw, 76px)/1.02 var(--font-display); letter-spacing: -.02em; margin: 16px 0 18px; }
+.title-ink { position: relative; display: inline-block; isolation: isolate; }
+.title-ink canvas { position: absolute; left: -10px; bottom: -.04em; width: calc(100% + 22px); height: .42em; z-index: -1; opacity: .3; }
+.dek { font-size: clamp(18px, 2.1vw, 21px); line-height: 1.55; color: var(--muted); margin: 0; max-width: 34em; text-wrap: pretty; }
+.dek b { color: var(--ink); font-weight: 500; }
+.portrait { position: relative; margin: 0; isolation: isolate; }
+.portrait img { position: relative; z-index: 1; display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border: 1.5px solid var(--ink); border-radius: 18px; }
+.portrait canvas { left: -70px; top: -64px; width: calc(100% + 140px); height: calc(100% + 120px); z-index: 0; }
+
+/* story */
+section { padding-block: 40px; }
+.col { max-width: 680px; margin: 0 auto; }
+/* A pause after "The short version": the home page's sea, softly faded at both sides. */
+.sea-divider { position: relative; max-width: 860px; height: 150px; margin: -28px auto 20px; -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent); mask-image: linear-gradient(to right, transparent, #000 9%, #000 91%, transparent); }
+.sea-divider .wave { position: absolute; inset: 0; -webkit-mask-image: linear-gradient(to right, #000 0, transparent 0); mask-image: linear-gradient(to right, #000 0, transparent 0); }
+.sea-divider canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sea-divider .wave-wash { opacity: var(--wash-depth, .85); }
+h2 { font: 700 clamp(28px, 3.6vw, 38px)/1.15 var(--font-display); margin: 8px 0 18px; text-wrap: balance; }
+p { margin: 14px 0; text-wrap: pretty; }
+.lead::first-letter { font: 800 3.4em/0.86 var(--font-display); float: left; margin: .06em .1em 0 0; color: var(--ink); }
+
+/* principles */
+.principles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 8px; }
+.pr { align-content: start; position: relative; border: 1px solid var(--rule); border-radius: 18px; background: var(--surface); padding: 22px 22px 20px; display: grid; gap: 6px; overflow: hidden; }
+.pr .kj { font: 800 44px/1 var(--font-display); color: var(--ink); display: flex; align-items: baseline; gap: 10px; }
+.pr .kj small { font: 500 11px/1 var(--font-mono); letter-spacing: .12em; color: var(--muted); }
+.pr h3 { font: 600 18px/1.3 var(--font-body); margin: 6px 0 0; }
+.pr p { margin: 0; color: var(--muted); font-size: 15.5px; line-height: 1.6; }
+
+/* quote */
+.quote { text-align: center; padding-block: 56px; }
+.quote .wrap { position: relative; isolation: isolate; }
+/* a faint brush circle behind the question, painted once as it comes into view */
+.quote .ink { left: 50%; top: 50%; width: min(320px, 80vw); height: min(320px, 80vw); translate: -50% -50%; opacity: .3; z-index: -1; }
+.quote blockquote { margin: 0 auto; max-width: 18ch; font: 700 clamp(32px, 5vw, 52px)/1.15 var(--font-display); text-wrap: balance; }
+.quote .src { margin-top: 16px; font: 400 13px/1.5 var(--font-mono); color: var(--muted); }
+
+/* path */
+.path { position: relative; margin-top: 18px; }
+.path canvas { left: 0; top: 0; width: 100%; height: 100%; z-index: 0; }
+.stations { position: relative; z-index: 1; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
+.st { display: grid; gap: 6px; align-content: start; }
+.st .dot { position: relative; overflow: hidden; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--ink); background: var(--paper); margin: 6px 0 8px; }
+/* Each dot is stamped with its chapter's pattern as the brush line reaches it (--at: measured against the paint-in,
+   which races to the fourth dot and then takes its time over the dry tail).
+   The same five patterns, in the same order, make up the cloth at the top of the page. */
+.st .dot::before { content: ""; position: absolute; inset: 0; clip-path: circle(0 at 50% 50%); transition: clip-path .5s cubic-bezier(.3, 1.2, .5, 1) var(--at); }
+.stations.go .dot::before { clip-path: circle(75% at 50% 50%); }
+.st:nth-child(1) { --at: 0ms; } .st:nth-child(2) { --at: 190ms; } .st:nth-child(3) { --at: 280ms; } .st:nth-child(4) { --at: 380ms; } .st:nth-child(5) { --at: 1200ms; }
+@media (prefers-reduced-motion: reduce) { .st .dot::before { transition: none; } }
+.st.now .dot { border-color: var(--indigo); box-shadow: 0 0 0 5px color-mix(in srgb, var(--indigo) 18%, transparent); }
+.st .yr { font: 500 12px/1 var(--font-mono); color: var(--indigo); letter-spacing: .06em; }
+.st h3 { font: 700 19px/1.2 var(--font-display); margin: 0; }
+.st p { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--muted); }
+
+/* numbers */
+.numbers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 8px; }
+.num { position: relative; overflow: hidden; border: 1px solid var(--rule); border-radius: 16px; background: var(--surface); padding: 18px; }
+.num b { display: block; font: 700 clamp(30px, 4vw, 40px)/1.05 var(--font-display); font-variant-numeric: tabular-nums; }
+.num span { display: block; margin-top: 6px; font: 400 12.5px/1.5 var(--font-mono); color: var(--muted); }
+
+/* toolbox */
+.tools { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin-top: 8px; }
+.tools h3 { font: 500 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chip { font: 400 13px/1 var(--font-mono); padding: 8px 11px; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); display: inline-flex; align-items: center; gap: 7px; }
+.chip .ico { width: 13px; height: 13px; flex: none; color: var(--muted); transition: color .2s; }
+.chip:hover .ico { color: var(--ink); }
+.langs { margin-top: 22px; display: flex; gap: 10px; flex-wrap: wrap; font: 400 14px/1.5 var(--font-body); color: var(--muted); }
+.langs b { color: var(--ink); font-weight: 600; }
+
+/* call to action */
+.cta { margin: 40px auto 56px; max-width: 900px; border: 1.5px solid var(--ink); border-radius: 26px; background: var(--surface); padding: clamp(24px, 5vw, 48px); position: relative; overflow: hidden; }
+.cta canvas.ink { right: -60px; top: -40px; width: 300px; height: 300px; opacity: .55; }
+.cta .status { display: inline-flex; align-items: center; gap: 8px; font: 500 12.5px/1 var(--font-mono); padding: 6px 11px; border-radius: 99px; border: 1px solid var(--rule); background: var(--paper); }
+.cta .status i { width: 7px; height: 7px; border-radius: 50%; background: #2F9E6A; box-shadow: 0 0 0 3px color-mix(in srgb, #2F9E6A 22%, transparent); }
+.cta h2 { position: relative; margin: 16px 0 10px; max-width: 16ch; }
+.cta p { position: relative; max-width: 36em; color: var(--muted); margin: 0 0 22px; }
+.actions { position: relative; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn { font: 500 13.5px/1 var(--font-mono); padding: 12px 15px; border-radius: 11px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); text-decoration: none; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; }
+.btn:hover { border-color: var(--ink); }
+.btn.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.btn svg { width: 14px; height: 14px; }
+.copied { font: 400 12.5px/1 var(--font-mono); color: var(--indigo); }
+
+@media (max-width: 820px) {
+  .sea-divider { height: 130px; }
+  /* The ensō becomes the photo's frame: a round portrait inside the brush circle, beside the stacked greeting. */
+  .hero .wrap { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "eyebrow eyebrow" "name photo" "dek dek"; gap: 0 14px; align-items: center; }
+  .hero .wrap > div:first-child { display: contents; }
+  .hero .eyebrow { grid-area: eyebrow; }
+  .hero h1 { grid-area: name; margin: 24px 0 24px; }
+  .dek { grid-area: dek; }
+  .title-ink { width: min-content; } /* "Hi, I'm" / "Gary.", with the swash under the longer line */
+  .portrait { grid-area: photo; width: clamp(80px, calc((100vw - 211px) / 1.237), 112px); margin: 10px 18px 0 0; }
+  .portrait img { aspect-ratio: 1; border-radius: 50%; object-position: 30% 30%; }
+  .portrait canvas { left: -23%; top: -23%; width: 146%; height: 146%; }
+  .principles, .tools { grid-template-columns: minmax(0, 1fr); }
+  .numbers { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .stations { grid-template-columns: minmax(0, 1fr); gap: 26px; padding-left: 34px; }
+  .st .dot { position: absolute; margin: 0; transform: translate(-36px, 2px); }
+  .st { position: relative; }
+}
+
+.num.ink-card .sg { --rest: radial-gradient(circle at 100% 0, rgb(0 0 0 / .58), rgb(0 0 0 / .22) 48px, transparent 92px); }
+/* The intro runs wider than Home's, so the resting cloth stays further right, clear of it. */
+@media (min-width: 821px) { main .hero-cloth .sg { --rest: radial-gradient(ellipse 40% 130% at 100% 20%, #000 40%, transparent); } }
+/* How I work: each habit wears the pattern of the chapter that taught it, in the corner and on hover. */
+.principles .pr.mon-card .sg { --rest: radial-gradient(circle at 100% 0, #000, rgb(0 0 0 / .4) 70px, transparent 128px); }

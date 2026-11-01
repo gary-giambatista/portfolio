@@ -1,0 +1,64 @@
+---
+/** Demo 6: the flights' real wave builder. Size and seed rebuild it; the scroll slider only moves a mask. */
+---
+<figure class="demo" aria-labelledby="seaCap">
+  <div class="demo-stage sea-stage" id="seaStage" role="img" aria-label="A breaking wave in nested indigo stripes, with foam along its crest and a small Mount Fuji behind it">
+    <div class="wave" id="seaWave"><canvas id="seaWash"></canvas><canvas id="seaInk"></canvas></div>
+  </div>
+  <div class="demo-bar">
+    <label class="ctl"><span>Band height <output id="oSeaH"></output></span><input type="range" id="sSeaH" min="170" max="320" step="10" value="250" /></label>
+    <label class="ctl"><span>Seed <output id="oSeaS"></output></span><input type="range" id="sSeaS" min="1" max="60" step="1" value="19" /></label>
+    <label class="ctl"><span>Scroll <output id="oSeaP"></output></span><input type="range" id="sSeaP" min="0" max="1" step=".01" value=".8" /></label>
+    <div class="seg" role="group" aria-label="Which way the wave breaks"><button type="button" data-curl="1" aria-pressed="true">Right</button><button type="button" data-curl="-1" aria-pressed="false">Left</button></div>
+    <span class="readout" id="oSea"></span>
+  </div>
+  <figcaption id="seaCap">Live: the same wave code as the flights. Height, seed and direction rebuild the drawing. Scroll only moves a mask, so it costs almost nothing.</figcaption>
+</figure>
+
+<script>
+  import { fitCanvas, paint } from "~/lib/ink/paint";
+  import { buildWave } from "~/lib/home/waves";
+  import { onThemeChange } from "~/lib/theme";
+
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const stage = $("seaStage"), wave = $("seaWave");
+  const sH = $<HTMLInputElement>("sSeaH"), sS = $<HTMLInputElement>("sSeaS"), sP = $<HTMLInputElement>("sSeaP");
+  let dir: 1 | -1 = 1, queued = 0;
+
+  function reveal() {
+    const raw = +sP.value, W = stage.clientWidth, edge = raw <= 0 ? W + 1 : raw >= 1 ? -80 : (W + 70) * (1 - raw) - 70;
+    const mask = `linear-gradient(to right, transparent ${edge}px, #000 ${edge + 70}px)`;
+    wave.style.setProperty("-webkit-mask-image", mask); wave.style.maskImage = mask;
+    wave.style.setProperty("--wash-depth", String(.4 + .45 * raw));
+    $("oSeaP").textContent = Math.round(raw * 100) + "%";
+  }
+  function draw() {
+    queued = 0;
+    const H = +sH.value, W = stage.clientWidth, css = getComputedStyle(stage), color = (n: string) => css.getPropertyValue(n).trim();
+    stage.style.height = H + "px";
+    $("oSeaH").textContent = H + "px"; $("oSeaS").textContent = sS.value;
+    const t0 = performance.now();
+    const segs = buildWave({ width: W, height: H, x0: 12, x1: W - 12, yb: H - 28, dir, fuji: dir > 0 ? .82 : .18, seed: +sS.value });
+    const [wc] = fitCanvas($<HTMLCanvasElement>("seaWash")), [ic] = fitCanvas($<HTMLCanvasElement>("seaInk"));
+    wc.fillStyle = wc.strokeStyle = color("--wash"); wc.lineCap = "round"; paint(wc, segs.wash);
+    ic.lineCap = "round"; ic.lineJoin = "round";
+    ic.fillStyle = ic.strokeStyle = color("--brush"); paint(ic, segs.ink); paint(ic, segs.foamEdge);
+    ic.fillStyle = color("--foam"); paint(ic, segs.foam);
+    $("oSea").textContent = `Drawn in ${Math.round(performance.now() - t0)} ms`;
+    reveal();
+  }
+  const queue = () => { queued ||= requestAnimationFrame(draw); };
+  sH.addEventListener("input", queue); sS.addEventListener("input", queue); sP.addEventListener("input", reveal);
+  document.querySelectorAll<HTMLElement>("[data-curl]").forEach(b => b.addEventListener("click", () => {
+    dir = +b.dataset.curl! as 1 | -1;
+    document.querySelectorAll("[data-curl]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    queue();
+  }));
+  // Painted only when it nears the screen, like the timeline's waves.
+  const io = new IntersectionObserver(es => {
+    if (!es.some(e => e.isIntersecting)) return;
+    io.disconnect(); draw();
+    addEventListener("resize", queue); onThemeChange(queue);
+  }, { rootMargin: "400px 0px" });
+  io.observe(stage);
+</script>

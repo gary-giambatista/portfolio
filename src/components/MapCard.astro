@@ -1,0 +1,30 @@
+---
+/** A location card's map: Natural Earth coastline, lakes and rivers (built at build time) with pinned places. */
+import maps from "~/data/generated/maps.json";
+import { JA_PLACE, PIN_COORDS, type Era } from "~/content/timeline";
+
+interface Props { id: Era["id"] }
+const { id } = Astro.props;
+const m = maps[id];
+const PIN = "M0 0c-3.4-4.2-5.2-6.8-5.2-9.2a5.2 5.2 0 0 1 10.4 0c0 2.4-1.8 5-5.2 9.2z";
+const label = (side: string) => side === "l" ? { x: -7, y: -6, anchor: "end" } : side === "b" ? { x: 0, y: 9, anchor: "middle" } : { x: 7, y: -6, anchor: undefined };
+---
+<svg class="map" viewBox="0 0 180 220" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
+  <defs><pattern id={`grid-${id}`} width="22" height="22" patternUnits="userSpaceOnUse"><path class="grid" d="M22 0H0V22" /></pattern></defs>
+  <rect class="water" width="180" height="220" />
+  <rect width="180" height="220" fill={`url(#grid-${id})`} />
+  <path class="land" d={m.land} />
+  <path class="lake" d={m.lakes} />
+  <path class="river" d={m.rivers} />
+  {m.pins.map((p, i) => {
+    const l = label(p.side);
+    return (
+      <g class="pin" transform={`translate(${p.x} ${p.y})`} data-tip={p.name} data-tip-ja={JA_PLACE[p.name] || ""} data-tip-sub={PIN_COORDS[p.name] || ""}>
+        <circle class="pulse" cy="-8" r="5" style={`animation-delay:${i * .5}s`} />
+        <path d={PIN} />
+        <circle class="hole" cy="-9.2" r="1.9" />
+        <text x={l.x} y={l.y} text-anchor={l.anchor}><tspan class="l-en">{p.name}</tspan><tspan class="l-ja">{JA_PLACE[p.name]}</tspan></text>
+      </g>
+    );
+  })}
+</svg>

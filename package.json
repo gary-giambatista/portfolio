@@ -1,0 +1,37 @@
+{
+  "name": "portfolio",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "data:maps": "tsx scripts/build-maps.ts",
+    "data:kanji": "tsx scripts/sync-kanji.ts",
+    "data": "npm run data:maps && npm run data:fonts",
+    "data:fonts": "tsx scripts/build-cjk-fonts.ts"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^8.1.2",
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.4.4",
+    "hanzi-writer": "^3.7.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@k1low/hanzi-writer-data-jp": "^0.8.0",
+    "@types/d3-geo": "^3.1.1",
+    "@types/geojson": "^7946.0.16",
+    "@types/node": "^26.6.6",
+    "d3-geo": "^3.1.1",
+    "simple-icons": "^16.36.0",
+    "topojson-client": "^3.1.0",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3"
+  }
+}

@@ -1,0 +1,37 @@
+---
+/** Demo 8: the fabric ripple from the timeline's cards, with its strength and wavelength on sliders. */
+import PatternDyes from "~/components/PatternDyes.astro";
+import "~/styles/ink-cards.css";
+const NAMES = [["teaching", "Asanoha"], ["work", "Kikkō"], ["marketing", "Ichimatsu"], ["education", "Sakura"]];
+---
+<PatternDyes />
+<figure class="demo" aria-labelledby="rpCap">
+  <div class="demo-stage rp-stage">
+    <div class="rp-card ink-card mon-card" id="rpCard" data-mon="teaching">
+      <canvas class="sg" aria-hidden="true"></canvas>
+      <p>Move your pointer across this card, or tap it. Ink spreads from where you came in, then the cloth moves under your cursor.</p>
+    </div>
+  </div>
+  <div class="demo-bar">
+    <div class="seg" role="group" aria-label="Pattern">{NAMES.map(([id, name], i) => <button type="button" data-rp={id} aria-pressed={i === 0 ? "true" : "false"}>{name}</button>)}</div>
+    <label class="ctl"><span>Strength <output id="oRpA"></output></span><input type="range" id="sRpA" min="0" max="10" step=".2" value="2.4" /></label>
+    <label class="ctl"><span>Wavelength <output id="oRpW"></output></span><input type="range" id="sRpW" min="30" max="200" step="2" value="92" /></label>
+  </div>
+  <figcaption id="rpCap">Live: the timeline's card code. The site uses a strength of 2.4 and a wavelength of 92. With reduced motion turned on, the ink still spreads but the cloth stays still.</figcaption>
+</figure>
+
+<script>
+  import { initInkCards } from "~/lib/ink-cards";
+  import { monPainter, RIPPLE } from "~/lib/mon-cards";
+
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const card = $("rpCard"), a = $<HTMLInputElement>("sRpA"), w = $<HTMLInputElement>("sRpW");
+  const repaint = initInkCards(document.querySelectorAll("#rpCard"), monPainter);
+  const read = () => { RIPPLE.amp = +a.value; RIPPLE.wave = +w.value; $("oRpA").textContent = a.value; $("oRpW").textContent = w.value + "px"; };
+  a.addEventListener("input", read); w.addEventListener("input", read); read();
+  document.querySelectorAll<HTMLElement>("[data-rp]").forEach(b => b.addEventListener("click", () => {
+    card.dataset.mon = b.dataset.rp;
+    document.querySelectorAll("[data-rp]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    repaint();
+  }));
+</script>

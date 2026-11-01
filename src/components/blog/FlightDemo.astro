@@ -1,0 +1,79 @@
+---
+/** Demo 5: the timeline's flight code, with a slider standing in for the scroll position. */
+---
+<figure class="demo" aria-labelledby="flightCap">
+  <div class="demo-stage"><svg id="flightSvg" role="img" aria-label="A plane flying along a curved route between New Jersey and Japan"></svg></div>
+  <div class="demo-bar">
+    <label class="ctl" style="flex-basis:220px"><span>Scroll progress <output id="oProg"></output></span><input type="range" id="sProg" min="0" max="1" step=".005" value=".42"></label>
+    <div class="seg" role="group" aria-label="Easing"><button type="button" data-ease="linear" aria-pressed="false">Linear</button><button type="button" data-ease="inout" aria-pressed="true">Ease in-out</button></div>
+    <button class="btn" type="button" id="bTan" aria-pressed="false">Show heading</button>
+    <button class="btn primary" type="button" id="bFly">Fly</button>
+    <svg class="ease-plot" viewBox="0 0 120 80" aria-hidden="true"><path class="axis" d="M8 72H114M8 72V6"></path><path id="easePath"></path><circle id="easeDot" r="3.5"></circle></svg>
+  </div>
+  <figcaption id="flightCap">Live: the timeline's flight code with a slider standing in for the scroll position. Drag it back the other way and the plane turns around. The small plot shows the easing curve.</figcaption>
+</figure>
+
+<script>
+  import { easeInOut, planeAt, routePath } from "~/lib/flight";
+  import { reduceMotion } from "~/lib/motion";
+  import { setFill } from "~/lib/blog/ranges";
+
+  const $ = (id: string) => document.getElementById(id)!;
+  const fs = $("flightSvg") as unknown as SVGSVGElement, slider = $("sProg") as HTMLInputElement;
+  let ease = "inout", flyAnim = 0, fLen = 0, lastRaw: number | undefined, heading = 180, turn = 180, turning = 0, pos: ReturnType<typeof planeAt>;
+  fs.innerHTML = `<path class="track"/><path class="trail"/><circle class="end" r="4"/><circle class="end" r="4"/><text>NEW JERSEY</text><text text-anchor="end">JAPAN</text><line class="tan" visibility="hidden"/><use class="plane" href="#i-plane" x="-26" y="-22" width="52" height="44"/>`;
+  const fTrack = fs.querySelector<SVGPathElement>(".track")!, fTrail = fs.querySelector<SVGPathElement>(".trail")!, fPlane = fs.querySelector(".plane")!, fTan = fs.querySelector(".tan")!;
+  const easeFn = (p: number) => ease === "linear" ? p : easeInOut(p);
+  const set = (el: Element, attrs: Record<string, number | string>) => Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, String(v)));
+
+  function layoutFlight() {
+    const W = fs.clientWidth, H = fs.clientHeight, x0 = 40, x1 = W - 40, yb = H - 46;
+    fs.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    const d = routePath(x0, x1, yb);
+    fTrack.setAttribute("d", d); fTrail.setAttribute("d", d);
+    fLen = fTrack.getTotalLength(); fTrail.style.strokeDasharray = `${fLen} ${fLen}`;
+    const [a, b] = fs.querySelectorAll(".end"), [ta, tb] = fs.querySelectorAll("text");
+    set(a, { cx: x0, cy: yb }); set(b, { cx: x1, cy: yb }); set(ta, { x: x0, y: yb + 24 }); set(tb, { x: x1, y: yb + 24 });
+    $("easePath").setAttribute("d", Array.from({ length: 41 }, (_, i) => { const p = i / 40; return (i ? "L" : "M") + (8 + p * 106).toFixed(1) + "," + (72 - easeFn(p) * 66).toFixed(1); }).join(""));
+    drawFlight();
+  }
+  const placePlane = () => fPlane.setAttribute("transform", `translate(${pos.x} ${pos.y}) rotate(${pos.ang * 180 / Math.PI + turn}) scale(${pos.scale})`);
+  function bank() {
+    turning = 0;
+    const left = heading - turn;
+    turn = Math.abs(left) < 2 ? heading : turn + left * .16;
+    placePlane();
+    if (turn !== heading) turning = requestAnimationFrame(bank);
+  }
+  function drawFlight() {
+    const raw = +slider.value, p = easeFn(raw);
+    pos = planeAt(fTrack, fLen, 1 - p); // scrolling down goes back in time, so the plane flies from its destination
+    if (lastRaw !== undefined && raw !== lastRaw) heading = raw > lastRaw ? 180 : 0;
+    lastRaw = raw;
+    if (reduceMotion) turn = heading;
+    placePlane();
+    if (turn !== heading && !turning) turning = requestAnimationFrame(bank);
+    fTrail.style.strokeDasharray = `${fLen - pos.L} ${fLen}`;
+    fTrail.style.strokeDashoffset = String(-pos.L);
+    const showTan = $("bTan").getAttribute("aria-pressed") === "true";
+    fTan.setAttribute("visibility", showTan ? "visible" : "hidden");
+    if (showTan) set(fTan, { x1: pos.x - Math.cos(pos.ang) * 60, y1: pos.y - Math.sin(pos.ang) * 60, x2: pos.x + Math.cos(pos.ang) * 60, y2: pos.y + Math.sin(pos.ang) * 60 });
+    $("oProg").textContent = Math.round(raw * 100) + "% → " + Math.round(p * 100) + "% back along the route";
+    set($("easeDot"), { cx: 8 + raw * 106, cy: 72 - p * 66 });
+  }
+  slider.addEventListener("input", () => { cancelAnimationFrame(flyAnim); drawFlight(); });
+  document.querySelectorAll<HTMLElement>("[data-ease]").forEach(b => b.addEventListener("click", () => {
+    ease = b.dataset.ease!; document.querySelectorAll("[data-ease]").forEach(x => x.setAttribute("aria-pressed", String(x === b))); layoutFlight();
+  }));
+  $("bTan").addEventListener("click", e => { const b = e.currentTarget as HTMLElement; b.setAttribute("aria-pressed", String(b.getAttribute("aria-pressed") !== "true")); drawFlight(); });
+  $("bFly").addEventListener("click", () => {
+    cancelAnimationFrame(flyAnim);
+    if (reduceMotion) { slider.value = "1"; setFill(slider); drawFlight(); return; }
+    const t0 = performance.now(), d = 2400;
+    const step = (now: number) => { const t = Math.min(1, (now - t0) / d); slider.value = String(t); setFill(slider); drawFlight(); if (t < 1) flyAnim = requestAnimationFrame(step); };
+    flyAnim = requestAnimationFrame(step);
+  });
+  layoutFlight();
+  let rz = 0;
+  addEventListener("resize", () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(layoutFlight); });
+</script>

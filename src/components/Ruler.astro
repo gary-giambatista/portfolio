@@ -1,0 +1,30 @@
+---
+/**
+ * The decade at a glance: the Japan band, the self-taught span, the two flights, year ticks, and a dot per entry.
+ * The dots are pointer shortcuts only (out of the tab order and hidden from screen readers): every entry is in the
+ * page itself, in the ⌘K palette, and one J/K press away, and 18 tiny tab stops before the content helped no one.
+ */
+import { D, flatEntries, jaDates, RULER_MAX, RULER_MIN } from "~/content/timeline";
+
+const pct = (y: number) => ((y - RULER_MIN) / (RULER_MAX - RULER_MIN)) * 100;
+const pos = (y: number) => `left:${pct(y)}%`;
+const flights = [
+  [D(2019, 4), "Moved to Japan", "2019 · New Jersey → Japan", "日本へ", "2019年 · ニュージャージー → 日本"],
+  [D(2022, 4), "Moved back home", "2022 · Japan → New Jersey", "帰国", "2022年 · 日本 → ニュージャージー"],
+] as const;
+const years = Array.from({ length: 11 }, (_, i) => 2016 + i);
+---
+<div class="ruler" id="ruler" aria-label="Timeline 2016 to 2026">
+  <div class="band" style={`left:${pct(D(2019, 4))}%;width:${pct(D(2022, 4)) - pct(D(2019, 4))}%`}><span><span class="l-en">Japan</span><span class="l-ja" lang="ja">日本</span></span></div>
+  <div class="track"></div>
+  <div class="span" style={`left:${pct(D(2022, 4))}%;width:${pct(D(2023, 3)) - pct(D(2022, 4))}%`} data-tip="Teaching myself to code" data-tip-sub="Apr 2022 – Mar 2023" data-tip-ja="独学でプログラミング" data-tip-sub-ja="2022年4月 – 2023年3月"></div>
+  {flights.map(([y, t, sub, tj, sj]) => (
+    <span class="fly" style={pos(y)} tabindex="0" role="img" data-tip={t} data-tip-sub={sub} data-tip-ja={tj} data-tip-sub-ja={sj} aria-label={`${t}, ${sub}`}><svg aria-hidden="true"><use href="#i-plane" /></svg></span>
+  ))}
+  {years.map(y => <span class="tick" style={pos(y)}>'{String(y).slice(2)}</span>)}
+  {flatEntries.map(e => (
+    <button class={`dot ${e.type}`} type="button" data-id={e.id} style={pos(e.start)} tabindex="-1" aria-hidden="true"
+      data-tip={e.title} data-tip-sub={e.dates} data-tip-ja={e.ja?.title || e.title} data-tip-sub-ja={jaDates(e)}></button>
+  ))}
+  <div class="cursor" id="cursor"></div>
+</div>

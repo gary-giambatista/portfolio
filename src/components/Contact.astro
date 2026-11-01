@@ -1,0 +1,20 @@
+---
+import { EMAIL, RESUME, ROUTES, SOCIAL } from "~/config/links";
+import "~/styles/ink-cards.css";
+---
+<section class="contact wrap" aria-labelledby="contactTitle">
+  <div class="cta ink-card quiet" id="contact">
+    <canvas class="sg" aria-hidden="true"></canvas>
+    <canvas class="ink" data-ink="enso" data-color="--wash" data-seed="9" aria-hidden="true"></canvas>
+    <span class="status"><i></i><span class="l-en">Open to software engineering roles</span><span class="l-ja" lang="ja">ソフトウェアエンジニア職を探しています</span></span>
+    <h2 id="contactTitle"><span class="l-en">Let's build something people enjoy using.</span><span class="l-ja" lang="ja">使う人が楽しめるものを、一緒に作りましょう。</span></h2>
+    <p><span class="l-en">I'm looking for a team that cares about its users as much as its code. Front end, full stack or mobile, I'd love to hear what you're working on.</span><span class="l-ja" lang="ja">コードと同じくらいユーザーを大切にするチームを探しています。フロントエンド、フルスタック、モバイルのいずれでも、ぜひお話を聞かせてください。</span></p>
+    <div class="cta-actions">
+      <button class="cta-btn primary" type="button" id="copyEmail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6 8.5 7 8.5-7"/></svg><span class="email">{EMAIL}</span></button>
+      <a class="cta-btn" href={RESUME} target="_blank" rel="noopener"><span class="l-en">Resume (PDF) ↗</span><span class="l-ja" lang="ja">履歴書(PDF・英語) ↗</span></a>
+      <a class="cta-btn" href={SOCIAL.linkedin.href} target="_blank" rel="noopener">LinkedIn ↗</a>
+      <a class="cta-btn" href={ROUTES.about}><span class="l-en">More about me →</span><span class="l-ja" lang="ja">自己紹介(英語) →</span></a>
+      <span class="cta-copied" id="copied" aria-live="polite"></span>
+    </div>
+  </div>
+</section>

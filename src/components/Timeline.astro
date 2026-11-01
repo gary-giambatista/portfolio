@@ -1,0 +1,27 @@
+---
+/** The timeline: one section per location era, present first, with a flight between eras. */
+import { eras } from "~/content/timeline";
+import Entry from "./Entry.astro";
+import Flight from "./Flight.astro";
+import MapCard from "./MapCard.astro";
+import T from "./T.astro";
+---
+<div class="timeline" id="timeline">
+  {eras.map(era => (
+    <Fragment>
+      <section class="era" aria-label={era.name}>
+        <canvas class="ink wash place-wash" data-ink="wash" data-color="--wash" data-seed={era.id.length * 31 + 3} aria-hidden="true"></canvas>
+        <div class="place">
+          <MapCard id={era.id} /><span class="glyph">{era.glyph}</span>
+          <div class="meta"><div class="name"><T en={era.name} ja={era.ja.name} /></div><div class="years"><T en={era.years} ja={era.ja.years} /></div></div>
+        </div>
+        <div class="entries">{era.entries.map((e, i) => <Entry entry={e} first={i === 0} />)}</div>
+      </section>
+      {era.flight && <Flight flight={era.flight} />}
+    </Fragment>
+  ))}
+  <div class="spine-drop" aria-hidden="true">
+    <canvas class="ink" data-ink="drop" data-color="--ink" data-seed="5"></canvas>
+    <canvas class="ink drop-fill" data-ink="drop" data-color="--brush" data-seed="5"></canvas>
+  </div>
+</div>

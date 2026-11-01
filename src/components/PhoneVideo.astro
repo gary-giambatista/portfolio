@@ -1,0 +1,72 @@
+---
+/**
+ * A muted, looping screen recording inside a phone frame. Not used yet: waiting on the Kanji Kaku recording.
+ *
+ * Behavior: shows the poster until the video scrolls into view, then plays; pauses when it scrolls away.
+ * With "reduce motion" on it never autoplays: the poster stays, with a play button the visitor can choose.
+ * No sound track is expected (encode with -an), and nothing downloads until the video nears the viewport.
+ *
+ * Usage:
+ *   import poster from "~/assets/video/kanji-kaku-poster.webp";
+ *   <PhoneVideo poster={poster} sources={[
+ *     { src: "/video/kanji-kaku.av1.mp4", type: 'video/mp4; codecs="av01.0.05M.08"' },
+ *     { src: "/video/kanji-kaku.h264.mp4", type: "video/mp4" },
+ *   ]} label="Kanji Kaku on an iPhone: writing 日 stroke by stroke, then a review" />
+ *
+ * See README → "Kanji Kaku video" for the ffmpeg commands that make these files.
+ */
+import { getImage } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import "~/styles/phone-video.css";
+
+interface Props {
+  poster: ImageMetadata;
+  sources: { src: string; type: string }[];
+  /** Describes what the recording shows, for screen readers. */
+  label: string;
+  /** The recording's aspect ratio (width / height). iPhone screen recordings are 1179×2556. */
+  ratio?: number;
+}
+const { poster, sources, label, ratio = 1179 / 2556 } = Astro.props;
+const posterImg = await getImage({ src: poster, width: 600, format: "webp" });
+---
+<figure class="phone-video" style={`--ratio:${ratio}`}>
+  <div class="pv-frame">
+    <video class="pv-video" muted loop playsinline preload="none" poster={posterImg.src} aria-label={label} data-phone-video>
+      {sources.map(s => <source data-src={s.src} type={s.type} />)}
+    </video>
+    <button class="pv-play" type="button" hidden aria-label="Play the screen recording">
+      <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.5v9l7.5-4.5z" fill="currentColor" /></svg>
+    </button>
+  </div>
+  <slot />
+</figure>
+
+<script>
+  import { reduceMotion } from "~/lib/motion";
+
+  document.querySelectorAll<HTMLVideoElement>("video[data-phone-video]").forEach(video => {
+    const btn = video.parentElement!.querySelector<HTMLButtonElement>(".pv-play")!;
+    let loaded = false;
+    const load = () => {
+      if (loaded) return; loaded = true;
+      video.querySelectorAll("source").forEach(s => { s.src = s.dataset.src!; });
+      video.load();
+    };
+    const play = () => { load(); video.play().catch(() => { btn.hidden = false; }); };
+    if (reduceMotion) {
+      // Never autoplay; let the visitor choose. Once playing, the button toggles pause.
+      btn.hidden = false;
+      btn.addEventListener("click", () => {
+        if (video.paused) { play(); btn.setAttribute("aria-label", "Pause the screen recording"); btn.classList.add("playing"); }
+        else { video.pause(); btn.setAttribute("aria-label", "Play the screen recording"); btn.classList.remove("playing"); }
+      });
+      return;
+    }
+    btn.addEventListener("click", play);
+    if (!("IntersectionObserver" in window)) { play(); return; }
+    new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) play(); else if (loaded) video.pause();
+    }), { rootMargin: "200px 0px" }).observe(video);
+  });
+</script>

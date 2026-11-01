@@ -1,0 +1,65 @@
+---
+/** Demo 2: a scaled-down copy of the timeline's spine, with the mask that reveals the ink. */
+---
+<figure class="demo" aria-labelledby="scrollCap">
+  <div class="scrolly-wrap">
+    <div class="demo-stage scrolly" id="scrolly" tabindex="0" aria-label="Scrollable mini timeline">
+      <div class="tipline" id="tipline"><i></i><span>tip · 38% of the view</span></div>
+      <div class="track" id="track"></div>
+    </div>
+    <div class="side">
+      <div><div class="readout">ink tip</div><div class="big" id="oTip">0px</div></div>
+      <div><div class="readout">active dot</div><div class="big" id="oActive">2026</div></div>
+      <button class="btn" type="button" id="bMask" aria-pressed="false">Show the mask</button>
+      <span class="readout">Scroll inside the box. The tip sits 38% of the way down the view, and the dashed line marks it.</span>
+    </div>
+  </div>
+  <figcaption id="scrollCap">Live: a scaled-down copy of the timeline's spine. "Show the mask" outlines the gradient that reveals the ink.</figcaption>
+</figure>
+
+<script>
+  import { paint, fitCanvas, type Seg } from "~/lib/ink/paint";
+  import { rng, smooth } from "~/lib/ink/random";
+  import { inkMask } from "~/lib/spine-mask";
+  import { onThemeChange } from "~/lib/theme";
+
+  const $ = (id: string) => document.getElementById(id)!;
+  const css = (n: string) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const sc = $("scrolly"), track = $("track");
+  const STOPS = [["2026", "Kanji Kaku"], ["2026", "Software Engineer 1"], ["2024", "YouFilter.ai"], ["2024", "Associate Engineer"], ["2023", "Katacard"], ["2022", "Back from Japan"], ["2019", "Moved to Japan"], ["2016", "First job"]];
+  const sInk = document.createElement("canvas"), maskViz = document.createElement("div");
+  maskViz.className = "maskviz"; maskViz.hidden = true;
+  track.innerHTML = `<div class="spine"></div>` + STOPS.map(([y, t], i) => `<span class="dot" style="top:${130 + i * 120}px"></span><span class="lbl" style="top:${130 + i * 120}px">${t}<small>${y}</small></span>`).join("");
+  track.prepend(sInk); track.append(maskViz);
+  const sLen = 1180 - 120, nodeYs = STOPS.map((_, i) => 130 + i * 120);
+
+  function paintSpine() {
+    sInk.style.height = sLen + "px";
+    const [ctx, w] = fitCanvas(sInk), R = rng(77), wob = smooth(R, 3, 1), press = smooth(R, 4, 2), segs: Seg[] = [];
+    for (let y = 0; y <= sLen; y += 1.2) {
+      let p = .5 + press(y / 300) * .14;
+      for (const ny of nodeYs) { const d = (y - ny) / 16; if (Math.abs(d) < 4) p += Math.exp(-d * d) * .75; }
+      segs.push({ dot: [w / 2 + wob(y / 500) * 1.4 + (R() - .5) * .4, y, 4.2 * p, 1] });
+      if (R() < .35) segs.push({ dot: [w / 2 + (R() - .5) * 8 * p, y, .5 + R() * .6, .6] });
+    }
+    ctx.fillStyle = css("--brush"); paint(ctx, segs);
+    updateSpine();
+  }
+  function updateSpine() {
+    // One source of truth: the tip reveals the ink and decides which dots are inked.
+    const tip = Math.min(sLen, sc.scrollTop + sc.clientHeight * .38);
+    inkMask(sInk, tip);
+    let active = 0;
+    track.querySelectorAll(".dot").forEach((d, i) => { const hit = nodeYs[i] <= tip; d.classList.toggle("inked", hit); if (hit) active = i; });
+    track.querySelectorAll(".dot").forEach((d, i) => d.classList.toggle("active", i === active));
+    $("oTip").textContent = Math.round(tip) + "px"; $("oActive").textContent = STOPS[active][0];
+    $("tipline").style.transform = `translateY(${sc.clientHeight * .38}px)`;
+    Object.assign(maskViz.style, { top: Math.max(0, tip - 26) + "px", height: "26px" });
+  }
+  sc.addEventListener("scroll", updateSpine, { passive: true });
+  $("bMask").addEventListener("click", e => { const b = e.currentTarget as HTMLElement, on = b.getAttribute("aria-pressed") !== "true"; b.setAttribute("aria-pressed", String(on)); maskViz.hidden = !on; });
+  paintSpine();
+  let rz = 0;
+  addEventListener("resize", () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(paintSpine); });
+  onThemeChange(paintSpine);
+</script>

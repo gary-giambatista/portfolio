@@ -1,0 +1,83 @@
+---
+import Base from "~/layouts/Base.astro";
+import Contact from "~/components/Contact.astro";
+import Footer from "~/components/Footer.astro";
+import PatternDyes from "~/components/PatternDyes.astro";
+import Hero from "~/components/Hero.astro";
+import HomeNav from "~/components/HomeNav.astro";
+import IconSprite from "~/components/IconSprite.astro";
+import RulerBar from "~/components/RulerBar.astro";
+import Timeline from "~/components/Timeline.astro";
+import { flatEntries, jaDates, NOW, RULER_MAX, RULER_MIN, startLabel } from "~/content/timeline";
+import "~/styles/home.css";
+import "~/styles/kanji-pad.css";
+import "~/styles/widgets.css";
+
+// The slice of the timeline the browser needs for the ruler, readout and command palette.
+const index = {
+  now: NOW, min: RULER_MIN, max: RULER_MAX,
+  entries: flatEntries.map(e => ({
+    id: e.id, type: e.type, start: e.start, end: e.end,
+    title: e.title, titleJa: e.ja?.title ?? e.title, kind: e.kind, kindJa: e.ja?.kind ?? e.kind,
+    dates: e.dates, datesJa: jaDates(e), startEn: startLabel(e).en, startJa: startLabel(e).ja,
+    skills: e.skills ?? [], era: e.era.name, eraJa: e.era.ja.name,
+  })),
+};
+---
+<Base title="Gary Giambatista · Software Engineer" description="Software engineer in Hoboken, NJ. I build front ends people enjoy using, from Shopify widgets that moved millions in sales to a kanji-writing app for iOS and Android." bilingual>
+  <script is:inline slot="head">
+    // Arriving at #contact from another page: phones jump straight there instead of smooth-scrolling through
+    // 11,000px of timeline (which pops in screenshots, the kanji pad and ink on the way). Larger screens keep the sweep.
+    if (location.hash && matchMedia("(max-width: 720px)").matches) {
+      var html = document.documentElement;
+      html.style.scrollBehavior = "auto";
+      addEventListener("load", function () { setTimeout(function () { html.style.scrollBehavior = ""; }, 100); });
+    }
+  </script>
+  <IconSprite />
+  <HomeNav />
+  <main>
+    <Hero />
+    <RulerBar />
+    <div class="wrap tl-wrap">
+      <PatternDyes />
+      <Timeline />
+    </div>
+    <Contact />
+  </main>
+  <Footer />
+  <script type="application/json" id="timeline-data" set:html={JSON.stringify(index)}></script>
+</Base>
+
+<script>
+  import { initLangToggle } from "~/lib/i18n";
+  import { initPopover } from "~/lib/popover";
+  import { initThemeButton } from "~/lib/theme";
+  import { initInk } from "~/lib/ink/canvas";
+  import { initCopyEmail } from "~/lib/copy-email";
+  import { initInkCards } from "~/lib/ink-cards";
+  import { brocadePainter, monPainter } from "~/lib/mon-cards";
+  import { initSpine } from "~/lib/home/spine";
+  import { initFlights } from "~/lib/home/flights";
+  import { initTimeline } from "~/lib/home/timeline";
+  import { initPalette } from "~/lib/home/palette";
+  import { initKanjiPad } from "~/lib/kanji-pad";
+  import { initBundleBuilder } from "~/lib/widgets/bundle-builder";
+  import { initGiftWithPurchase } from "~/lib/widgets/gift-with-purchase";
+
+  initPopover({ top: 70 });
+  initThemeButton();
+  initLangToggle();
+  initInk();
+  initSpine();
+  initFlights();
+  initKanjiPad(document.getElementById("kk"));
+  initBundleBuilder(document.getElementById("rw-bb"));
+  initGiftWithPurchase(document.getElementById("rw-gwp"));
+  initCopyEmail(document.getElementById("copyEmail"), document.getElementById("copied"));
+  initInkCards(document.querySelectorAll(".ink-card:not(.mon-card)"));
+  initInkCards(document.querySelectorAll(".mon-card:not(.hero-cloth)"), monPainter);
+  initInkCards(document.querySelectorAll(".hero-cloth"), brocadePainter);
+  initPalette();
+  initTimeline();
+</script>
