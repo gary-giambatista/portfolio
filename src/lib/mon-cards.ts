@@ -3,7 +3,7 @@
  * tiles come from the CSS variables PatternDyes.astro emits, are drawn once into a sheet, and each frame shifts thin columns of that sheet
  * near the cursor, so a wave travels along these short boxes and the dye deepens where it lifts.
  */
-import type { Card, Painter } from "../ink-cards";
+import type { Card, Painter } from "./ink-cards";
 
 const COL = 2, AMP = 2.4, SIGMA = 120, WAVE = 92, SPEED = 2, SCALE = 2;
 const sheets = new WeakMap<Card, HTMLCanvasElement>();
@@ -68,25 +68,37 @@ export const monPainter: Painter = {
   render,
 };
 
-/** The hero's cloth: every pattern on the site, in flowing bands like a brocade, with a paper-colored seam between each. */
-const BANDS = ["learning", "education", "work", "marketing", "project", "teaching"];
-export const brocadePainter: Painter = {
-  layout: (k, repaint) => prepare(k, repaint, BANDS, (sc, fills, w, h, dpr) => {
-    const tilt = h * .7, band = (h + tilt) / BANDS.length, step = 6 * dpr;
-    const edge = (i: number, x: number) => i * band - tilt * (x / w) + h * .07 * Math.sin(x / w * 7 + i * 1.7) + h * .025 * Math.sin(x / w * 17 + i * 2.9);
-    for (let i = 0; i < BANDS.length; i++) {
-      const p = new Path2D();
-      for (let x = 0; x <= w + step; x += step) p.lineTo(x, edge(i, x));
-      for (let x = w + step; x >= 0; x -= step) p.lineTo(x, edge(i + 1, x));
-      p.closePath();
-      sc.fillStyle = fills[i]; sc.fill(p);
-    }
-    sc.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--paper").trim(); sc.lineWidth = 3 * dpr;
-    for (let i = 1; i < BANDS.length; i++) {
-      sc.beginPath();
-      for (let x = 0; x <= w + step; x += step) sc.lineTo(x, edge(i, x));
-      sc.stroke();
-    }
-  }),
-  render,
-};
+/**
+ * A hero's cloth: patterns in flowing bands like a brocade, with a paper-colored seam between each. `flip` runs the
+ * bands the other way, so About's cloth isn't a copy of Home's.
+ */
+function brocade(bands: string[], flip = false): Painter {
+  return {
+    layout: (k, repaint) => prepare(k, repaint, bands, (sc, fills, w, h, dpr) => {
+      const tilt = h * .7, band = (h + tilt) / bands.length, step = 6 * dpr;
+      const edge = (i: number, x: number) => {
+        const t = flip ? 1 - x / w : x / w;
+        return i * band - tilt * t + h * .07 * Math.sin(t * 7 + i * 1.7) + h * .025 * Math.sin(t * 17 + i * 2.9);
+      };
+      bands.forEach((_, i) => {
+        const p = new Path2D();
+        for (let x = 0; x <= w + step; x += step) p.lineTo(x, edge(i, x));
+        for (let x = w + step; x >= 0; x -= step) p.lineTo(x, edge(i + 1, x));
+        p.closePath();
+        sc.fillStyle = fills[i]; sc.fill(p);
+      });
+      sc.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--paper").trim(); sc.lineWidth = 3 * dpr;
+      for (let i = 1; i < bands.length; i++) {
+        sc.beginPath();
+        for (let x = 0; x <= w + step; x += step) sc.lineTo(x, edge(i, x));
+        sc.stroke();
+      }
+    }),
+    render,
+  };
+}
+
+/** Home: every pattern on the site. */
+export const brocadePainter = brocade(["learning", "education", "work", "marketing", "project", "teaching"]);
+/** About: the five chapters of "The path here", in the order they happened. */
+export const pathBrocadePainter = brocade(["marketing", "teaching", "learning", "work", "project"], true);

@@ -2,16 +2,29 @@
 import { Image } from "astro:assets";
 import Base from "~/layouts/Base.astro";
 import SubNav from "~/components/SubNav.astro";
+import IconSprite from "~/components/IconSprite.astro";
+import PatternDyes from "~/components/PatternDyes.astro";
+import Footer from "~/components/Footer.astro";
 import portrait from "~/assets/img/gary-harbor.webp";
 import { EMAIL, RESUME, SOCIAL } from "~/config/links";
 import "~/styles/subnav.css";
 import "~/styles/about.css";
+
+/** The toolbox: [name, icon]. Icons are logos from simple-icons, or c-* glyphs for things without one. */
+const TOOLBOX: { title: string; tools: [string, string][] }[] = [
+  { title: "Front end", tools: [["TypeScript", "typescript"], ["JavaScript", "javascript"], ["React", "react"], ["Next.js", "nextdotjs"], ["Vue.js", "vuedotjs"], ["React Native", "react"], ["CSS", "css"], ["Tailwind", "tailwindcss"], ["HTML", "html5"], ["UI/UX", "c-layout"]] },
+  { title: "Back end", tools: [["Node.js", "nodedotjs"], ["Express", "express"], ["PHP", "php"], ["Python", "python"], ["Liquid", "c-drop"], ["SQL", "c-db"], ["Convex", "convex"]] },
+  { title: "AI and workflow", tools: [["Claude Code", "claude"], ["Codex", "c-codex"], ["Cursor", "cursor"], ["AI agent workflows", "c-agents"], ["Git", "git"], ["Google Cloud", "googlecloud"], ["Shopify", "shopify"], ["E-commerce", "c-cart"]] },
+];
 import "~/styles/ink-cards.css";
 ---
 <Base title="About Gary Giambatista" description="I'm a software engineer in Hoboken, New Jersey, focused on the front end. I care about the people on the other side of the screen, and I love turning hard problems into things that feel simple.">
+<IconSprite slugs={TOOLBOX.flatMap(g => g.tools.map(t => t[1]))} />
+<PatternDyes />
 <SubNav current="about" ink />
 <main>
-  <section class="hero">
+  <section class="hero ink-card mon-card hero-cloth">
+    <canvas class="sg" aria-hidden="true"></canvas>
     <div class="wrap">
       <div>
         <div class="eyebrow">About</div>
@@ -44,16 +57,17 @@ import "~/styles/ink-cards.css";
         <h2>Four habits I bring to every team.</h2>
       </div>
       <div class="principles">
-        <article class="pr ink-card"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">人<small>HITO · PEOPLE</small></div><h3>Start with the people</h3><p>Every project starts with one question: what purpose does this serve? Understanding the person behind the problem is how I avoid building the wrong thing well.</p></article>
-        <article class="pr ink-card"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">責任<small>SEKININ · OWNERSHIP</small></div><h3>Own the whole problem</h3><p>From a support ticket to a brand-new product, I treat the problem as mine until it's solved. Three years of triaging merchant issues taught me to follow a bug all the way to its root.</p></article>
-        <article class="pr ink-card"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">設計<small>SEKKEI · DESIGN</small></div><h3>Design the system</h3><p>As AI changed how software gets written, my work shifted toward architecture: shaping the data, the boundaries and the tests, then directing agents to build inside them.</p></article>
-        <article class="pr ink-card"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">丁寧<small>TEINEI · CARE</small></div><h3>Sweat the details</h3><p>Teaching kindergarten in a second language taught me patience and clarity. I bring the same care to interfaces: every state, every edge case, accessibility, and motion that helps instead of distracts.</p></article>
+        <article class="pr ink-card mon-card" data-mon="marketing"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">人<small>HITO · PEOPLE</small></div><h3>Start with the people</h3><p>Every project starts with one question: what purpose does this serve? Understanding the person behind the problem is how I avoid building the wrong thing well.</p></article>
+        <article class="pr ink-card mon-card" data-mon="work"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">責任<small>SEKININ · OWNERSHIP</small></div><h3>Own the whole problem</h3><p>From a support ticket to a brand-new product, I treat the problem as mine until it's solved. Three years of triaging merchant issues taught me to follow a bug all the way to its root.</p></article>
+        <article class="pr ink-card mon-card" data-mon="project"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">設計<small>SEKKEI · DESIGN</small></div><h3>Design the system</h3><p>As AI changed how software gets written, my work shifted toward architecture: shaping the data, the boundaries and the tests, then directing agents to build inside them.</p></article>
+        <article class="pr ink-card mon-card" data-mon="teaching"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">丁寧<small>TEINEI · CARE</small></div><h3>Sweat the details</h3><p>Teaching kindergarten in a second language taught me patience and clarity. I bring the same care to interfaces: every state, every edge case, accessibility, and motion that helps instead of distracts.</p></article>
       </div>
     </div>
   </section>
 
   <section class="quote">
     <div class="wrap">
+      <canvas class="ink" data-ink="quiet-enso" data-seed="23" data-color="--wash" data-dur="1500" data-delay="100" data-start="visible" aria-hidden="true"></canvas>
       <blockquote>“What purpose does this serve?”</blockquote>
       <div class="src">The question I ask before writing any code</div>
     </div>
@@ -66,11 +80,11 @@ import "~/styles/ink-cards.css";
       <div class="path">
         <canvas class="ink" data-ink="stroke-path" data-seed="5" data-color="--brush" data-dur="1800" data-delay="150" data-start="visible" aria-hidden="true"></canvas>
         <ol class="stations">
-          <li class="st"><span class="dot" aria-hidden="true"></span><span class="yr">2016</span><h3>Marketing</h3><p>How products get sold, and who they're sold to. I still think about the funnel when I build a UI.</p></li>
-          <li class="st"><span class="dot" aria-hidden="true"></span><span class="yr">2019</span><h3>Teaching in Japan</h3><p>How to explain anything to anyone, in a second language, to an audience of 1 to 55-year-olds.</p></li>
-          <li class="st"><span class="dot" aria-hidden="true"></span><span class="yr">2022</span><h3>Teaching myself to code</h3><p>HTML to Next.js on my own, and the first version of this site.</p></li>
-          <li class="st"><span class="dot" aria-hidden="true"></span><span class="yr">2023</span><h3>Rebuy Engine</h3><p>Four roles in three years, from answering tickets to leading a new product.</p></li>
-          <li class="st now"><span class="dot" aria-hidden="true"></span><span class="yr">Now</span><h3>Kanji Kaku</h3><p>Everything at once: product, design, architecture and teaching, in one app.</p></li>
+          <li class="st" data-mon="marketing"><span class="dot" aria-hidden="true"></span><span class="yr">2016</span><h3>Marketing</h3><p>How products get sold, and who they're sold to. I still think about the funnel when I build a UI.</p></li>
+          <li class="st" data-mon="teaching"><span class="dot" aria-hidden="true"></span><span class="yr">2019</span><h3>Teaching in Japan</h3><p>How to explain anything to anyone, in a second language, to an audience of 1 to 55-year-olds.</p></li>
+          <li class="st" data-mon="learning"><span class="dot" aria-hidden="true"></span><span class="yr">2022</span><h3>Teaching myself to code</h3><p>HTML to Next.js on my own, and the first version of this site.</p></li>
+          <li class="st" data-mon="work"><span class="dot" aria-hidden="true"></span><span class="yr">2023</span><h3>Rebuy Engine</h3><p>Four roles in three years, from answering tickets to leading a new product.</p></li>
+          <li class="st now" data-mon="project"><span class="dot" aria-hidden="true"></span><span class="yr">Now</span><h3>Kanji Kaku</h3><p>Everything at once: product, design, architecture and teaching, in one app.</p></li>
         </ol>
       </div>
     </div>
@@ -96,9 +110,9 @@ import "~/styles/ink-cards.css";
       <div class="eyebrow">Toolbox</div>
       <h2>What I build with.</h2>
       <div class="tools">
-        <div><h3>Front end</h3><div class="chips"><span class="chip">TypeScript</span><span class="chip">JavaScript</span><span class="chip">React</span><span class="chip">Next.js</span><span class="chip">Vue.js</span><span class="chip">React Native</span><span class="chip">CSS</span><span class="chip">Tailwind</span><span class="chip">HTML</span><span class="chip">UI/UX</span></div></div>
-        <div><h3>Back end</h3><div class="chips"><span class="chip">Node.js</span><span class="chip">Express</span><span class="chip">PHP</span><span class="chip">Python</span><span class="chip">Liquid</span><span class="chip">SQL</span><span class="chip">Convex</span></div></div>
-        <div><h3>AI and workflow</h3><div class="chips"><span class="chip">Claude Code</span><span class="chip">Codex</span><span class="chip">Cursor</span><span class="chip">AI agent workflows</span><span class="chip">Git</span><span class="chip">Google Cloud</span><span class="chip">Shopify</span><span class="chip">E-commerce</span></div></div>
+        {TOOLBOX.map(({ title, tools }) => (
+          <div><h3>{title}</h3><div class="chips">{tools.map(([name, icon]) => <span class="chip"><svg class="ico" aria-hidden="true"><use href={`#i-${icon}`} /></svg>{name}</span>)}</div></div>
+        ))}
       </div>
       <div class="langs"><span><b>English</b> · native</span><span><b>日本語</b> · learned while living in Japan for three years</span></div>
     </div>
@@ -120,6 +134,7 @@ import "~/styles/ink-cards.css";
     </section>
   </div>
 </main>
+<Footer />
 </Base>
 
 <script>
@@ -129,11 +144,19 @@ import "~/styles/ink-cards.css";
   import { initCopyEmail } from "~/lib/copy-email";
   import { initSeaDivider } from "~/lib/about-wave";
   import { initInkCards } from "~/lib/ink-cards";
+  import { monPainter, pathBrocadePainter } from "~/lib/mon-cards";
 
   initPopover({ top: 66 });
   initThemeButton();
   initInk();
   initCopyEmail(document.getElementById("copyEmail"), document.getElementById("copied"));
+
+  // Each chapter's dot takes its pattern as the brush line reaches it (see .stations in about.css).
+  const stations = document.querySelector(".stations")!;
+  new IntersectionObserver((es, io) => { if (es[0].isIntersecting) { stations.classList.add("go"); io.disconnect(); } }, { threshold: .25 }).observe(stations);
+
   initSeaDivider(document.getElementById("seaDivider"));
-  initInkCards(document.querySelectorAll(".ink-card"));
+  initInkCards(document.querySelectorAll(".ink-card:not(.mon-card)"));
+  initInkCards(document.querySelectorAll(".mon-card:not(.hero-cloth)"), monPainter);
+  initInkCards(document.querySelectorAll(".hero-cloth"), pathBrocadePainter);
 </script>

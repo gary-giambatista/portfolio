@@ -30,7 +30,7 @@ p { margin: 14px 0; text-wrap: pretty; }
 
 /* principles */
 .principles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 8px; }
-.pr { position: relative; border: 1px solid var(--rule); border-radius: 18px; background: var(--surface); padding: 22px 22px 20px; display: grid; gap: 6px; overflow: hidden; }
+.pr { align-content: start; position: relative; border: 1px solid var(--rule); border-radius: 18px; background: var(--surface); padding: 22px 22px 20px; display: grid; gap: 6px; overflow: hidden; }
 .pr .kj { font: 800 44px/1 var(--font-display); color: var(--ink); display: flex; align-items: baseline; gap: 10px; }
 .pr .kj small { font: 500 11px/1 var(--font-mono); letter-spacing: .12em; color: var(--muted); }
 .pr h3 { font: 600 18px/1.3 var(--font-body); margin: 6px 0 0; }
@@ -38,6 +38,9 @@ p { margin: 14px 0; text-wrap: pretty; }
 
 /* quote */
 .quote { text-align: center; padding-block: 56px; }
+.quote .wrap { position: relative; isolation: isolate; }
+/* a faint brush circle behind the question, painted once as it comes into view */
+.quote .ink { left: 50%; top: 50%; width: min(320px, 80vw); height: min(320px, 80vw); translate: -50% -50%; opacity: .3; z-index: -1; }
 .quote blockquote { margin: 0 auto; max-width: 18ch; font: 700 clamp(32px, 5vw, 52px)/1.15 var(--font-display); text-wrap: balance; }
 .quote .src { margin-top: 16px; font: 400 13px/1.5 var(--font-mono); color: var(--muted); }
 
@@ -46,8 +49,15 @@ p { margin: 14px 0; text-wrap: pretty; }
 .path canvas { left: 0; top: 0; width: 100%; height: 100%; z-index: 0; }
 .stations { position: relative; z-index: 1; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
 .st { display: grid; gap: 6px; align-content: start; }
-.st .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--ink); background: var(--paper); margin: 8px 0 10px; }
-.st.now .dot { background: var(--indigo); border-color: var(--indigo); box-shadow: 0 0 0 5px color-mix(in srgb, var(--indigo) 18%, transparent); }
+.st .dot { position: relative; overflow: hidden; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--ink); background: var(--paper); margin: 6px 0 8px; }
+/* Each dot is stamped with its chapter's pattern as the brush line reaches it (--at: measured against the paint-in,
+   which races to the fourth dot and then takes its time over the dry tail).
+   The same five patterns, in the same order, make up the cloth at the top of the page. */
+.st .dot::before { content: ""; position: absolute; inset: 0; clip-path: circle(0 at 50% 50%); transition: clip-path .5s cubic-bezier(.3, 1.2, .5, 1) var(--at); }
+.stations.go .dot::before { clip-path: circle(75% at 50% 50%); }
+.st:nth-child(1) { --at: 0ms; } .st:nth-child(2) { --at: 190ms; } .st:nth-child(3) { --at: 280ms; } .st:nth-child(4) { --at: 380ms; } .st:nth-child(5) { --at: 1200ms; }
+@media (prefers-reduced-motion: reduce) { .st .dot::before { transition: none; } }
+.st.now .dot { border-color: var(--indigo); box-shadow: 0 0 0 5px color-mix(in srgb, var(--indigo) 18%, transparent); }
 .st .yr { font: 500 12px/1 var(--font-mono); color: var(--indigo); letter-spacing: .06em; }
 .st h3 { font: 700 19px/1.2 var(--font-display); margin: 0; }
 .st p { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--muted); }
@@ -62,12 +72,14 @@ p { margin: 14px 0; text-wrap: pretty; }
 .tools { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin-top: 8px; }
 .tools h3 { font: 500 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
 .chips { display: flex; flex-wrap: wrap; gap: 7px; }
-.chip { font: 400 13px/1 var(--font-mono); padding: 8px 11px; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); }
+.chip { font: 400 13px/1 var(--font-mono); padding: 8px 11px; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); display: inline-flex; align-items: center; gap: 7px; }
+.chip .ico { width: 13px; height: 13px; flex: none; color: var(--muted); transition: color .2s; }
+.chip:hover .ico { color: var(--ink); }
 .langs { margin-top: 22px; display: flex; gap: 10px; flex-wrap: wrap; font: 400 14px/1.5 var(--font-body); color: var(--muted); }
 .langs b { color: var(--ink); font-weight: 600; }
 
 /* call to action */
-.cta { margin: 40px auto 96px; max-width: 900px; border: 1.5px solid var(--ink); border-radius: 26px; background: var(--surface); padding: clamp(24px, 5vw, 48px); position: relative; overflow: hidden; }
+.cta { margin: 40px auto 56px; max-width: 900px; border: 1.5px solid var(--ink); border-radius: 26px; background: var(--surface); padding: clamp(24px, 5vw, 48px); position: relative; overflow: hidden; }
 .cta canvas.ink { right: -60px; top: -40px; width: 300px; height: 300px; opacity: .55; }
 .cta .status { display: inline-flex; align-items: center; gap: 8px; font: 500 12.5px/1 var(--font-mono); padding: 6px 11px; border-radius: 99px; border: 1px solid var(--rule); background: var(--paper); }
 .cta .status i { width: 7px; height: 7px; border-radius: 50%; background: #2F9E6A; box-shadow: 0 0 0 3px color-mix(in srgb, #2F9E6A 22%, transparent); }
@@ -95,8 +107,12 @@ p { margin: 14px 0; text-wrap: pretty; }
   .principles, .tools { grid-template-columns: minmax(0, 1fr); }
   .numbers { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .stations { grid-template-columns: minmax(0, 1fr); gap: 26px; padding-left: 34px; }
-  .st .dot { position: absolute; margin: 0; transform: translate(-34px, 4px); }
+  .st .dot { position: absolute; margin: 0; transform: translate(-36px, 2px); }
   .st { position: relative; }
 }
 
 .num.ink-card .sg { --rest: radial-gradient(circle at 100% 0, rgb(0 0 0 / .58), rgb(0 0 0 / .22) 48px, transparent 92px); }
+/* The intro runs wider than Home's, so the resting cloth stays further right, clear of it. */
+@media (min-width: 821px) { main .hero-cloth .sg { --rest: radial-gradient(ellipse 40% 130% at 100% 20%, #000 40%, transparent); } }
+/* How I work: each habit wears the pattern of the chapter that taught it, in the corner and on hover. */
+.principles .pr.mon-card .sg { --rest: radial-gradient(circle at 100% 0, #000, rgb(0 0 0 / .4) 70px, transparent 128px); }
