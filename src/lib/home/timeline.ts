@@ -112,6 +112,9 @@ export function stepEntry(dir: 1 | -1) {
 export const replayIntro = () => { scrollTo({ top: 0 }); setTimeout(playIntro, 50); };
 
 export function initTimeline() {
+  // The bar sticks under the nav exactly as the hero leaves; that's when it comes forward.
+  const nav = document.querySelector<HTMLElement>(".nav")!, hero = document.querySelector<HTMLElement>(".hero")!;
+  new IntersectionObserver(([e]) => bar.classList.toggle("stuck", !e.isIntersecting), { rootMargin: `-${nav.offsetHeight}px 0px 0px` }).observe(hero);
   ruler.addEventListener("click", ev => {
     const d = (ev.target as Element).closest<HTMLElement>(".dot"); if (!d) return;
     document.getElementById(d.dataset.id!)!.scrollIntoView({ block: "start" });
