@@ -45,7 +45,8 @@
 .mon-card::before, .mon-card .sg { border-radius: inherit; }
 .mon-card .sg { --rest: linear-gradient(to left, rgb(0 0 0 / .85), transparent 170px); --fill: radial-gradient(circle at var(--mx) var(--my), #000 calc(var(--bloom) - 40px), transparent var(--bloom)); }
 /* Compact entries have no box of their own: on hover they gain one, without moving their text. */
-.compact-card { --halo: var(--paper); margin: -13px -17px; padding: 12px 16px; border: 1px solid transparent; border-radius: 14px; }
+/* The right side stays 1px inside the timeline's clip (.tl-wrap), or the border is cut off. */
+.compact-card { --halo: var(--paper); margin: -13px -15px -13px -17px; padding: 12px 14px 12px 16px; border: 1px solid transparent; border-radius: 14px; }
 .compact-card .sg { --rest: linear-gradient(transparent, transparent); } /* the pattern only appears on hover */
 .compact-card.bloom { --halo: color-mix(in srgb, var(--paper) 95%, var(--wash)); }
 .compact-card.bloom .entry-head::before { opacity: 0; } /* its pattern fills the box instead of the header's wash */
