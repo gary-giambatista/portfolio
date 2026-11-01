@@ -39,7 +39,8 @@ const logo = LOGOS[e.id];
 <article class:list={["entry", e.type, { compact: e.compact, first }]} id={e.id} data-type={e.type} data-mon={monFor(e.type, e.kind)}>
   <span class="node" aria-hidden="true"></span>
   <div class="entry-grid">
-    <div>
+    <div class:list={{ "ink-card mon-card compact-card": e.compact }}>
+      {e.compact && <canvas class="sg" aria-hidden="true"></canvas>}
       <header class="entry-head">
         <div class="eyebrow"><span class="kind"><span class:list={["mon", { logo }]} aria-hidden="true">{logo && <Image src={logo} alt="" width={16} height={16} densities={[1, 2]} loading="lazy" decoding="async" />}</span><T en={e.kind} ja={J.kind} /></span><span><T en={e.dates} ja={jaDates(e)} /></span></div>
         <h2><T en={e.title} ja={J.title} /></h2><p class="sub"><T en={e.sub} ja={J.sub} html /></p>
@@ -65,7 +66,8 @@ const logo = LOGOS[e.id];
       </div>
     )}
     {!e.compact && (ex.stats || ex.links) && (
-      <div class="extra">
+      <div class="extra ink-card mon-card">
+        <canvas class="sg" aria-hidden="true"></canvas>
         {(ex.stats ?? []).map(([n, l, tip], i) => {
           const jt = J.tips?.[i];
           return tip
