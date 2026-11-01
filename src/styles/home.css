@@ -15,8 +15,14 @@ body {
 a { color: inherit; }
 
 /* ---------- Nav ---------- */
-.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--paper); transition: background .5s ease; }
-.nav.stuck { background: var(--surface); } /* one surface with the ruler below, so there's no seam above its buttons */
+/* Once the ruler comes forward, the nav and ruler are one header: a single fade from the raised surface down to the
+   page's own color, so there's no seam above the ruler's buttons. Each holds half the fade. */
+@property --head-a { syntax: "<color>"; inherits: false; initial-value: transparent; }
+@property --head-b { syntax: "<color>"; inherits: false; initial-value: transparent; }
+.nav, .ruler-bar { --head-a: var(--paper); --head-b: var(--paper); --head-mid: color-mix(in srgb, var(--surface) 50%, var(--paper)); background: linear-gradient(var(--head-a), var(--head-b)); transition: --head-a .5s ease, --head-b .5s ease; }
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; }
+.nav.stuck { --head-a: var(--surface); --head-b: var(--head-mid); }
+.ruler-bar.stuck { --head-a: var(--head-mid); --head-b: var(--paper); }
 body:has(.nav.stuck)::before { background: var(--surface); } /* and the strip under a phone's notch */
 .nav .wrap { height: var(--nav-h); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .socials { display: flex; gap: 10px; }
@@ -47,9 +53,8 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 .portrait img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border: 1.5px solid var(--ink); border-radius: 16px; background: var(--land); }
 
 /* ---------- Time ruler (sticky) ---------- */
-.ruler-bar { position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--nav-h)); z-index: 15; background: var(--paper); border-bottom: 1px solid var(--rule); transition: background .5s ease; }
-/* Once the hero has scrolled away (.stuck), the bar comes forward: its own surface, stronger marks and the ink line. */
-.ruler-bar.stuck { background: var(--surface); }
+.ruler-bar { position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--nav-h)); z-index: 15; border-bottom: 1px solid var(--rule); }
+/* Once the hero has scrolled away (.stuck), the bar comes forward: the header's fade, stronger marks and the ink line. */
 .ruler-head { grid-column: 1 / -1; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .readout { font-family: var(--font-mono); font-size: 13px; color: var(--muted); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .readout b { color: var(--ink); font-weight: 500; }
