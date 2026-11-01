@@ -15,7 +15,9 @@ body {
 a { color: inherit; }
 
 /* ---------- Nav ---------- */
-.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--paper); }
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--paper); transition: background .5s ease; }
+.nav.stuck { background: var(--surface); } /* one surface with the ruler below, so there's no seam above its buttons */
+body:has(.nav.stuck)::before { background: var(--surface); } /* and the strip under a phone's notch */
 .nav .wrap { height: var(--nav-h); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .socials { display: flex; gap: 10px; }
 .socials a {
@@ -380,4 +382,4 @@ kbd { font: 500 10.5px/1 var(--font-mono); padding: 3px 5px; border-radius: 5px;
 @media (max-width: 380px) { .kind { --cap: 11px; --cap-gap: 5px; letter-spacing: .05em; } }
 @media (max-width: 560px) { .entry-head::before { inset: -26px -18px -16px -14px; } } /* clear of the spine */
 .stuck .ruler .dot:not(.lit, :hover) { opacity: .75; }
-@media (prefers-reduced-motion: reduce) { .ruler-bar, .ruler .track, .ruler .track::after { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .nav, .ruler-bar, .ruler .track, .ruler .track::after { transition: none; } }
