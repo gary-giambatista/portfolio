@@ -1,4 +1,8 @@
-/** Flights: each plane follows its route as its band scrolls through the viewport. */
+/**
+ * Flights: each plane follows its route as its band scrolls through the viewport. The timeline runs backward in
+ * time as you scroll down, so a plane waits at the later place (its destination), flies back to the earlier one
+ * as you scroll down, and makes the real flight when you scroll up. It turns to face the way it's moving.
+ */
 import { easeInOut, planeAt, routePath } from "../flight";
 import { onLangChange, isJa } from "../i18n";
 import { fitCanvas, paint } from "../ink/paint";
@@ -6,7 +10,7 @@ import { reduceMotion } from "../motion";
 import { onThemeChange } from "../theme";
 import { buildWave } from "./waves";
 
-type Flight = { el: HTMLElement; svg: SVGSVGElement; path?: SVGPathElement; trail?: SVGPathElement; plane?: SVGUseElement; len?: number; x0?: number; x1?: number; dims?: [number, number, number, number, number]; waveKey?: string };
+type Flight = { el: HTMLElement; svg: SVGSVGElement; path?: SVGPathElement; trail?: SVGPathElement; plane?: SVGUseElement; len?: number; x0?: number; x1?: number; dims?: [number, number, number, number, number]; waveKey?: string; raw?: number; heading?: number; turn?: number; turning?: number; pos?: ReturnType<typeof planeAt> };
 const tl = document.getElementById("timeline")!;
 const flights: Flight[] = [...document.querySelectorAll<HTMLElement>(".flight")].map(el => ({ el, svg: el.querySelector("svg")! }));
 
@@ -21,7 +25,6 @@ export function layoutFlights() {
     f.path = f.svg.querySelector<SVGPathElement>(".track")!;
     f.len = f.path.getTotalLength();
     f.trail = f.svg.querySelector<SVGPathElement>(".trail")!;
-    f.trail.style.strokeDasharray = `${f.len} ${f.len}`;
     const [a, b] = f.svg.querySelectorAll(".end");
     a.setAttribute("cx", String(x0)); a.setAttribute("cy", String(yb)); b.setAttribute("cx", String(x1)); b.setAttribute("cy", String(yb));
     const [la, lb] = f.svg.querySelectorAll(".lbl:not(.yr)");
@@ -58,6 +61,20 @@ function paintWave(f: Flight, W: number, H: number, x0: number, x1: number, yb: 
   ic.fillStyle = color("--foam"); paint(ic, segs.foam);
 }
 
+function placePlane(f: Flight) {
+  const { x, y, ang, scale } = f.pos!;
+  f.plane!.setAttribute("transform", `translate(${x} ${y}) rotate(${ang * 180 / Math.PI + f.turn!}) scale(${scale})`);
+}
+
+/** Bank smoothly around when the scroll direction changes. */
+function turnPlane(f: Flight) {
+  f.turning = 0;
+  const left = f.heading! - f.turn!;
+  f.turn = Math.abs(left) < 2 ? f.heading! : f.turn! + left * .16;
+  placePlane(f);
+  if (f.turn !== f.heading) f.turning = requestAnimationFrame(() => turnPlane(f));
+}
+
 export function updateFlights() {
   const vh = innerHeight;
   for (const f of flights) {
@@ -65,14 +82,21 @@ export function updateFlights() {
     paintWaveIfNear(f);
     const r = f.el.getBoundingClientRect();
     const raw = reduceMotion ? 1 : Math.min(1, Math.max(0, (vh * .9 - r.top) / (vh * .62)));
-    const pos = planeAt(f.path, f.len, easeInOut(raw));
-    f.plane!.setAttribute("transform", pos.transform);
-    f.trail!.style.strokeDashoffset = String(f.len - pos.L);
-    // The sea paints in behind the plane, and its wash deepens as the flight goes on.
+    const pos = f.pos = planeAt(f.path, f.len, reduceMotion ? 1 : 1 - easeInOut(raw));
+    if (f.raw !== undefined && raw !== f.raw) f.heading = raw > f.raw ? 180 : 0;
+    f.raw = raw;
+    f.heading ??= reduceMotion ? 0 : 180;
+    f.turn ??= f.heading;
+    placePlane(f);
+    if (f.turn !== f.heading && !f.turning) f.turning = requestAnimationFrame(() => turnPlane(f));
+    // The trail and the sea run from the destination back to the plane; the wash deepens along the way.
+    const from = reduceMotion ? 0 : pos.L;
+    f.trail!.style.strokeDasharray = `${f.len - from} ${f.len}`;
+    f.trail!.style.strokeDashoffset = String(-from);
     const wave = f.el.querySelector<HTMLElement>(".wave");
     if (wave) {
-      const edge = raw <= 0 ? -1 : raw >= 1 ? f.el.clientWidth + 80 : pos.x + 36;
-      const mask = `linear-gradient(to right, #000 ${edge - 70}px, transparent ${edge}px)`;
+      const edge = raw <= 0 ? f.el.clientWidth + 1 : raw >= 1 ? -80 : pos.x - 36;
+      const mask = `linear-gradient(to right, transparent ${edge}px, #000 ${edge + 70}px)`;
       wave.style.setProperty("-webkit-mask-image", mask); wave.style.maskImage = mask;
       wave.style.setProperty("--wash-depth", String(.4 + .45 * raw));
     }
