@@ -139,24 +139,37 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 .rp-card { overflow: hidden; border: 1px solid var(--rule); border-radius: 16px; background: var(--surface); padding: 30px clamp(18px, 3vw, 28px); }
 .rp-card p { margin: 0; max-width: 34em; font-size: 16px; line-height: 1.6; }
 
-/* The post's side nav and reading progress (lib/blog/rail.ts). It sits in the gutter beside the 900px demos. */
-.rail { display: none; }
+/* The post's side nav and reading progress (lib/blog/rail.ts). On small screens an ensō button floats at the corner
+   and opens the links; with room in the gutter beside the 900px demos, the links stay open above it. */
 .read-bar { position: fixed; z-index: 19; left: 0; right: 0; top: calc(env(safe-area-inset-top, 0px) + 59px); height: 3px; pointer-events: none; }
 .read-bar i { display: block; height: 100%; background: var(--indigo); transform: scaleX(0); transform-origin: left; }
+.rail { position: fixed; z-index: 18; right: max(14px, env(safe-area-inset-right, 0px)); bottom: max(14px, env(safe-area-inset-bottom, 0px)); opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity .35s ease, transform .35s ease, visibility 0s .35s; }
+.rail.on { opacity: 1; visibility: visible; transform: none; transition: opacity .35s ease, transform .35s ease, visibility 0s; }
+.rail-ring { position: relative; display: grid; place-items: center; width: 58px; height: 58px; padding: 0; border: 1px solid var(--rule); border-radius: 50%; background: var(--surface); color: var(--ink); font: 500 11px/1 var(--font-mono); font-variant-numeric: tabular-nums; cursor: pointer; box-shadow: 0 8px 22px -10px rgb(0 0 0 / .5); transition: transform .2s ease; }
+.rail-ring:not(:disabled):active { transform: scale(.95); }
+.rail-ring canvas { inset: -3px; width: calc(100% + 6px); height: calc(100% + 6px); pointer-events: none; }
+.rail-ring .ring-track { opacity: .22; }
+.rail-ring .ring-fill { -webkit-mask-image: linear-gradient(transparent, transparent); mask-image: linear-gradient(transparent, transparent); }
+.rail-ring.done { color: var(--indigo); }
+.rail-panel { position: absolute; right: 0; bottom: 68px; display: grid; grid-template-columns: 11px minmax(0, 1fr); column-gap: 12px; width: min(290px, calc(100vw - 28px)); max-height: calc(100dvh - 170px); overflow-y: auto; padding: 16px 18px; border: 1px solid var(--rule); border-radius: 20px; background: var(--surface); box-shadow: 0 14px 34px -14px rgb(0 0 0 / .5);
+  visibility: hidden; clip-path: circle(0 at calc(100% - 29px) calc(100% + 39px)); transition: clip-path .28s cubic-bezier(.4, 0, .6, 1), visibility 0s .28s; }
+.rail.open .rail-panel { visibility: visible; clip-path: circle(150% at calc(100% - 29px) calc(100% + 39px)); transition: clip-path .42s cubic-bezier(.2, .7, .3, 1), visibility 0s; }
+.rail-track { position: relative; width: 2px; margin-left: 4.5px; background: var(--rule); border-radius: 2px; }
+.rail-track i { position: absolute; left: 0; top: 0; width: 100%; height: 0; background: var(--indigo); border-radius: 2px; }
+.rail ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; font: 400 13.5px/1.4 var(--font-mono); }
+.rail li { position: relative; }
+.rail li::before { content: ""; position: absolute; left: -23px; top: 11px; width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--rule); background: var(--surface); transition: background .25s, border-color .25s; }
+.rail li.reached::before { background: var(--indigo); border-color: var(--indigo); }
+.rail a { display: block; padding: 7px 0; color: var(--muted); text-decoration: none; transition: color .2s; }
+.rail a:hover { color: var(--indigo); }
+.rail a[aria-current] { color: var(--ink); font-weight: 500; }
 @media (min-width: 1240px) and (min-height: 620px) {
   .read-bar { display: none; }
-  .rail { display: grid; grid-template-columns: 11px minmax(0, 1fr); column-gap: 12px; position: fixed; z-index: 10; top: 96px; left: max(14px, calc((100vw - 900px) / 2 - 234px)); width: clamp(146px, calc((100vw - 900px) / 2 - 28px), 206px);
-    opacity: 0; visibility: hidden; transform: translateX(-6px); transition: opacity .35s ease, transform .35s ease, visibility 0s .35s; }
-  .rail.on { opacity: 1; visibility: visible; transform: none; transition: opacity .35s ease, transform .35s ease, visibility 0s; }
-  .rail-track { position: relative; width: 2px; margin-left: 4.5px; background: var(--rule); border-radius: 2px; }
-  .rail-track i { position: absolute; left: 0; top: 0; width: 100%; height: 0; background: var(--indigo); border-radius: 2px; }
-  .rail ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font: 400 12px/1.4 var(--font-mono); }
-  .rail li { position: relative; }
-  .rail li::before { content: ""; position: absolute; left: -23px; top: 6px; width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--rule); background: var(--paper); transition: background .25s, border-color .25s; }
-  .rail li.reached::before { background: var(--indigo); border-color: var(--indigo); }
-  .rail a { display: block; padding: 2px 0; color: var(--muted); text-decoration: none; transition: color .2s; }
-  .rail a:hover { color: var(--indigo); }
-  .rail a[aria-current] { color: var(--ink); font-weight: 500; }
-  .rail-pct { grid-column: 2; margin-top: 10px; font: 400 11px/1 var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+  .rail { display: flex; flex-direction: column; gap: 14px; z-index: 10; top: 96px; bottom: auto; right: auto; left: max(14px, calc((100vw - 900px) / 2 - 234px)); width: clamp(146px, calc((100vw - 900px) / 2 - 28px), 206px); transform: translateX(-6px); }
+  .rail-ring { order: 2; border: 0; background: none; box-shadow: none; cursor: default; color: var(--muted); }
+  .rail-panel { position: static; width: auto; max-height: none; overflow: visible; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; visibility: inherit; clip-path: none; transition: none; }
+  .rail ol { gap: 4px; font-size: 12px; }
+  .rail li::before { top: 6px; background: var(--paper); }
+  .rail a { padding: 2px 0; }
 }
-@media (prefers-reduced-motion: reduce) { .rail, .rail.on, .rail li::before, .rail a { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .rail, .rail.on, .rail-ring, .rail-panel, .rail.open .rail-panel, .rail li::before, .rail a { transition: none; } }

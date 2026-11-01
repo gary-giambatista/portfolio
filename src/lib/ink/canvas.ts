@@ -46,6 +46,7 @@ const BUILDERS: Record<string, Builder> = {
   "stroke-enso": (_, w, h, seed) => { const [pt, len] = ensoPath(w, h, seed, .92); return brushAlong(pt, len, Math.min(w, h) * .085, seed, { dry: .68 }); },
   "stroke-swash": (_, w, h, seed) => brushAlong(t => [6 + t * (w - 12), h * .58 - Math.sin(t * Math.PI) * h * .12], w, h * .82, seed, { dry: .86 }),
   "quiet-enso": (_, w, h, seed) => { const [pt, len] = ensoPath(w, h, seed, .8); return brushAlong(pt, len, Math.min(w, h) * .032, seed, { dry: .68 }); },
+  "ring-enso": (_, w, h, seed) => { const [pt, len] = ensoPath(w, h, seed, .95); return brushAlong(pt, len, Math.min(w, h) * .085, seed, { dry: .74 }); },
   "stroke-path": stationPath,
   "open-enso": (_, w, h, seed) => buildOpenEnso(w, h, seed),
   "dot-swash": (_, w, h, seed) => buildDotSwash(w, h, seed),
