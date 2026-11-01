@@ -60,17 +60,19 @@ const index = {
   import { initSpine } from "~/lib/home/spine";
   import { initFlights } from "~/lib/home/flights";
   import { initTimeline } from "~/lib/home/timeline";
+  import { initNavIsland } from "~/lib/home/nav-island";
   import { initPalette } from "~/lib/home/palette";
   import { initKanjiPad } from "~/lib/kanji-pad";
   import { initBundleBuilder } from "~/lib/widgets/bundle-builder";
   import { initGiftWithPurchase } from "~/lib/widgets/gift-with-purchase";
 
-  initPopover({ top: 70 });
+  initPopover({ top: 8 });
   initThemeButton();
   initLangToggle();
   initInk();
   initSpine();
   initFlights();
+  initNavIsland();
   initKanjiPad(document.getElementById("kk"));
   initBundleBuilder(document.getElementById("rw-bb"));
   initGiftWithPurchase(document.getElementById("rw-gwp"));

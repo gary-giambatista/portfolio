@@ -15,7 +15,7 @@ body {
 a { color: inherit; }
 
 /* ---------- Nav ---------- */
-.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--paper); }
+.nav { position: relative; z-index: 20; background: var(--paper); }
 .nav .wrap { height: var(--nav-h); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .socials { display: flex; gap: 10px; }
 .socials a {
@@ -45,7 +45,7 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 .portrait img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border: 1.5px solid var(--ink); border-radius: 16px; background: var(--land); }
 
 /* ---------- Time ruler (sticky) ---------- */
-.ruler-bar { position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--nav-h)); z-index: 15; background: var(--paper); border-bottom: 1px solid var(--rule); transition: background .5s ease; }
+.ruler-bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 15; background: var(--paper); border-bottom: 1px solid var(--rule); transition: background .5s ease; }
 /* Once the hero has scrolled away (.stuck), the bar comes forward: its own surface, stronger marks and the ink line,
    and the nav above it takes on the current entry's pattern. */
 .ruler-bar.stuck { background: var(--surface); }
@@ -112,7 +112,7 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 .place .years { font: 500 11px/1 var(--font-mono); color: var(--indigo); margin-top: 4px; }
 
 .entries { margin-left: var(--content-x); display: grid; gap: 96px; }
-.entry { position: relative; scroll-margin-top: calc(var(--nav-h) + 110px); }
+.entry { position: relative; scroll-margin-top: 110px; }
 .entry .node { position: absolute; left: calc(var(--spine-x) - var(--content-x)); top: 6px; width: 18px; height: 18px; transform: translateX(-50%); border-radius: 50%; border: 2px solid var(--ink); background: var(--paper); }
 .entry.learning .node { width: 14px; height: 14px; border-style: dashed; }
 .ruler .dot.learning { top: 23px; background: transparent; border: 1.5px solid var(--muted); width: 10px; height: 10px; }
@@ -303,7 +303,7 @@ kbd { font: 500 10.5px/1 var(--font-mono); padding: 3px 5px; border-radius: 5px;
 
 /* ---------- Contact card (end of the timeline) ---------- */
 .contact { padding-block: 8px 72px; }
-.cta { margin: 0 auto; max-width: 900px; border: 1.5px solid var(--ink); border-radius: 26px; background: var(--surface); padding: clamp(24px, 5vw, 48px); position: relative; overflow: hidden; isolation: isolate; scroll-margin-top: calc(var(--nav-h) + 110px); }
+.cta { margin: 0 auto; max-width: 900px; border: 1.5px solid var(--ink); border-radius: 26px; background: var(--surface); padding: clamp(24px, 5vw, 48px); position: relative; overflow: hidden; isolation: isolate; scroll-margin-top: 110px; }
 .cta .ink { right: -60px; top: -40px; width: 300px; height: 300px; opacity: .55; z-index: -1; }
 .cta h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(28px, 3.6vw, 38px); line-height: 1.15; margin: 16px 0 10px; max-width: 16ch; text-wrap: balance; }
 .cta p { max-width: 36em; color: var(--muted); margin: 0 0 22px; text-wrap: pretty; }
@@ -379,13 +379,37 @@ kbd { font: 500 10.5px/1 var(--font-mono); padding: 3px 5px; border-radius: 5px;
 @media (max-width: 560px) { .entry-head::before { inset: -26px -18px -16px -14px; } } /* clear of the spine */
 .stuck .ruler .dot:not(.lit, :hover) { opacity: .75; }
 @media (prefers-reduced-motion: reduce) { .ruler-bar, .ruler .track, .ruler .track::after { transition: none; } }
-/* The nav's cloth: the current entry's pattern, faint, with a halo keeping the links clear. Tiles from PatternDyes. */
-.nav { --hk: 0; --halo: var(--paper); transition: --hk .5s ease; }
-.nav.stuck { --hk: 1; }
-.nav::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .5s ease; }
-.nav.stuck::before { opacity: var(--nav-cloth, .2); }
-.nav > .wrap { position: relative; z-index: 1; }
-.nav .links a:hover { text-shadow: none; } /* a hovered link has its own chip */
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .nav { --nav-cloth: .32; } }
-:root[data-theme="dark"] .nav { --nav-cloth: .32; }
-@media (prefers-reduced-motion: reduce) { .nav, .nav::before { transition: none; } }
+/* ---------- The nav's island ----------
+   At the top of the page the nav is an ordinary header (.seal hidden, .nav-items laid out as if it weren't there).
+   Once it scrolls off, the same elements float as a seal at the left, giving the timeline back its height. */
+.seal { display: none; }
+.nav-items { display: contents; }
+.nav.island { view-transition-name: none; }
+.nav.island > .wrap { display: block; position: fixed; left: max(14px, env(safe-area-inset-left, 0px)); top: 50%; width: 46px; height: 46px; max-width: none; margin: -23px 0 0; padding: 0; animation: island-in .4s cubic-bezier(.3, 1.3, .5, 1); }
+@keyframes island-in { from { opacity: 0; transform: scale(.6); } }
+.nav.island .seal { display: block; position: relative; z-index: 1; width: 46px; height: 46px; padding: 0; border: 1.5px solid var(--ink); border-radius: 50%; background: var(--surface); overflow: hidden; cursor: pointer; box-shadow: 0 6px 18px -8px rgb(0 0 0 / .5); transition: transform .25s ease; }
+.nav.island .seal:hover, .nav.island.open .seal { transform: scale(1.06); }
+.seal-dye { position: absolute; inset: 0; opacity: 0; transition: opacity .9s ease; }
+.seal-dye.on { opacity: 1; }
+.seal-mark { position: absolute; left: 50%; top: 50%; width: 24px; height: 24px; margin: -12px; border-radius: 50%; background: var(--surface); display: grid; align-content: center; justify-items: center; gap: 2.5px; }
+.seal-mark b { display: block; width: 11px; height: 1.5px; border-radius: 2px; background: var(--ink); }
+/* The panel opens from the seal in an expanding circle, the same gesture as the theme change. */
+.nav.island .nav-items { display: grid; gap: 10px; position: absolute; left: -6px; top: 50%; translate: 0 -50%; width: max-content; padding: 12px 14px 12px 64px; border: 1px solid var(--rule); border-radius: 29px; background: var(--surface); box-shadow: 0 14px 34px -14px rgb(0 0 0 / .45); visibility: hidden; clip-path: circle(0 at 29px 50%); transition: clip-path .32s cubic-bezier(.4, 0, .6, 1), visibility 0s .32s; }
+.nav.island.open .nav-items { visibility: visible; clip-path: circle(150% at 29px 50%); transition: clip-path .5s cubic-bezier(.2, .7, .3, 1), visibility 0s; }
+.nav.island .socials { gap: 8px; }
+.nav.island .socials a { width: 38px; height: 38px; background: var(--paper); }
+.nav.island .socials svg { width: 18px; height: 18px; }
+.nav.island .socials a[aria-label="Resume (PDF)"] { display: grid; }
+.nav.island .links { flex-wrap: wrap; gap: 2px; font-size: 14px; }
+.nav.island .links a { padding: 7px 9px; }
+.nav.island .links .sep { display: none; }
+.nav.island .links a:first-child { margin-left: -9px; }
+.nav.island .cmdk-btn { margin-left: auto; }
+/* No gutter to float in on narrower screens: the seal waits in the corner, and the panel opens above it. */
+@media (max-width: 1239px) {
+  .nav.island > .wrap { top: auto; bottom: max(14px, env(safe-area-inset-bottom, 0px)); margin: 0; }
+  .nav.island .nav-items { top: auto; bottom: -6px; translate: none; clip-path: circle(0 at 29px calc(100% - 29px)); padding: 12px 14px 12px 14px; padding-bottom: 64px; }
+  .nav.island.open .nav-items { clip-path: circle(150% at 29px calc(100% - 29px)); }
+}
+@media (prefers-reduced-motion: reduce) { .nav.island > .wrap { animation: none; } .seal-dye, .nav.island .seal, .nav.island .nav-items, .nav.island.open .nav-items { transition: none; } }
+.nav.island .theme-btn { display: grid; } /* phones hide it in the header's tight row; the panel has room */
