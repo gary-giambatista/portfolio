@@ -50,7 +50,7 @@
 .compact-card .sg { --rest: linear-gradient(transparent, transparent); } /* the pattern only appears on hover */
 .compact-card.bloom { --halo: color-mix(in srgb, var(--paper) 95%, var(--wash)); }
 .compact-card.bloom .entry-head::before { opacity: 0; } /* its pattern fills the box instead of the header's wash */
-@media (max-width: 560px) { .compact-card { margin: -9px -11px; padding: 8px 10px; } .mon-card:not(.compact-card) .sg { --rest: linear-gradient(to left, rgb(0 0 0 / .85), transparent 70px); } }
+@media (max-width: 560px) { .compact-card { margin: -9px -11px; padding: 8px 10px; } .mon-card:not(.compact-card, .hero-cloth) .sg { --rest: linear-gradient(to left, rgb(0 0 0 / .85), transparent 70px); } }
 /* The hero's cloth: all the site's patterns as a flowing brocade. It rests at the right, clear of the name, and
    unfolds across the whole section on hover. The halo stays off until then, so the name's swash is untouched. */
 .hero-cloth { --hk: 0; --halo: var(--paper); --mon-base: .2; }
