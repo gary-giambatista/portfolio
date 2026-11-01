@@ -56,16 +56,17 @@ import "~/styles/ink-cards.css";
         <h2>Four habits I bring to every team.</h2>
       </div>
       <div class="principles">
-        <article class="pr ink-card"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">人<small>HITO · PEOPLE</small></div><h3>Start with the people</h3><p>Every project starts with one question: what purpose does this serve? Understanding the person behind the problem is how I avoid building the wrong thing well.</p></article>
-        <article class="pr ink-card"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">責任<small>SEKININ · OWNERSHIP</small></div><h3>Own the whole problem</h3><p>From a support ticket to a brand-new product, I treat the problem as mine until it's solved. Three years of triaging merchant issues taught me to follow a bug all the way to its root.</p></article>
-        <article class="pr ink-card"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">設計<small>SEKKEI · DESIGN</small></div><h3>Design the system</h3><p>As AI changed how software gets written, my work shifted toward architecture: shaping the data, the boundaries and the tests, then directing agents to build inside them.</p></article>
-        <article class="pr ink-card"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">丁寧<small>TEINEI · CARE</small></div><h3>Sweat the details</h3><p>Teaching kindergarten in a second language taught me patience and clarity. I bring the same care to interfaces: every state, every edge case, accessibility, and motion that helps instead of distracts.</p></article>
+        <article class="pr ink-card mon-card" data-mon="marketing"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">人<small>HITO · PEOPLE</small></div><h3>Start with the people</h3><p>Every project starts with one question: what purpose does this serve? Understanding the person behind the problem is how I avoid building the wrong thing well.</p></article>
+        <article class="pr ink-card mon-card" data-mon="work"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">責任<small>SEKININ · OWNERSHIP</small></div><h3>Own the whole problem</h3><p>From a support ticket to a brand-new product, I treat the problem as mine until it's solved. Three years of triaging merchant issues taught me to follow a bug all the way to its root.</p></article>
+        <article class="pr ink-card mon-card" data-mon="project"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">設計<small>SEKKEI · DESIGN</small></div><h3>Design the system</h3><p>As AI changed how software gets written, my work shifted toward architecture: shaping the data, the boundaries and the tests, then directing agents to build inside them.</p></article>
+        <article class="pr ink-card mon-card" data-mon="teaching"><canvas class="sg" aria-hidden="true"></canvas><div class="kj" lang="ja">丁寧<small>TEINEI · CARE</small></div><h3>Sweat the details</h3><p>Teaching kindergarten in a second language taught me patience and clarity. I bring the same care to interfaces: every state, every edge case, accessibility, and motion that helps instead of distracts.</p></article>
       </div>
     </div>
   </section>
 
   <section class="quote">
     <div class="wrap">
+      <canvas class="ink" data-ink="quiet-enso" data-seed="23" data-color="--wash" data-dur="1500" data-delay="100" data-start="visible" aria-hidden="true"></canvas>
       <blockquote>“What purpose does this serve?”</blockquote>
       <div class="src">The question I ask before writing any code</div>
     </div>
@@ -78,11 +79,11 @@ import "~/styles/ink-cards.css";
       <div class="path">
         <canvas class="ink" data-ink="stroke-path" data-seed="5" data-color="--brush" data-dur="1800" data-delay="150" data-start="visible" aria-hidden="true"></canvas>
         <ol class="stations">
-          <li class="st"><span class="dot" aria-hidden="true"></span><span class="yr">2016</span><h3>Marketing</h3><p>How products get sold, and who they're sold to. I still think about the funnel when I build a UI.</p></li>
-          <li class="st"><span class="dot" aria-hidden="true"></span><span class="yr">2019</span><h3>Teaching in Japan</h3><p>How to explain anything to anyone, in a second language, to an audience of 1 to 55-year-olds.</p></li>
-          <li class="st"><span class="dot" aria-hidden="true"></span><span class="yr">2022</span><h3>Teaching myself to code</h3><p>HTML to Next.js on my own, and the first version of this site.</p></li>
-          <li class="st"><span class="dot" aria-hidden="true"></span><span class="yr">2023</span><h3>Rebuy Engine</h3><p>Four roles in three years, from answering tickets to leading a new product.</p></li>
-          <li class="st now"><span class="dot" aria-hidden="true"></span><span class="yr">Now</span><h3>Kanji Kaku</h3><p>Everything at once: product, design, architecture and teaching, in one app.</p></li>
+          <li class="st" data-mon="marketing"><span class="dot" aria-hidden="true"></span><span class="yr">2016</span><h3>Marketing</h3><p>How products get sold, and who they're sold to. I still think about the funnel when I build a UI.</p></li>
+          <li class="st" data-mon="teaching"><span class="dot" aria-hidden="true"></span><span class="yr">2019</span><h3>Teaching in Japan</h3><p>How to explain anything to anyone, in a second language, to an audience of 1 to 55-year-olds.</p></li>
+          <li class="st" data-mon="learning"><span class="dot" aria-hidden="true"></span><span class="yr">2022</span><h3>Teaching myself to code</h3><p>HTML to Next.js on my own, and the first version of this site.</p></li>
+          <li class="st" data-mon="work"><span class="dot" aria-hidden="true"></span><span class="yr">2023</span><h3>Rebuy Engine</h3><p>Four roles in three years, from answering tickets to leading a new product.</p></li>
+          <li class="st now" data-mon="project"><span class="dot" aria-hidden="true"></span><span class="yr">Now</span><h3>Kanji Kaku</h3><p>Everything at once: product, design, architecture and teaching, in one app.</p></li>
         </ol>
       </div>
     </div>
@@ -141,13 +142,19 @@ import "~/styles/ink-cards.css";
   import { initCopyEmail } from "~/lib/copy-email";
   import { initSeaDivider } from "~/lib/about-wave";
   import { initInkCards } from "~/lib/ink-cards";
-  import { pathBrocadePainter } from "~/lib/mon-cards";
+  import { monPainter, pathBrocadePainter } from "~/lib/mon-cards";
 
   initPopover({ top: 66 });
   initThemeButton();
   initInk();
   initCopyEmail(document.getElementById("copyEmail"), document.getElementById("copied"));
+
+  // Each chapter's dot takes its pattern as the brush line reaches it (see .stations in about.css).
+  const stations = document.querySelector(".stations")!;
+  new IntersectionObserver((es, io) => { if (es[0].isIntersecting) { stations.classList.add("go"); io.disconnect(); } }, { threshold: .25 }).observe(stations);
+
   initSeaDivider(document.getElementById("seaDivider"));
-  initInkCards(document.querySelectorAll(".ink-card:not(.hero-cloth)"));
+  initInkCards(document.querySelectorAll(".ink-card:not(.mon-card)"));
+  initInkCards(document.querySelectorAll(".mon-card:not(.hero-cloth)"), monPainter);
   initInkCards(document.querySelectorAll(".hero-cloth"), pathBrocadePainter);
 </script>
