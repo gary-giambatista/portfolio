@@ -38,7 +38,7 @@
 /* a hovered nav link has its own chip, so it drops the halo */
 .ink-card.nav a:hover { text-shadow: none; }
 /* Pattern cards (each timeline entry's info box, and the compact entries): the same hover, dialed down for short
-   boxes and drawn in the entry's own pattern. A little of it rests at the right-hand end. */
+   boxes and drawn in the entry's own pattern. On info boxes, a little of it rests at the right-hand end. */
 .mon-card { --mon-base: .16; position: relative; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mon-card { --mon-base: .26; } }
 :root[data-theme="dark"] .mon-card { --mon-base: .26; }
@@ -46,7 +46,7 @@
 .mon-card .sg { --rest: linear-gradient(to left, rgb(0 0 0 / .85), transparent 170px); --fill: radial-gradient(circle at var(--mx) var(--my), #000 calc(var(--bloom) - 40px), transparent var(--bloom)); }
 /* Compact entries have no box of their own: on hover they gain one, without moving their text. */
 .compact-card { --halo: var(--paper); margin: -13px -17px; padding: 12px 16px; border: 1px solid transparent; border-radius: 14px; }
-.compact-card .sg { --rest: radial-gradient(ellipse 120px 62% at calc(100% - 110px) 50%, #000 20%, transparent); }
+.compact-card .sg { --rest: linear-gradient(transparent, transparent); } /* the pattern only appears on hover */
 .compact-card.bloom { --halo: color-mix(in srgb, var(--paper) 95%, var(--wash)); }
 .compact-card.bloom .entry-head::before { opacity: 0; } /* its pattern fills the box instead of the header's wash */
-@media (max-width: 560px) { .compact-card { margin: -9px -11px; padding: 8px 10px; } .mon-card .sg { --rest: linear-gradient(to left, rgb(0 0 0 / .85), transparent 70px); } .compact-card .sg { --rest: linear-gradient(transparent, transparent); } }
+@media (max-width: 560px) { .compact-card { margin: -9px -11px; padding: 8px 10px; } .mon-card .sg { --rest: linear-gradient(to left, rgb(0 0 0 / .85), transparent 70px); } }
