@@ -163,13 +163,25 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 .rail a { display: block; padding: 7px 0; color: var(--muted); text-decoration: none; transition: color .2s; }
 .rail a:hover { color: var(--indigo); }
 .rail a[aria-current] { color: var(--ink); font-weight: 500; }
+/* Why it looks tappable: a small menu badge that's always there (it becomes a close mark), and on first appearance a
+   label slides out of the ring and the ring gives a small nudge. */
+.ring-badge { position: absolute; top: -4px; left: -4px; display: grid; place-items: center; width: 22px; height: 22px; border: 1px solid var(--rule); border-radius: 50%; background: var(--surface); color: var(--indigo); box-shadow: 0 2px 6px -2px rgb(0 0 0 / .4); }
+.ring-badge svg { width: 12px; height: 12px; }
+.ring-badge path { transition: opacity .2s ease; }
+.i-close, .rail.open .i-list { opacity: 0; }
+.rail.open .i-close { opacity: 1; }
+.ring-hint { position: absolute; right: calc(100% + 10px); top: 50%; translate: 0 -50%; padding: 9px 12px; border: 1px solid var(--rule); border-radius: 99px; background: var(--surface); color: var(--ink); font: 500 12.5px/1 var(--font-mono); white-space: nowrap; box-shadow: 0 8px 22px -10px rgb(0 0 0 / .5); opacity: 0; transform: translateX(10px) scale(.92); transform-origin: right center; pointer-events: none; transition: opacity .3s ease, transform .3s ease; }
+.rail-ring.hint .ring-hint { opacity: 1; transform: none; transition: opacity .35s ease .45s, transform .45s cubic-bezier(.3, 1.3, .5, 1) .45s; }
+.rail-ring.hint { animation: ring-nudge .7s ease .45s; }
+@keyframes ring-nudge { 35% { scale: 1.1; } 70% { scale: .97; } }
 @media (min-width: 1240px) and (min-height: 620px) {
   .read-bar { display: none; }
   .rail { display: flex; flex-direction: column; gap: 14px; z-index: 10; top: 96px; bottom: auto; right: auto; left: max(14px, calc((100vw - 900px) / 2 - 234px)); width: clamp(146px, calc((100vw - 900px) / 2 - 28px), 206px); transform: translateX(-6px); }
+  .ring-hint, .ring-badge { display: none; }
   .rail-ring { order: 2; border: 0; background: none; box-shadow: none; cursor: default; color: var(--muted); }
   .rail-panel { position: static; width: auto; max-height: none; overflow: visible; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; visibility: inherit; clip-path: none; transition: none; }
   .rail ol { gap: 4px; font-size: 12px; }
   .rail li::before { top: 6px; background: var(--paper); }
   .rail a { padding: 2px 0; }
 }
-@media (prefers-reduced-motion: reduce) { .rail, .rail.on, .rail-ring, .rail-panel, .rail.open .rail-panel, .rail li::before, .rail a { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .rail-ring.hint { animation: none; } .rail, .rail.on, .rail-ring, .ring-hint, .rail-ring.hint .ring-hint, .ring-badge path, .rail-panel, .rail.open .rail-panel, .rail li::before, .rail a { transition: none; } }

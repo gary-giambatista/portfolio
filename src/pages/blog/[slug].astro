@@ -24,6 +24,8 @@ const { title, description, published, readingTime, toc } = post.data;
       <canvas class="ink ring-track" data-ink="ring-enso" data-seed="17" data-color="--muted" aria-hidden="true"></canvas>
       <canvas class="ink ring-fill" id="railInk" data-ink="ring-enso" data-seed="17" data-color="--indigo" aria-hidden="true"></canvas>
       <span class="sr">Jump to a section</span><span id="railPct" aria-hidden="true">0%</span>
+      <span class="ring-hint" aria-hidden="true">Jump to a section</span>
+      <span class="ring-badge" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path class="i-list" d="M2 3h8M2 6h8M2 9h8" /><path class="i-close" d="M3 3l6 6M9 3l-6 6" /></svg></span>
     </button>
     <div class="rail-panel" id="railPanel">
       <div class="rail-track" aria-hidden="true"><i id="railFill"></i></div>

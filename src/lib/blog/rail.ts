@@ -55,11 +55,24 @@ export function initRail() {
   new IntersectionObserver(([e]) => {
     const on = !e.isIntersecting && e.boundingClientRect.top < 0;
     rail.classList.toggle("on", on);
+    if (on) showHint();
     if (!on) setOpen(false);
   }).observe(document.querySelector(".toc")!);
 
   // The ensō as a button: only where the links are tucked away. Beside the page it's just the progress ring.
-  const setOpen = (open: boolean) => { rail.classList.toggle("open", open); ring.setAttribute("aria-expanded", String(open)); };
+  const setOpen = (open: boolean) => {
+    rail.classList.toggle("open", open); ring.setAttribute("aria-expanded", String(open));
+    if (open) ring.classList.remove("hint");
+  };
+  // A number in a circle doesn't look tappable, so the first time it appears in a visit, it says what it does.
+  let hinted = false;
+  const showHint = () => {
+    if (hinted || wide.matches) return;
+    hinted = true;
+    try { if (sessionStorage.getItem("railHint")) return; sessionStorage.setItem("railHint", "1"); } catch { /* private mode: hint anyway */ }
+    ring.classList.add("hint");
+    setTimeout(() => ring.classList.remove("hint"), 3600);
+  };
   const wide = matchMedia("(min-width: 1240px) and (min-height: 620px)");
   const setMode = () => {
     ring.disabled = wide.matches;
