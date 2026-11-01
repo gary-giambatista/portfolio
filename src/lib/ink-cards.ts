@@ -136,4 +136,5 @@ export function initInkCards(els: NodeListOf<HTMLElement>, painter: Painter = se
   });
   document.addEventListener("pointerdown", e => { if (tapped && !tapped.el.contains(e.target as Node)) { leave(tapped); tapped = null; } });
   onThemeChange(() => cards.forEach(k => k.key && paint(k)));
+  return () => cards.forEach(paint);
 }

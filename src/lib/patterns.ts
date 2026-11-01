@@ -4,6 +4,11 @@
  * indigo-dyed cloth: a dyed ground with pale resist lines.
  */
 export type Dye = { ground: string; mid: string; line: string };
+/** From tokens.css: light ground is --indigo with --paper resist lines; dark ground is --indigo-soft with --indigo lines. */
+export const DYES: Record<"light" | "dark", Dye> = {
+  light: { ground: "#2A4A8C", mid: "#6F86BF", line: "#F3F5F4" },
+  dark: { ground: "#1B2740", mid: "#3A4D74", line: "#94AEEA" },
+};
 
 const f = (n: number) => +n.toFixed(1);
 const SQ3 = Math.sqrt(3);

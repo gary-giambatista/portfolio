@@ -17,7 +17,21 @@ const { title, description, published, readingTime, toc } = post.data;
 ---
 <Base title={`${title} · Gary Giambatista`} description={description}>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-plane" viewBox="-26 -22 52 44"><path d="M1-3.2-7.5-20H-3L10.5-3.2ZM1 3.2-7.5 20H-3L10.5 3.2ZM-15.5-3.2-20.5-10.5H-17.5L-11.5-3.2ZM-15.5 3.2-20.5 10.5H-17.5L-11.5 3.2ZM-4.6-12.6h5.4v2.8h-5.4ZM-4.6 9.8h5.4v2.8h-5.4Z"/><path d="M-22 0C-22-2.6-18.5-3.4-12-3.4H13C19.5-3.4 24-1.8 25.5 0 24 1.8 19.5 3.4 13 3.4H-12C-18.5 3.4-22 2.6-22 0Z"/></symbol></svg>
-  <SubNav current="blog" />
+  <SubNav current="blog" ink />
+  <div class="read-bar" aria-hidden="true"><i id="readBar"></i></div>
+  <nav class="rail" id="rail" aria-label="On this page">
+    <button class="rail-ring" id="railRing" type="button" aria-expanded="false" aria-controls="railPanel">
+      <canvas class="ink ring-track" data-ink="ring-enso" data-seed="17" data-color="--muted" aria-hidden="true"></canvas>
+      <canvas class="ink ring-fill" id="railInk" data-ink="ring-enso" data-seed="17" data-color="--indigo" aria-hidden="true"></canvas>
+      <span class="sr">Jump to a section</span><span id="railPct" aria-hidden="true">0%</span>
+      <span class="ring-hint" aria-hidden="true">Jump to a section</span>
+      <span class="ring-badge" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path class="i-list" d="M2 3h8M2 6h8M2 9h8" /><path class="i-close" d="M3 3l6 6M9 3l-6 6" /></svg></span>
+    </button>
+    <div class="rail-panel" id="railPanel">
+      <div class="rail-track" aria-hidden="true"><i id="railFill"></i></div>
+      <ol>{toc.map(t => <li><a href={`#${t.id}`}>{t.label}</a></li>)}</ol>
+    </div>
+  </nav>
   <main class="wrap">
     <article>
       <div class="col">
@@ -30,7 +44,7 @@ const { title, description, published, readingTime, toc } = post.data;
         <Content />
       </div>
       <div class="col">
-        <div class="end-note"><span>Written by Gary Giambatista</span><a href={ROUTES.home}>← Back to the timeline</a></div>
+        <div class="end-note"><span>Written by Gary Giambatista and Claude</span><a href={ROUTES.home}>← Back to the timeline</a></div>
       </div>
     </article>
   </main>
@@ -42,9 +56,11 @@ const { title, description, published, readingTime, toc } = post.data;
   import { initInk } from "~/lib/ink/canvas";
   import { initRanges } from "~/lib/blog/ranges";
   import { initInkCards } from "~/lib/ink-cards";
+  import { initRail } from "~/lib/blog/rail";
 
   initThemeButton();
   initInk();
   initRanges();
-  initInkCards(document.querySelectorAll(".ink-card"));
+  initRail();
+  initInkCards(document.querySelectorAll(".ink-card:not(.mon-card)"));
 </script>
