@@ -133,8 +133,10 @@ A portfolio full of effects is easy to make slow. I set a budget before adding a
   <div class="stat"><b>10 KB</b><span>the one library: Hanzi Writer, for the kanji pad</span></div>
   <div class="stat"><b>6</b><span>traditional patterns, generated from geometry and dyed for both themes</span></div>
   <div class="stat"><b>9 KB</b><span>stroke data for 15 kanji, compressed and served from this site, loaded with the pad</span></div>
-  <div class="stat"><b>2</b><span>themes, both designed, both following your system setting</span></div>
+  <div class="stat"><b>100</b><span>Lighthouse score in every category, on every page, on phones and desktops</span></div>
 </div>
+
+I also kept score. I ran Lighthouse and axe throughout the build, on every page, in both themes, on phone and desktop sizes, and treated a lost point as a bug to fix. That caught real problems: the ink once cost a phone most of a second of blocked time, which is why it now paints in small slices when the browser is idle. Scores can wobble by a point between runs, but the site holds 100 across the board.
 
 <ul class="plain">
   <li><b>Motion is optional.</b> With "reduce motion" turned on, the intro sweep, the paint-in, the pulsing pins, the flying items and the fabric ripple all turn off. The scroll-linked ink still works, because it only moves when you do.</li>

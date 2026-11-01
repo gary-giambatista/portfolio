@@ -138,3 +138,25 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 .rp-stage { padding: clamp(14px, 3vw, 28px); }
 .rp-card { overflow: hidden; border: 1px solid var(--rule); border-radius: 16px; background: var(--surface); padding: 30px clamp(18px, 3vw, 28px); }
 .rp-card p { margin: 0; max-width: 34em; font-size: 16px; line-height: 1.6; }
+
+/* The post's side nav and reading progress (lib/blog/rail.ts). It sits in the gutter beside the 900px demos. */
+.rail { display: none; }
+.read-bar { position: fixed; z-index: 19; left: 0; right: 0; top: calc(env(safe-area-inset-top, 0px) + 59px); height: 3px; pointer-events: none; }
+.read-bar i { display: block; height: 100%; background: var(--indigo); transform: scaleX(0); transform-origin: left; }
+@media (min-width: 1240px) and (min-height: 620px) {
+  .read-bar { display: none; }
+  .rail { display: grid; grid-template-columns: 11px minmax(0, 1fr); column-gap: 12px; position: fixed; z-index: 10; top: 96px; left: max(14px, calc((100vw - 900px) / 2 - 234px)); width: clamp(146px, calc((100vw - 900px) / 2 - 28px), 206px);
+    opacity: 0; visibility: hidden; transform: translateX(-6px); transition: opacity .35s ease, transform .35s ease, visibility 0s .35s; }
+  .rail.on { opacity: 1; visibility: visible; transform: none; transition: opacity .35s ease, transform .35s ease, visibility 0s; }
+  .rail-track { position: relative; width: 2px; margin-left: 4.5px; background: var(--rule); border-radius: 2px; }
+  .rail-track i { position: absolute; left: 0; top: 0; width: 100%; height: 0; background: var(--indigo); border-radius: 2px; }
+  .rail ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font: 400 12px/1.4 var(--font-mono); }
+  .rail li { position: relative; }
+  .rail li::before { content: ""; position: absolute; left: -23px; top: 6px; width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--rule); background: var(--paper); transition: background .25s, border-color .25s; }
+  .rail li.reached::before { background: var(--indigo); border-color: var(--indigo); }
+  .rail a { display: block; padding: 2px 0; color: var(--muted); text-decoration: none; transition: color .2s; }
+  .rail a:hover { color: var(--indigo); }
+  .rail a[aria-current] { color: var(--ink); font-weight: 500; }
+  .rail-pct { grid-column: 2; margin-top: 10px; font: 400 11px/1 var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+}
+@media (prefers-reduced-motion: reduce) { .rail, .rail.on, .rail li::before, .rail a { transition: none; } }
