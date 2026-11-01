@@ -17,12 +17,17 @@ const readout = document.getElementById("readout")!;
 const dots = [...ruler.querySelectorAll<HTMLButtonElement>(".dot")];
 const dotById = Object.fromEntries(dots.map(d => [d.dataset.id!, d]));
 
+const bar = ruler.closest<HTMLElement>(".ruler-bar")!;
+/** Moves the cursor, and the ink behind it that runs from today back to this point. */
+const moveCursor = (y: number) => { cursor.style.left = pct(y) + "%"; ruler.style.setProperty("--at", pct(y) + "%"); };
+
 const titleOf = (e: EntryIndex) => L(e.title, e.titleJa);
 const yearLabel = (e: EntryIndex) => e.end === null ? L("Now", "現在") : L(e.startEn, e.startJa);
 const say = (e: EntryIndex, label: string) => { readout.innerHTML = `<b>${esc(label)}</b> · ${esc(titleOf(e))} · ${esc(L(e.era, e.eraJa))}`; };
 
 function setCurrent(e: EntryIndex) {
-  cursor.style.left = pct(e.end === null ? NOW : e.start) + "%";
+  moveCursor(e.end === null ? NOW : e.start);
+  bar.dataset.mon = entryEl(e.id).dataset.mon;
   dots.forEach(d => d.classList.toggle("current", d.dataset.id === e.id));
   say(e, yearLabel(e));
 }
@@ -57,7 +62,7 @@ export function playIntro() {
   const frame = (t: number) => {
     if (!playing) return;
     const p = Math.min(1, (t - t0) / dur), y = MIN + (NOW - MIN) * ease(p);
-    cursor.style.left = pct(y) + "%";
+    moveCursor(y);
     let shown: EntryIndex | null = null;
     chrono.forEach(e => { if (e.start <= y) { dotById[e.id].classList.add("lit"); shown = e; } });
     if (shown && shown !== lastShown) { lastShown = shown; say(shown, L((shown as EntryIndex).startEn, (shown as EntryIndex).startJa)); }
