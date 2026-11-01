@@ -5,7 +5,9 @@
  */
 import type { Card, Painter } from "./ink-cards";
 
-const COL = 2, AMP = 2.4, SIGMA = 120, WAVE = 92, SPEED = 2, SCALE = 2;
+const COL = 2, SIGMA = 120, SPEED = 2, SCALE = 2, PAD = 12;
+/** The ripple's shape. Mutable so the blog's demo can put it on sliders. */
+export const RIPPLE = { amp: 2.4, wave: 92 };
 const sheets = new WeakMap<Card, HTMLCanvasElement>();
 const tiles = new Map<string, Promise<HTMLImageElement>>();
 
@@ -27,7 +29,7 @@ function prepare(k: Card, repaint: () => void, names: string[], compose: (sc: Ca
   Promise.all(urls.map(u => tile(u.slice(5, -2)))).then(imgs => {
     if (k.key !== key) return;
     const sheet = document.createElement("canvas"), sc = sheet.getContext("2d")!;
-    sheet.width = k.c.width; sheet.height = k.c.height + Math.ceil(AMP * 2 * dpr);
+    sheet.width = k.c.width; sheet.height = k.c.height + Math.ceil(PAD * 2 * dpr);
     compose(sc, imgs.map(img => {
       const piece = document.createElement("canvas"), s = SCALE * dpr;
       piece.width = Math.round(img.naturalWidth * s); piece.height = Math.round(img.naturalHeight * s);
@@ -52,11 +54,11 @@ function render(k: Card, time: number) {
   // Far from the cursor the sheet is still, so it's drawn in two blocks; only the columns nearby move.
   if (lo > 0) ctx.drawImage(sheet, 0, off, lo, k.c.height, 0, 0, lo, k.c.height);
   if (hi < cw) ctx.drawImage(sheet, hi, off, cw - hi, k.c.height, hi, 0, cw - hi, k.c.height);
-  const step = Math.round(COL * dpr), kw = 2 * Math.PI / WAVE, wt = time / 1000 * SPEED * Math.PI;
+  const step = Math.round(COL * dpr), kw = 2 * Math.PI / RIPPLE.wave, wt = time / 1000 * SPEED * Math.PI;
   for (let x = lo; x < hi; x += step) {
     const d = Math.abs((x + step / 2) / dpr - k.px), f = Math.exp(-((d / SIGMA) ** 2)) * k.amp, wv = Math.sin(d * kw - wt);
     ctx.globalAlpha = base + base * .9 * f * (.5 + .5 * wv);
-    ctx.drawImage(sheet, x, off + wv * f * AMP * dpr, Math.min(step, cw - x), k.c.height, x, 0, Math.min(step, cw - x), k.c.height);
+    ctx.drawImage(sheet, x, off + wv * f * RIPPLE.amp * dpr, Math.min(step, cw - x), k.c.height, x, 0, Math.min(step, cw - x), k.c.height);
   }
   ctx.globalAlpha = 1;
 }

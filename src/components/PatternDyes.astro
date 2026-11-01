@@ -4,11 +4,9 @@
  * entry kind (MON in lib/patterns.ts). Emitted as CSS variables plus one rule per pattern for the badge cap, the
  * active header's wash and the ruler's readout (both drawn at twice the tile size), so the page ships no pattern code.
  */
-import { MON, tileSize, url, type Dye } from "~/lib/patterns";
+import { DYES, MON, tileSize, url } from "~/lib/patterns";
 
-// From tokens.css: light ground is --indigo with --paper resist lines; dark ground is --indigo-soft with --indigo lines.
-const light: Dye = { ground: "#2A4A8C", mid: "#6F86BF", line: "#F3F5F4" };
-const dark: Dye = { ground: "#1B2740", mid: "#3A4D74", line: "#94AEEA" };
+const { light, dark } = DYES;
 
 let lightVars = "", darkVars = "", useDark = "", rules = "";
 for (const [name, draw] of Object.entries(MON)) {

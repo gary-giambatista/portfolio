@@ -1,0 +1,7 @@
+<pre tabindex="0"><code><span class="tk-k">for</span> (<span class="tk-k">let</span> x = lo; x &lt; hi; x += step) {            <span class="tk-c">// only the columns near the cursor</span>
+  <span class="tk-k">const</span> d = Math.abs(x - pointer);
+  <span class="tk-k">const</span> f = Math.exp(-((d / reach) ** 2)) * amp; <span class="tk-c">// strongest under the cursor</span>
+  <span class="tk-k">const</span> wave = Math.sin(d * k - time);
+  ctx.globalAlpha = base + base * .9 * f * (.5 + .5 * wave); <span class="tk-c">// the dye deepens as it lifts</span>
+  ctx.drawImage(sheet, x, wave * f * strength, step, h, x, 0, step, h);
+}</code></pre>

@@ -126,3 +126,15 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 /* MDX renders the article flat; each block takes the reading column, demos break out wider. */
 .prose > * { max-width: 680px; margin-left: auto; margin-right: auto; }
 .prose > .demo { max-width: 900px; }
+
+/* the sea, pattern and ripple demos */
+.sea-stage { height: 250px; overflow: hidden; }
+.sea-stage .wave, .sea-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+#seaWash { opacity: var(--wash-depth, .85); }
+.mon-stage { height: 240px; overflow: hidden; }
+.mon-stage i { position: absolute; outline: 2px dashed var(--paper); outline-offset: -1px; box-shadow: 0 0 0 999px color-mix(in srgb, var(--paper) 50%, transparent); }
+.mon-seg { flex: 1 1 100%; flex-wrap: wrap; }
+.mon-seg button { flex: 1 1 auto; }
+.rp-stage { padding: clamp(14px, 3vw, 28px); }
+.rp-card { overflow: hidden; border: 1px solid var(--rule); border-radius: 16px; background: var(--surface); padding: 30px clamp(18px, 3vw, 28px); }
+.rp-card p { margin: 0; max-width: 34em; font-size: 16px; line-height: 1.6; }

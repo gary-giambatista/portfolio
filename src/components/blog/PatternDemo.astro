@@ -1,0 +1,53 @@
+---
+/** Demo 7: the site's pattern generators, run live. */
+const PATTERNS = [
+  ["work", "Kikkō hanabishi", "Tortoiseshell, for longevity and steady growth. Worn by work."],
+  ["project", "Bishamon kikkō", "Three hexagons locked together, named for the guardian Bishamonten's armor. Worn by personal projects."],
+  ["learning", "Seigaiha", "Waves that roll on and on. Worn by learning."],
+  ["teaching", "Asanoha", "Hemp leaves. Hemp grows fast and strong, so it was sewn into children's clothes. Worn by teaching."],
+  ["marketing", "Ichimatsu", "A checkerboard made the talk of Edo by a kabuki actor. Worn by marketing."],
+  ["education", "Sakura", "Cherry blossoms, which open as the Japanese school year begins. Worn by university."],
+];
+---
+<figure class="demo" aria-labelledby="monCap">
+  <div class="demo-stage mon-stage" id="monStage" role="img" aria-label="A swatch of the selected Japanese pattern"><i id="monTile" hidden></i></div>
+  <div class="demo-bar">
+    <div class="seg mon-seg" role="group" aria-label="Pattern">{PATTERNS.map(([id, name, why], i) => <button type="button" data-mon-pick={id} data-why={why} aria-pressed={i === 0 ? "true" : "false"}>{name}</button>)}</div>
+    <label class="ctl"><span>Scale <output id="oMonS"></output></span><input type="range" id="sMonS" min="1" max="6" step=".5" value="3" /></label>
+    <button class="btn" type="button" id="bMonT" aria-pressed="false">Show one tile</button>
+    <span class="readout" id="oMon"></span>
+  </div>
+  <figcaption id="monCap"><span id="monWhy"></span></figcaption>
+</figure>
+
+<script>
+  import { DYES, MON, tileSize, url, type Mon } from "~/lib/patterns";
+  import { onThemeChange } from "~/lib/theme";
+
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const stage = $("monStage"), tile = $("monTile"), scale = $<HTMLInputElement>("sMonS"), bT = $("bMonT");
+  let pick: Mon = "work";
+
+  function show() {
+    const dark = getComputedStyle(document.documentElement).colorScheme === "dark";
+    const svg = MON[pick](dark ? DYES.dark : DYES.light), [w, h] = tileSize(svg), s = +scale.value;
+    stage.style.backgroundImage = url(svg);
+    stage.style.backgroundSize = `${w * s}px ${h * s}px`;
+    tile.style.width = w * s + "px"; tile.style.height = h * s + "px";
+    tile.style.left = w * s * Math.round(stage.clientWidth / 2 / (w * s)) + "px";
+    tile.style.top = h * s * Math.round(stage.clientHeight / 2 / (h * s)) + "px";
+    tile.hidden = bT.getAttribute("aria-pressed") !== "true";
+    $("oMonS").textContent = s + "×";
+    $("oMon").textContent = `One tile: ${w} × ${h} px, ${(svg.length / 1024).toFixed(1)} KB of SVG`;
+    $("monWhy").textContent = document.querySelector<HTMLElement>(`[data-mon-pick="${pick}"]`)!.dataset.why!;
+  }
+  document.querySelectorAll<HTMLElement>("[data-mon-pick]").forEach(b => b.addEventListener("click", () => {
+    pick = b.dataset.monPick as Mon;
+    document.querySelectorAll("[data-mon-pick]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    show();
+  }));
+  bT.addEventListener("click", () => { bT.setAttribute("aria-pressed", String(bT.getAttribute("aria-pressed") !== "true")); show(); });
+  scale.addEventListener("input", show);
+  addEventListener("resize", show); onThemeChange(show);
+  show();
+</script>
