@@ -1,6 +1,6 @@
 /**
- * The timeline's pattern cards: the About cards' hover, in the entry's own pattern. The tile comes from the CSS
- * variables PatternDyes.astro emits, is drawn once into a sheet, and each frame shifts thin columns of that sheet
+ * The timeline's pattern cards and the hero's cloth: the About cards' hover, in the site's other patterns. The
+ * tiles come from the CSS variables PatternDyes.astro emits, are drawn once into a sheet, and each frame shifts thin columns of that sheet
  * near the cursor, so a wave travels along these short boxes and the dye deepens where it lifts.
  */
 import type { Card, Painter } from "../ink-cards";
@@ -15,46 +15,78 @@ function tile(src: string) {
   return t;
 }
 
-export const monPainter: Painter = {
-  layout(k, repaint) {
-    const W = k.el.clientWidth, H = k.el.clientHeight, dpr = Math.min(2, devicePixelRatio || 1);
-    const name = k.el.closest<HTMLElement>("[data-mon]")!.dataset.mon;
-    const url = getComputedStyle(document.documentElement).getPropertyValue(`--mon-${name}`).trim();
-    const key = [W, H, dpr, url.length, getComputedStyle(k.el).getPropertyValue("--mon-base"), url.slice(-60)].join();
-    if (!W || !url || k.key === key) return false;
-    k.key = key; k.W = W; k.H = H;
-    k.c.width = Math.round(W * dpr); k.c.height = Math.round(H * dpr);
-    const src = url.slice(5, -2);
-    tile(src).then(img => {
-      if (k.key !== key) return;
+/** Size the card's canvas, load its tiles, and let `compose` paint the sheet the wave will warp. */
+function prepare(k: Card, repaint: () => void, names: string[], compose: (sc: CanvasRenderingContext2D, fills: CanvasPattern[], w: number, h: number, dpr: number) => void) {
+  const W = k.el.clientWidth, H = k.el.clientHeight, dpr = Math.min(2, devicePixelRatio || 1);
+  const root = getComputedStyle(document.documentElement);
+  const urls = names.map(n => root.getPropertyValue(`--mon-${n}`).trim());
+  const key = [W, H, dpr, getComputedStyle(k.el).getPropertyValue("--mon-base"), ...urls.map(u => u.length + u.slice(-60))].join();
+  if (!W || !urls.every(Boolean) || k.key === key) return false;
+  k.key = key; k.W = W; k.H = H;
+  k.c.width = Math.round(W * dpr); k.c.height = Math.round(H * dpr);
+  Promise.all(urls.map(u => tile(u.slice(5, -2)))).then(imgs => {
+    if (k.key !== key) return;
+    const sheet = document.createElement("canvas"), sc = sheet.getContext("2d")!;
+    sheet.width = k.c.width; sheet.height = k.c.height + Math.ceil(AMP * 2 * dpr);
+    compose(sc, imgs.map(img => {
       const piece = document.createElement("canvas"), s = SCALE * dpr;
       piece.width = Math.round(img.naturalWidth * s); piece.height = Math.round(img.naturalHeight * s);
       piece.getContext("2d")!.drawImage(img, 0, 0, piece.width, piece.height);
-      const sheet = document.createElement("canvas"), sc = sheet.getContext("2d")!;
-      sheet.width = k.c.width; sheet.height = k.c.height + Math.ceil(AMP * 2 * dpr);
-      sc.fillStyle = sc.createPattern(piece, "repeat")!; sc.fillRect(0, 0, sheet.width, sheet.height);
-      sheets.set(k, sheet);
-      repaint();
-    }).catch(() => { /* no tile: the card stays plain */ });
-    return true;
-  },
-  render(k, time) {
-    const sheet = sheets.get(k);
-    if (!sheet) return;
-    const ctx = k.c.getContext("2d")!, cw = k.c.width, dpr = cw / k.W, off = (sheet.height - k.c.height) / 2;
-    const base = parseFloat(getComputedStyle(k.el).getPropertyValue("--mon-base")) || .22;
-    ctx.clearRect(0, 0, cw, k.c.height);
-    ctx.globalAlpha = base;
-    const reach = SIGMA * 2.4, lo = k.amp > .01 ? Math.max(0, Math.round((k.px - reach) / COL) * COL * dpr) : cw, hi = k.amp > .01 ? Math.min(cw, Math.round((k.px + reach) / COL) * COL * dpr) : cw;
-    // Far from the cursor the sheet is still, so it's drawn in two blocks; only the columns nearby move.
-    if (lo > 0) ctx.drawImage(sheet, 0, off, lo, k.c.height, 0, 0, lo, k.c.height);
-    if (hi < cw) ctx.drawImage(sheet, hi, off, cw - hi, k.c.height, hi, 0, cw - hi, k.c.height);
-    const step = Math.round(COL * dpr), kw = 2 * Math.PI / WAVE, wt = time / 1000 * SPEED * Math.PI;
-    for (let x = lo; x < hi; x += step) {
-      const d = Math.abs((x + step / 2) / dpr - k.px), f = Math.exp(-((d / SIGMA) ** 2)) * k.amp, wv = Math.sin(d * kw - wt);
-      ctx.globalAlpha = base + base * .9 * f * (.5 + .5 * wv);
-      ctx.drawImage(sheet, x, off + wv * f * AMP * dpr, Math.min(step, cw - x), k.c.height, x, 0, Math.min(step, cw - x), k.c.height);
+      return sc.createPattern(piece, "repeat")!;
+    }), sheet.width, sheet.height, dpr);
+    sheets.set(k, sheet);
+    repaint();
+    k.c.classList.add("ready");
+  }).catch(() => { /* no tile: the card stays plain */ });
+  return true;
+}
+
+function render(k: Card, time: number) {
+  const sheet = sheets.get(k);
+  if (!sheet) return;
+  const ctx = k.c.getContext("2d")!, cw = k.c.width, dpr = cw / k.W, off = (sheet.height - k.c.height) / 2;
+  const base = parseFloat(getComputedStyle(k.el).getPropertyValue("--mon-base")) || .22;
+  ctx.clearRect(0, 0, cw, k.c.height);
+  ctx.globalAlpha = base;
+  const reach = SIGMA * 2.4, lo = k.amp > .01 ? Math.max(0, Math.round((k.px - reach) / COL) * COL * dpr) : cw, hi = k.amp > .01 ? Math.min(cw, Math.round((k.px + reach) / COL) * COL * dpr) : cw;
+  // Far from the cursor the sheet is still, so it's drawn in two blocks; only the columns nearby move.
+  if (lo > 0) ctx.drawImage(sheet, 0, off, lo, k.c.height, 0, 0, lo, k.c.height);
+  if (hi < cw) ctx.drawImage(sheet, hi, off, cw - hi, k.c.height, hi, 0, cw - hi, k.c.height);
+  const step = Math.round(COL * dpr), kw = 2 * Math.PI / WAVE, wt = time / 1000 * SPEED * Math.PI;
+  for (let x = lo; x < hi; x += step) {
+    const d = Math.abs((x + step / 2) / dpr - k.px), f = Math.exp(-((d / SIGMA) ** 2)) * k.amp, wv = Math.sin(d * kw - wt);
+    ctx.globalAlpha = base + base * .9 * f * (.5 + .5 * wv);
+    ctx.drawImage(sheet, x, off + wv * f * AMP * dpr, Math.min(step, cw - x), k.c.height, x, 0, Math.min(step, cw - x), k.c.height);
+  }
+  ctx.globalAlpha = 1;
+}
+
+export const monPainter: Painter = {
+  layout: (k, repaint) => prepare(k, repaint, [k.el.closest<HTMLElement>("[data-mon]")!.dataset.mon!], (sc, [fill], w, h) => {
+    sc.fillStyle = fill; sc.fillRect(0, 0, w, h);
+  }),
+  render,
+};
+
+/** The hero's cloth: every pattern on the site, in flowing bands like a brocade, with a paper-colored seam between each. */
+const BANDS = ["learning", "education", "work", "marketing", "project", "teaching"];
+export const brocadePainter: Painter = {
+  layout: (k, repaint) => prepare(k, repaint, BANDS, (sc, fills, w, h, dpr) => {
+    const tilt = h * .7, band = (h + tilt) / BANDS.length, step = 6 * dpr;
+    const edge = (i: number, x: number) => i * band - tilt * (x / w) + h * .07 * Math.sin(x / w * 7 + i * 1.7) + h * .025 * Math.sin(x / w * 17 + i * 2.9);
+    for (let i = 0; i < BANDS.length; i++) {
+      const p = new Path2D();
+      for (let x = 0; x <= w + step; x += step) p.lineTo(x, edge(i, x));
+      for (let x = w + step; x >= 0; x -= step) p.lineTo(x, edge(i + 1, x));
+      p.closePath();
+      sc.fillStyle = fills[i]; sc.fill(p);
     }
-    ctx.globalAlpha = 1;
-  },
+    sc.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--paper").trim(); sc.lineWidth = 3 * dpr;
+    for (let i = 1; i < BANDS.length; i++) {
+      sc.beginPath();
+      for (let x = 0; x <= w + step; x += step) sc.lineTo(x, edge(i, x));
+      sc.stroke();
+    }
+  }),
+  render,
 };
