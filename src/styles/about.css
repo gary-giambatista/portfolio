@@ -62,7 +62,9 @@ p { margin: 14px 0; text-wrap: pretty; }
 .tools { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin-top: 8px; }
 .tools h3 { font: 500 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
 .chips { display: flex; flex-wrap: wrap; gap: 7px; }
-.chip { font: 400 13px/1 var(--font-mono); padding: 8px 11px; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); }
+.chip { font: 400 13px/1 var(--font-mono); padding: 8px 11px; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); display: inline-flex; align-items: center; gap: 7px; }
+.chip .ico { width: 13px; height: 13px; flex: none; color: var(--muted); transition: color .2s; }
+.chip:hover .ico { color: var(--ink); }
 .langs { margin-top: 22px; display: flex; gap: 10px; flex-wrap: wrap; font: 400 14px/1.5 var(--font-body); color: var(--muted); }
 .langs b { color: var(--ink); font-weight: 600; }
 
@@ -100,3 +102,5 @@ p { margin: 14px 0; text-wrap: pretty; }
 }
 
 .num.ink-card .sg { --rest: radial-gradient(circle at 100% 0, rgb(0 0 0 / .58), rgb(0 0 0 / .22) 48px, transparent 92px); }
+/* The intro runs wider than Home's, so the resting cloth stays further right, clear of it. */
+@media (min-width: 821px) { main .hero-cloth .sg { --rest: radial-gradient(ellipse 40% 130% at 100% 20%, #000 40%, transparent); } }

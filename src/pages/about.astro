@@ -2,16 +2,28 @@
 import { Image } from "astro:assets";
 import Base from "~/layouts/Base.astro";
 import SubNav from "~/components/SubNav.astro";
+import IconSprite from "~/components/IconSprite.astro";
+import PatternDyes from "~/components/PatternDyes.astro";
 import portrait from "~/assets/img/gary-harbor.webp";
 import { EMAIL, RESUME, SOCIAL } from "~/config/links";
 import "~/styles/subnav.css";
 import "~/styles/about.css";
+
+/** The toolbox: [name, icon]. Icons are logos from simple-icons, or c-* glyphs for things without one. */
+const TOOLBOX: { title: string; tools: [string, string][] }[] = [
+  { title: "Front end", tools: [["TypeScript", "typescript"], ["JavaScript", "javascript"], ["React", "react"], ["Next.js", "nextdotjs"], ["Vue.js", "vuedotjs"], ["React Native", "react"], ["CSS", "css"], ["Tailwind", "tailwindcss"], ["HTML", "html5"], ["UI/UX", "c-layout"]] },
+  { title: "Back end", tools: [["Node.js", "nodedotjs"], ["Express", "express"], ["PHP", "php"], ["Python", "python"], ["Liquid", "c-drop"], ["SQL", "c-db"], ["Convex", "convex"]] },
+  { title: "AI and workflow", tools: [["Claude Code", "claude"], ["Codex", "c-spark"], ["Cursor", "cursor"], ["AI agent workflows", "c-agents"], ["Git", "git"], ["Google Cloud", "googlecloud"], ["Shopify", "shopify"], ["E-commerce", "c-cart"]] },
+];
 import "~/styles/ink-cards.css";
 ---
 <Base title="About Gary Giambatista" description="I'm a software engineer in Hoboken, New Jersey, focused on the front end. I care about the people on the other side of the screen, and I love turning hard problems into things that feel simple.">
+<IconSprite slugs={TOOLBOX.flatMap(g => g.tools.map(t => t[1]))} />
+<PatternDyes />
 <SubNav current="about" ink />
 <main>
-  <section class="hero">
+  <section class="hero ink-card mon-card hero-cloth">
+    <canvas class="sg" aria-hidden="true"></canvas>
     <div class="wrap">
       <div>
         <div class="eyebrow">About</div>
@@ -96,9 +108,9 @@ import "~/styles/ink-cards.css";
       <div class="eyebrow">Toolbox</div>
       <h2>What I build with.</h2>
       <div class="tools">
-        <div><h3>Front end</h3><div class="chips"><span class="chip">TypeScript</span><span class="chip">JavaScript</span><span class="chip">React</span><span class="chip">Next.js</span><span class="chip">Vue.js</span><span class="chip">React Native</span><span class="chip">CSS</span><span class="chip">Tailwind</span><span class="chip">HTML</span><span class="chip">UI/UX</span></div></div>
-        <div><h3>Back end</h3><div class="chips"><span class="chip">Node.js</span><span class="chip">Express</span><span class="chip">PHP</span><span class="chip">Python</span><span class="chip">Liquid</span><span class="chip">SQL</span><span class="chip">Convex</span></div></div>
-        <div><h3>AI and workflow</h3><div class="chips"><span class="chip">Claude Code</span><span class="chip">Codex</span><span class="chip">Cursor</span><span class="chip">AI agent workflows</span><span class="chip">Git</span><span class="chip">Google Cloud</span><span class="chip">Shopify</span><span class="chip">E-commerce</span></div></div>
+        {TOOLBOX.map(({ title, tools }) => (
+          <div><h3>{title}</h3><div class="chips">{tools.map(([name, icon]) => <span class="chip"><svg class="ico" aria-hidden="true"><use href={`#i-${icon}`} /></svg>{name}</span>)}</div></div>
+        ))}
       </div>
       <div class="langs"><span><b>English</b> · native</span><span><b>日本語</b> · learned while living in Japan for three years</span></div>
     </div>
@@ -129,11 +141,13 @@ import "~/styles/ink-cards.css";
   import { initCopyEmail } from "~/lib/copy-email";
   import { initSeaDivider } from "~/lib/about-wave";
   import { initInkCards } from "~/lib/ink-cards";
+  import { pathBrocadePainter } from "~/lib/mon-cards";
 
   initPopover({ top: 66 });
   initThemeButton();
   initInk();
   initCopyEmail(document.getElementById("copyEmail"), document.getElementById("copied"));
   initSeaDivider(document.getElementById("seaDivider"));
-  initInkCards(document.querySelectorAll(".ink-card"));
+  initInkCards(document.querySelectorAll(".ink-card:not(.hero-cloth)"));
+  initInkCards(document.querySelectorAll(".hero-cloth"), pathBrocadePainter);
 </script>
