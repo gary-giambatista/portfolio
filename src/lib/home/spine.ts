@@ -34,11 +34,11 @@ export function tipAt(sY: number) {
 export const tipPosition = () => tipAt(scrollY);
 
 let layoutKey = "", paintJob = 0;
-const BAND = 600; // px of spine per paint slice
+const BAND = 120; // px of spine per paint slice: the canvas rasterizes each slice's work when its task ends, so slices stay tiny
 
 /**
  * Paints the whole stroke, but only when its geometry or ink color changed. The band around the ink tip is
- * painted at once and the rest in small idle-time slices, so a tall timeline never blocks the main thread.
+ * painted at once and the rest one small slice per idle callback, so a tall timeline never blocks the main thread.
  * Every segment is the same ink color, so the order they're painted in doesn't change a single pixel.
  */
 export function layoutSpineInk() {
@@ -73,14 +73,16 @@ export function layoutSpineInk() {
   const here = Math.floor(tipPosition() / BAND);
   const order = bands.map((_, i) => i).sort((a, b) => Math.abs(a - here) - Math.abs(b - here));
   const job = ++paintJob;
-  const first = order.splice(0, 3);
+  const first = order.splice(0, Math.ceil(innerHeight * 1.5 / BAND));
   first.forEach(i => paint(ctx, bands[i]));
   updateSpineInk();
   const idle = (cb: () => void) => "requestIdleCallback" in window ? requestIdleCallback(cb, { timeout: 200 }) : setTimeout(cb, 16);
   const next = () => {
     if (job !== paintJob) return; // a newer layout took over
-    const t0 = performance.now();
-    while (order.length && performance.now() - t0 < 8) paint(ctx, bands[order.shift()!]);
+    // Whatever is nearest the tip right now, so ink is already there if you've scrolled ahead.
+    const now = tipPosition() / BAND;
+    const pick = order.reduce((best, b, i) => Math.abs(b - now) < Math.abs(order[best] - now) ? i : best, 0);
+    paint(ctx, bands[order.splice(pick, 1)[0]]);
     if (order.length) idle(next);
   };
   idle(next);
