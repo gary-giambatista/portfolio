@@ -1,5 +1,6 @@
 /** ⌘K command palette, plus the page's single-key shortcuts: / opens it, J and K step through time. */
 import { EMAIL, RESUME, ROUTES, SOCIAL } from "~/config/links";
+import { track } from "../analytics";
 import { esc } from "../esc";
 import { isJa, L, setLang } from "../i18n";
 import { reduceMotion } from "../motion";
@@ -40,9 +41,10 @@ function commands(): Cmd[] {
     { group: pages, icon: ICO.link, label: "GitHub", sub: SOCIAL.github.handle, keys: "code source", run: () => openLink(SOCIAL.github.href) },
     { group: pages, icon: ICO.link, label: "LinkedIn", sub: SOCIAL.linkedin.handle, keys: "social", run: () => openLink(SOCIAL.linkedin.href) },
     { group: pages, icon: ICO.link, label: "Instagram", sub: SOCIAL.instagram.handle, keys: "social photos", run: () => openLink(SOCIAL.instagram.href) },
-    { group: pages, icon: ICO.page, label: L("Contact", "連絡先"), sub: L("Get in touch", "お問い合わせ"), keys: "contact hire email reach", run: () => jumpTo("contact") },
+    { group: pages, icon: ICO.page, label: L("Contact", "連絡先"), sub: L("Get in touch", "お問い合わせ"), keys: "contact hire email reach", run: () => { track("contact"); jumpTo("contact"); } },
     { group: pages, icon: ICO.copy, label: L("Copy my email", "メールアドレスをコピー"), sub: EMAIL, keys: "contact mail email", keep: true,
       run: item => {
+        track("email-copy");
         const done = (ok: boolean) => { item.sub = ok ? L("Copied", "コピーしました") : EMAIL; renderList(); };
         try { navigator.clipboard.writeText(EMAIL).then(() => done(true), () => done(false)); } catch { done(false); }
       } },

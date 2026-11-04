@@ -44,9 +44,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   <Font cssVariable="--ff-mincho" preload={[{ weight: 800, subset: "latin" }, { weight: 700, subset: "latin" }]} />
   <Font cssVariable="--ff-plex-sans" preload={[{ weight: 400, subset: "latin" }]} />
   <Font cssVariable="--ff-plex-mono" preload={[{ weight: 400, subset: "latin" }]} />
+  <script is:inline defer src="https://cloud.umami.is/script.js" data-website-id="09e78557-e618-4363-acdd-13d4f976e586" data-domains="gary-giambatista.com" data-exclude-hash="true"></script>
   <slot name="head" />
 </head>
 <body>
   <slot />
+  <script>
+    import { initAnalytics } from "~/lib/analytics";
+    initAnalytics();
+  </script>
 </body>
 </html>
