@@ -4,6 +4,7 @@
  * nears the viewport.
  */
 import type HanziWriterType from "hanzi-writer";
+import { track, trackDemo } from "./analytics";
 import { padLabel, readingOf, storyHtml, strokeCount, type KanjiText } from "./kanji-text";
 import { onThemeChange } from "./theme";
 
@@ -46,11 +47,13 @@ export function initKanjiPad(root: HTMLElement | null) {
     writer.quiz({
       leniency, acceptBackwardsStrokes: false, showHintAfterMisses: false, highlightOnComplete: true,
       onMistake: d => {
+        trackDemo("kk");
         pad.classList.add("miss"); setTimeout(() => pad.classList.remove("miss"), 450);
         say(d.mistakesOnStroke >= 2 && !guide ? "Try that stroke again. The guide or Watch can help." : "Try that stroke again.", "bad");
       },
-      onCorrectStroke: d => { count.textContent = strokeCount(d.strokeNum + 1, k); say(d.strokesRemaining ? "Keep going." : ""); },
+      onCorrectStroke: d => { trackDemo("kk"); count.textContent = strokeCount(d.strokeNum + 1, k); say(d.strokesRemaining ? "Keep going." : ""); },
       onComplete: sum => {
+        track("kanji-completed");
         pad.classList.add("win");
         picker.children[idx].classList.add("done");
         const m = sum.totalMistakes;
