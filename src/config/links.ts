@@ -8,7 +8,7 @@ export const RESUME = "/gary-giambatista-resume-public.pdf";
 export const SITE_HISTORY = "https://github.com/gary-giambatista/portfolio/commits/main/";
 
 export const TESTFLIGHT = "https://testflight.apple.com/join/y8edJzEH";
-export const ANDROID_BUILD = "https://expo.dev/accounts/ggg3/projects/kanji-kaku/builds/67bfec0e-2f7b-43ac-9d3d-0a977bfa4b80";
+export const ANDROID_BUILD = "https://expo.dev/accounts/ggg3/projects/kanji-kaku/builds/ff272ced-5fbd-434f-a90d-72c7aeee17e6";
 
 export const SOCIAL = {
   github: { href: "https://github.com/gary-giambatista", handle: "@gary-giambatista" },
