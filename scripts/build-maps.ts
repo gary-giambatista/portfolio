@@ -31,16 +31,17 @@ type MapConfig = {
    * Named areas: the land polygon containing `at` is drawn even if it's a ranked island (Manhattan is), and is also
    * emitted on its own so the card can fill it with a pattern and letter its name along `axis` (two lon/lat points).
    */
-  areas?: { name: string; at: [number, number]; axis: [[number, number], [number, number]] }[];
+  areas?: { name: string; at: [number, number]; axis: [[number, number], [number, number]]; /** Its fill (lib/patterns.ts MON). */ mon: string }[];
 };
 
 export const MAP_CONFIG: Record<string, MapConfig> = {
   "nj-now": {
-    // Most visitors know NYC, not Hoboken, so the island across the river is patterned and named. Zoomed in on the
+    // Most visitors know NYC, not Hoboken, so the island across the river is patterned (ichimatsu, for the street
+    // grid) and named. Zoomed in on the
     // pair so the name can be lettered large enough to read; Manhattan's north tip runs off the top. The blog's simplification demo pins pins[0].
     scale: 38088.57, translate: [49279.398, 29802.241], bbox: [-74.6, 40.3, -73.4, 41.2],
     pins: [{ name: "Hoboken", lon: -74.0321, lat: 40.744, side: "l" }],
-    areas: [{ name: "New York City", at: [-73.975, 40.772], axis: [[-74.012, 40.705], [-73.928, 40.865]] }],
+    areas: [{ name: "New York City", at: [-73.975, 40.772], axis: [[-74.012, 40.705], [-73.928, 40.865]], mon: "marketing" }],
   },
   "japan": {
     scale: 2229.93, translate: [-5290.628, 1565.02], bbox: [134.5, 33.5, 142.5, 38],
@@ -125,7 +126,7 @@ function render(cfg: MapConfig, tol: number, fixed = false) {
     borders: "",
     areas: areas.map(a => {
       const [x, y] = proj(a.at)!, [x0, y0] = proj(a.axis[0])!, [x1, y1] = proj(a.axis[1])!;
-      return { name: a.name, d: draw(areaFC([a.feature])), x: +x.toFixed(1), y: +y.toFixed(1), angle: +(Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI).toFixed(1) };
+      return { name: a.name, mon: a.mon, d: draw(areaFC([a.feature])), x: +x.toFixed(1), y: +y.toFixed(1), angle: +(Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI).toFixed(1) };
     }),
     pins: cfg.pins.map(p => {
       const [x, y] = proj([p.lon, p.lat])!;
