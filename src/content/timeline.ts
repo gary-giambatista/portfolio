@@ -47,7 +47,7 @@ export const JA_PLACE: Record<string, string> = {
   "Wyckoff": "ワイコフ", "Pompton Plains": "ポンプトン・プレインズ", "Montclair": "モントクレア",
 };
 export const PIN_COORDS: Record<string, string> = {
-  "Hoboken": "40.74°N 74.03°W", "New York City": "40.75°N 73.99°W", "Tokyo": "35.68°N 139.69°E", "Nagoya": "35.18°N 136.91°E",
+  "Hoboken": "40.74°N 74.03°W", "Tokyo": "35.68°N 139.69°E", "Nagoya": "35.18°N 136.91°E",
   "Wyckoff": "41.01°N 74.17°W", "Pompton Plains": "40.97°N 74.30°W", "Montclair": "40.82°N 74.21°W",
 };
 
