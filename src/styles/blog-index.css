@@ -1,0 +1,68 @@
+/* Blog index. Layout: a title block, then one wide card per post, newest first. Each card pairs the post's kanji
+   (in a brush ensō) with its title and summary; on hover the card fills with its pattern (lib/mon-cards.ts). */
+:root { --wrap-max: 900px; }
+body { font: 400 17px/1.7 var(--font-body); }
+main { padding-block: 64px 72px; }
+
+.head { position: relative; z-index: 1; max-width: 680px; }
+/* The sea, sweeping in on load. On wide screens it rises into the header: the big wave fills the open space to the
+   right of the text, Fuji sits low under it at the left, and the cards get clear water below. */
+.sea-divider { z-index: 0; height: 120px; margin: 10px -16px 30px; } /* -16px meets .wrap's padding, so it never overflows */
+@media (min-width: 900px) {
+  .head .dek { max-width: 28em; }
+  .sea-divider { height: 180px; margin-top: -64px; margin-bottom: 56px; }
+}
+@media (min-width: 1000px) { .sea-divider { margin-inline: -40px; } }
+.eyebrow { font: 500 12px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; }
+h1 { font: 800 clamp(40px, 6.4vw, 64px)/1.05 var(--font-display); letter-spacing: -.02em; margin: 16px 0 18px; text-wrap: balance; }
+.title-ink { position: relative; display: inline-block; isolation: isolate; }
+.title-ink canvas { position: absolute; left: -8px; bottom: -.05em; width: calc(100% + 18px); height: .45em; z-index: -1; opacity: .3; pointer-events: none; }
+.dek { font-size: 20px; line-height: 1.55; color: var(--muted); margin: 0; text-wrap: pretty; }
+
+.posts { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
+.post { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 28px; align-items: center; overflow: hidden;
+  padding: 28px 30px; border: 1px solid var(--rule); border-radius: 20px; background: var(--surface); color: var(--ink); text-decoration: none; }
+.post:focus-visible { outline: 2px solid var(--indigo); outline-offset: 3px; }
+
+/* the kanji, inside an open brush ensō */
+.mark { position: relative; display: grid; place-items: center; width: 132px; aspect-ratio: 1; }
+.mark canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .85; }
+/* a faint ink wash, like the home page's, pooled behind the kanji. It stays inside the kanji's column (its right
+   edge stops 24px past the column, inside the 28px gap), so it never runs under the title; it fades in as the card arrives. */
+.mark .wash { inset: auto; left: -22%; top: -12%; width: 140%; height: 126%; opacity: var(--fog, .34); }
+/* It soaks in like ink on wet paper: a pool at the center bleeds outward (this mask) while its layers build up
+   (data-dur on the canvas). lib/ink/canvas.ts marks washes still below the screen .wait, so cards further down
+   bleed in as they arrive; the ones on screen at load start right away, just ahead of their ensō. */
+@property --bleed { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
+.mark .wash { --bleed: 180%; -webkit-mask-image: radial-gradient(closest-side, #000 calc(var(--bleed) - 40%), transparent var(--bleed)); mask-image: radial-gradient(closest-side, #000 calc(var(--bleed) - 40%), transparent var(--bleed)); }
+.mark .wash:not(.wait) { animation: bleed 1.9s cubic-bezier(.25, .6, .3, 1) var(--fog-delay, 0ms) both; }
+.mark .wash.wait { opacity: 0; }
+@keyframes bleed { from { --bleed: 0%; } to { --bleed: 180%; } }
+/* The fog's pigment: the wash in light mode. In dark mode the light wash blurred into the light kanji and ensō, so
+   it becomes a deep sumi pool instead, darker than the card, and the strokes read as light on wet ink. */
+.mark { --fog-ink: var(--wash); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mark { --fog-ink: #04070D; --fog: .55; } }
+:root[data-theme="dark"] .mark { --fog-ink: #04070D; --fog: .55; }
+.mark .kj { position: relative; font: 800 64px/1 var(--font-display); color: var(--ink); } /* above the fog */
+
+.body { display: grid; gap: 8px; }
+.meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font: 500 12px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.latest { padding: 4px 8px; border-radius: 99px; background: var(--indigo-soft); color: var(--indigo); letter-spacing: .08em; }
+.post h2 { font: 700 clamp(24px, 3vw, 30px)/1.15 var(--font-display); margin: 4px 0 0; text-wrap: balance; }
+.post p { margin: 0; color: var(--muted); font-size: 16px; line-height: 1.6; text-wrap: pretty; }
+.foot-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; margin-top: 6px; font: 500 13px/1.4 var(--font-mono); }
+.gloss { color: var(--muted); }
+.go { color: var(--indigo); }
+.go span { display: inline-block; transition: transform .25s ease; }
+.post:hover .go span, .post:focus-visible .go span { transform: translateX(4px); }
+.post:hover h2 { color: var(--indigo); }
+
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  main { padding-block: 44px 56px; }
+  .post { grid-template-columns: minmax(0, 1fr); gap: 14px; padding: 22px 20px; }
+  .mark { width: 84px; }
+  .mark .kj { font-size: 40px; }
+  .sea-divider { height: 100px; margin: 4px -16px 22px; }
+}
+@media (prefers-reduced-motion: reduce) { .go span { transition: none; } .mark .wash:not(.wait) { animation: none; } }

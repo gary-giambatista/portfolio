@@ -1,0 +1,70 @@
+---
+/** The blog's index: every post, newest first, each as a card with its own kanji and hover pattern. */
+import { getCollection } from "astro:content";
+import Base from "~/layouts/Base.astro";
+import SubNav from "~/components/SubNav.astro";
+import PatternDyes from "~/components/PatternDyes.astro";
+import Footer from "~/components/Footer.astro";
+import "~/styles/subnav.css";
+import "~/styles/ink-cards.css";
+import "~/styles/sea-divider.css";
+import "~/styles/blog-index.css";
+
+const posts = (await getCollection("blog")).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const count = `${posts.length} ${posts.length === 1 ? "post" : "posts"}`;
+---
+<Base title="Blog · Gary Giambatista" description="Writing about what I build and the road I'm on: how this site works, my search for the next role, and Kanji Kaku.">
+  <PatternDyes />
+  <SubNav current="blog" ink />
+  <main class="wrap">
+    <header class="head">
+      <div class="eyebrow"><span>Blog</span><span>·</span><span>{count}</span></div>
+      <h1><span class="title-ink">Notes along the way<canvas class="ink" data-ink="stroke-swash" data-seed="13" data-color="--indigo" data-dur="700" data-delay="300" aria-hidden="true"></canvas></span></h1>
+      <p class="dek">Writing about what I build and the road I'm on: how this site works, my search for the next role, and Kanji Kaku.</p>
+    </header>
+    <div class="sea-divider" id="seaDivider" aria-hidden="true"><div class="wave"><canvas class="wave-wash"></canvas><canvas class="wave-ink"></canvas></div></div>
+
+    <ol class="posts">
+      {posts.map(({ id, data }, i) => (
+        <li>
+          <a class="post ink-card mon-card" data-mon={data.mon} href={`/blog/${id}/`}>
+            <canvas class="sg" aria-hidden="true"></canvas>
+            <span class="mark" aria-hidden="true">
+              <canvas class="ink wash" data-ink="wash" data-color="--fog-ink" data-seed={String(61 + i * 13)} data-dur="1700" style={`--fog-delay: ${i * 180}ms`}></canvas>
+              <canvas class="ink" data-ink="open-enso" data-seed={String(29 + i * 7)} data-color="--brush" data-dur="1100" data-delay={String(200 + i * 180)} data-start="visible"></canvas>
+              <span class="kj" lang="ja">{data.mark.kanji}</span>
+            </span>
+            <span class="body">
+              <span class="meta">
+                {i === 0 && <span class="latest">Latest</span>}
+                <time datetime={data.date.toISOString().slice(0, 10)}>{data.published}</time><span>·</span><span>{data.readingTime}</span>
+              </span>
+              <h2>{data.title}</h2>
+              <p>{data.description}</p>
+              <span class="foot-row">
+                <span class="gloss"><span lang="ja">{data.mark.kanji}</span> {data.mark.reading} · {data.mark.meaning}</span>
+                <span class="go">Read the post <span aria-hidden="true">→</span></span>
+              </span>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </main>
+  <Footer />
+</Base>
+
+<script>
+  import { initThemeButton } from "~/lib/theme";
+  import { initInk } from "~/lib/ink/canvas";
+  import { initInkCards } from "~/lib/ink-cards";
+  import { monPainter } from "~/lib/mon-cards";
+  import { initSeaDivider } from "~/lib/sea-divider";
+
+  initThemeButton();
+  initInk();
+  initInkCards(document.querySelectorAll(".ink-card:not(.mon-card)"));
+  initInkCards(document.querySelectorAll(".post.mon-card"), monPainter);
+  // About's sea, mirrored: the wave breaks the other way and Fuji stands at the left.
+  initSeaDivider(document.getElementById("seaDivider"), { seed: 1116, dir: -1, fuji: .14 });
+</script>
