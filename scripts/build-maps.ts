@@ -37,10 +37,10 @@ type MapConfig = {
 export const MAP_CONFIG: Record<string, MapConfig> = {
   "nj-now": {
     // Most visitors know NYC, not Hoboken, so the island across the river is patterned and named. Zoomed in on the
-    // pair so the name can be lettered large enough to read. The blog's simplification demo pins pins[0].
-    scale: 29298.90, translate: [37930.306, 22949.416], bbox: [-74.6, 40.3, -73.4, 41.2],
+    // pair so the name can be lettered large enough to read; Manhattan's north tip runs off the top. The blog's simplification demo pins pins[0].
+    scale: 38088.57, translate: [49279.398, 29802.241], bbox: [-74.6, 40.3, -73.4, 41.2],
     pins: [{ name: "Hoboken", lon: -74.0321, lat: 40.744, side: "l" }],
-    areas: [{ name: "New York City", at: [-73.968, 40.785], axis: [[-74.012, 40.705], [-73.928, 40.865]] }],
+    areas: [{ name: "New York City", at: [-73.975, 40.772], axis: [[-74.012, 40.705], [-73.928, 40.865]] }],
   },
   "japan": {
     scale: 2229.93, translate: [-5290.628, 1565.02], bbox: [134.5, 33.5, 142.5, 38],
