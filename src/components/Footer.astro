@@ -21,7 +21,7 @@ const onBlog = Astro.url.pathname.startsWith("/blog");
   <div class="wrap">
     <span class="foot-contact">
       <span>{EMAIL}</span>
-      {!onBlog && <a href={ROUTES.blog}><span class="l-en">How this site is built →</span><span class="l-ja" lang="ja">このサイトの作り方(英語) →</span></a>}
+      {!onBlog && <a href={ROUTES.howItsBuilt}><span class="l-en">How this site is built →</span><span class="l-ja" lang="ja">このサイトの作り方(英語) →</span></a>}
     </span>
     <span class="foot-meta">
       <span><span class="l-en">Designed and built by Gary Giambatista and Claude in October 2026</span><span class="l-ja" lang="ja">2026年10月、Gary GiambatistaとClaudeがデザイン・制作</span></span>

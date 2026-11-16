@@ -112,6 +112,9 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 .stat b { display: block; font: 700 28px/1.1 var(--font-display); font-variant-numeric: tabular-nums; }
 .stat span { font: 400 12px/1.4 var(--font-mono); color: var(--muted); }
 .end-note { margin-top: 56px; padding-top: 22px; border-top: 1px dashed var(--rule); font: 400 14px/1.6 var(--font-mono); color: var(--muted); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.end-links { display: flex; gap: 18px; flex-wrap: wrap; }
+.eyebrow a { color: inherit; text-decoration: none; }
+.eyebrow a:hover { color: var(--indigo); text-decoration: underline; }
 
 @media (max-width: 760px) {
   body { font-size: 16px; }
@@ -126,6 +129,20 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 /* MDX renders the article flat; each block takes the reading column, demos break out wider. */
 .prose > * { max-width: 680px; margin-left: auto; margin-right: auto; }
 .prose > .demo { max-width: 900px; }
+
+/* A portrait (4:5) video, centered and capped so it doesn't dominate the column. width/height on the element reserve its space. */
+.prose > .clip { max-width: 480px; margin-block: 28px 24px; }
+/* The app links: two filled buttons side by side, centered under the video. They stack on narrow phones. */
+.prose > .try { margin-block: 0 8px; text-align: center; }
+.try-label { display: block; font: 500 12px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.try-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.store { display: inline-flex; align-items: center; gap: 10px; padding: 13px 20px; border-radius: 14px; border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper); font: 600 16px/1 var(--font-body); text-decoration: none; transition: transform .2s ease, background .2s ease, color .2s ease; }
+.store svg { width: 20px; height: 20px; fill: currentColor; flex: none; }
+.store:hover { background: var(--surface); color: var(--ink); transform: translateY(-2px); }
+.store:focus-visible { outline: 2px solid var(--indigo); outline-offset: 3px; }
+@media (max-width: 420px) { .try-links { flex-direction: column; align-items: stretch; } .store { justify-content: center; } }
+@media (prefers-reduced-motion: reduce) { .store { transition: none; } .store:hover { transform: none; } }
+.clip video { display: block; width: 100%; height: auto; border: 1.5px solid var(--ink); border-radius: 16px; background: var(--surface); }
 
 /* the sea, pattern and ripple demos */
 .sea-stage { height: 250px; overflow: hidden; }

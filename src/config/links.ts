@@ -30,5 +30,6 @@ export const ROUTES = {
   home: "/",
   contact: "/#contact",
   about: "/about/",
-  blog: "/blog/how-its-built/",
+  blog: "/blog/",
+  howItsBuilt: "/blog/how-its-built/",
 } as const;

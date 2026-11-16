@@ -1,6 +1,7 @@
 /**
- * The About page's sea divider: the home page's wave engine as a quiet pause after "The short version".
- * Painted once when it nears the viewport, then the ink sweeps in from left to right the first time it's seen.
+ * A sea divider: the home page's wave engine as a quiet band (About, after "The short version"; the blog index,
+ * under its header). Painted once when it nears the viewport, then the ink sweeps in from left to right the first
+ * time it's seen. Each page passes its own seed, breaking direction and Fuji position so no two seas match.
  */
 import { easeInOut } from "./flight";
 import { fitCanvas, paint } from "./ink/paint";
@@ -8,7 +9,9 @@ import { reduceMotion } from "./motion";
 import { onThemeChange } from "./theme";
 import { buildWave } from "./home/waves";
 
-export function initSeaDivider(el: HTMLElement | null) {
+type SeaOptions = { seed?: number; dir?: 1 | -1; /** Fuji's position across the band (0–1), or null for none. */ fuji?: number | null };
+
+export function initSeaDivider(el: HTMLElement | null, { seed = 2023, dir = 1, fuji = .86 }: SeaOptions = {}) {
   if (!el) return;
   const wave = el.querySelector<HTMLElement>(".wave")!;
   const wash = el.querySelector<HTMLCanvasElement>(".wave-wash")!, ink = el.querySelector<HTMLCanvasElement>(".wave-ink")!;
@@ -21,7 +24,7 @@ export function initSeaDivider(el: HTMLElement | null) {
     if (!W || k === key) return;
     key = k;
     // The route runs a little past both edges, so the sea reaches the soft fade at each side.
-    const segs = buildWave({ width: W, height: H, x0: -W * .08, x1: W * 1.08, yb: H - 4, dir: 1, fuji: W > 520 ? .86 : null, seed: 2023 });
+    const segs = buildWave({ width: W, height: H, x0: -W * .08, x1: W * 1.08, yb: H - 4, dir, fuji: W > 520 ? fuji : null, seed });
     const [wc] = fitCanvas(wash), [ic] = fitCanvas(ink);
     wc.fillStyle = wc.strokeStyle = color("--wash"); wc.lineCap = "round"; paint(wc, segs.wash);
     ic.lineCap = "round"; ic.lineJoin = "round";
