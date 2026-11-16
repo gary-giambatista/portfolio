@@ -141,7 +141,7 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 .key-pin { width: 11px; height: 14px; flex: none; }
 .key-pin path { fill: var(--indigo); }
 .key-pin circle { fill: var(--surface); }
-.key-dye { width: 13px; height: 13px; flex: none; border-radius: 3px; border: 1px solid var(--muted); background-size: 8px 8px; }
+.key-dye { width: 13px; height: 13px; flex: none; border-radius: 3px; border: 1px solid var(--muted); }
 
 .entries { margin-left: var(--content-x); display: grid; gap: 96px; }
 .entry { position: relative; scroll-margin-top: calc(var(--nav-h) + 110px); }
@@ -387,6 +387,8 @@ kbd { font: 500 10.5px/1 var(--font-mono); padding: 3px 5px; border-radius: 5px;
   .place-wash { display: none; }
   .place .meta { position: static; border: 0; padding: 0; flex: 1; min-width: 0; }
   .place .key { display: flex; }
+  /* the swatch's checks match the thumbnail's: a tile in map units, scaled like the 180-unit map into 92px */
+  .key-dye { background-size: calc(var(--tile) * 92px / 180); }
   .entry.first .node { display: block; }
   /* the readout touches the nav on phones; the spare room below it lets the pattern's fade finish inside the bar */
   .readout-cloth { translate: 0 5px; }
