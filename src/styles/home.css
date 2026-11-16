@@ -127,7 +127,7 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .map .area .dye-l { display: none; } :root:not([data-theme="light"]) .map .area .dye-d { display: inline; } }
 :root[data-theme="dark"] .map .area .dye-l { display: none; }
 :root[data-theme="dark"] .map .area .dye-d { display: inline; }
-.map .area text { font: 600 7.5px/1 var(--font-mono); letter-spacing: .04em; fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 2.5px; stroke-linejoin: round; pointer-events: none; }
+.map .area text { font: 600 9.5px/1 var(--font-mono); letter-spacing: .04em; fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 2.5px; stroke-linejoin: round; pointer-events: none; }
 .map .pin text { font: 500 8px/1 var(--font-mono); fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 2.5px; stroke-linejoin: round; }
 @keyframes pulse { from { transform: scale(.6); opacity: .9; } to { transform: scale(2.6); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .map .pin .pulse { animation: none; opacity: 0; } }
