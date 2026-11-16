@@ -135,6 +135,13 @@ h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(40px, 
 .place .meta { position: absolute; left: 8px; right: 8px; bottom: 8px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 6px 8px; }
 .place .name { font-weight: 600; font-size: 15px; line-height: 1.25; }
 .place .years { font: 500 11px/1 var(--font-mono); color: var(--indigo); margin-top: 4px; }
+/* The phone key for a card's map marks (the desktop map labels them itself). */
+.place .key { display: none; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; font: 500 11.5px/1.2 var(--font-mono); color: var(--muted); }
+.place .key > span { display: inline-flex; align-items: center; gap: 6px; }
+.key-pin { width: 11px; height: 14px; flex: none; }
+.key-pin path { fill: var(--indigo); }
+.key-pin circle { fill: var(--surface); }
+.key-dye { width: 13px; height: 13px; flex: none; border-radius: 3px; border: 1px solid var(--muted); background-size: 8px 8px; }
 
 .entries { margin-left: var(--content-x); display: grid; gap: 96px; }
 .entry { position: relative; scroll-margin-top: calc(var(--nav-h) + 110px); }
@@ -379,6 +386,7 @@ kbd { font: 500 10.5px/1 var(--font-mono); padding: 3px 5px; border-radius: 5px;
   .place .glyph { display: none; }
   .place-wash { display: none; }
   .place .meta { position: static; border: 0; padding: 0; flex: 1; min-width: 0; }
+  .place .key { display: flex; }
   .entry.first .node { display: block; }
   /* the readout touches the nav on phones; the spare room below it lets the pattern's fade finish inside the bar */
   .readout-cloth { translate: 0 5px; }
