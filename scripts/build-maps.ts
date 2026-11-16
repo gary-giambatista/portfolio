@@ -31,8 +31,13 @@ type MapConfig = {
 
 export const MAP_CONFIG: Record<string, MapConfig> = {
   "nj-now": {
-    scale: 21702.89, translate: [28131.597, 17015.345], bbox: [-74.6, 40.3, -73.4, 41.2],
-    pins: [{ name: "Hoboken", lon: -74.0321, lat: 40.744, side: "l" }],
+    // Centered a little east of Hoboken so Midtown's pin and its label fit beside it: most visitors know NYC, not
+    // Hoboken. Hoboken stays first; the blog's simplification demo pins pins[0].
+    scale: 21702.89, translate: [28119.597, 17015.345], bbox: [-74.6, 40.3, -73.4, 41.2],
+    pins: [
+      { name: "Hoboken", lon: -74.0321, lat: 40.744, side: "l" },
+      { name: "New York City", lon: -73.9857, lat: 40.7484, side: "r" },
+    ],
   },
   "japan": {
     scale: 2229.93, translate: [-5290.628, 1565.02], bbox: [134.5, 33.5, 142.5, 38],
