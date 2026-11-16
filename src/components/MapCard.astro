@@ -1,21 +1,44 @@
 ---
-/** A location card's map: Natural Earth coastline, lakes and rivers (built at build time) with pinned places. */
+/**
+ * A location card's map: Natural Earth coastline, lakes and rivers (built at build time) with pinned places. Named
+ * areas (New York City on the Hoboken card) are dyed in one of the timeline's patterns (set per area in build-maps.ts),
+ * one tile per theme, with their name lettered along the island.
+ */
 import maps from "~/data/generated/maps.json";
 import { JA_PLACE, PIN_COORDS, type Era } from "~/content/timeline";
+import { DYES, MON, tileSize, type Mon } from "~/lib/patterns";
 
 interface Props { id: Era["id"] }
 const { id } = Astro.props;
 const m = maps[id];
 const PIN = "M0 0c-3.4-4.2-5.2-6.8-5.2-9.2a5.2 5.2 0 0 1 10.4 0c0 2.4-1.8 5-5.2 9.2z";
+const dye = (mon: string, theme: "light" | "dark") => {
+  const svg = MON[mon as Mon](DYES[theme]), [w, h] = tileSize(svg);
+  return { w, h, href: `data:image/svg+xml,${encodeURIComponent(svg)}` };
+};
+/** Each area's pattern tile, light and dark: [area index, theme, tile]. */
+const tiles = m.areas.flatMap((a, i) => (["l", "d"] as const).map(k => [i, k, dye(a.mon, k === "l" ? "light" : "dark")] as const));
 const label = (side: string) => side === "l" ? { x: -7, y: -6, anchor: "end" } : side === "b" ? { x: 0, y: 9, anchor: "middle" } : { x: 7, y: -6, anchor: undefined };
 ---
 <svg class="map" viewBox="0 0 180 220" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
-  <defs><pattern id={`grid-${id}`} width="22" height="22" patternUnits="userSpaceOnUse"><path class="grid" d="M22 0H0V22" /></pattern></defs>
+  <defs>
+    <pattern id={`grid-${id}`} width="22" height="22" patternUnits="userSpaceOnUse"><path class="grid" d="M22 0H0V22" /></pattern>
+    {tiles.map(([i, k, t]) => (
+      <pattern id={`dye-${id}-${i}-${k}`} width={t.w} height={t.h} patternUnits="userSpaceOnUse" patternTransform="scale(.5)"><image href={t.href} width={t.w} height={t.h} /></pattern>
+    ))}
+  </defs>
   <rect class="water" width="180" height="220" />
   <rect width="180" height="220" fill={`url(#grid-${id})`} />
   <path class="land" d={m.land} />
   <path class="lake" d={m.lakes} />
   <path class="river" d={m.rivers} />
+  {m.areas.map((a, i) => (
+    <g class="area">
+      <path class="dye-l" d={a.d} fill={`url(#dye-${id}-${i}-l)`} />
+      <path class="dye-d" d={a.d} fill={`url(#dye-${id}-${i}-d)`} />
+      <text transform={`translate(${a.x} ${a.y}) rotate(${a.angle})`} text-anchor="middle" dy="3"><tspan class="l-en">{a.name}</tspan><tspan class="l-ja">{JA_PLACE[a.name]}</tspan></text>
+    </g>
+  ))}
   {m.pins.map((p, i) => {
     const l = label(p.side);
     return (

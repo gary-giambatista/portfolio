@@ -1,10 +1,17 @@
 ---
 /** The timeline: one section per location era, present first, with a flight between eras. */
-import { eras } from "~/content/timeline";
+import { eras, JA_PLACE } from "~/content/timeline";
+import maps from "~/data/generated/maps.json";
+import { DYES, MON, tileSize, type Mon } from "~/lib/patterns";
 import Entry from "./Entry.astro";
 import Flight from "./Flight.astro";
 import MapCard from "./MapCard.astro";
 import T from "./T.astro";
+
+/** The map pin's shape (as in MapCard), for the phone key. */
+/** A pattern tile's width in map units: MapCard draws tiles at half size (its patternTransform). */
+const tileW = (mon: string) => tileSize(MON[mon as Mon](DYES.light))[0] * .5;
+const PIN = "M0 0c-3.4-4.2-5.2-6.8-5.2-9.2a5.2 5.2 0 0 1 10.4 0c0 2.4-1.8 5-5.2 9.2z";
 ---
 <div class="timeline" id="timeline">
   {eras.map(era => (
@@ -13,7 +20,15 @@ import T from "./T.astro";
         <canvas class="ink wash place-wash" data-ink="wash" data-color="--wash" data-seed={era.id.length * 31 + 3} aria-hidden="true"></canvas>
         <div class="place">
           <MapCard id={era.id} /><span class="glyph">{era.glyph}</span>
-          <div class="meta"><div class="name"><T en={era.name} ja={era.ja.name} /></div><div class="years"><T en={era.years} ja={era.ja.years} /></div></div>
+          <div class="meta"><div class="name"><T en={era.name} ja={era.ja.name} /></div><div class="years"><T en={era.years} ja={era.ja.years} /></div>
+            {/* On phones the map is a thumbnail with no room for labels, so cards with a named area get a key instead. */}
+            {maps[era.id].areas.length > 0 && (
+              <div class="key">
+                {maps[era.id].pins.map(p => <span><svg class="key-pin" viewBox="-6 -15 12 15" aria-hidden="true"><path d={PIN} /><circle cy="-9.2" r="1.9" /></svg><T en={p.name} ja={JA_PLACE[p.name]} /></span>)}
+                {maps[era.id].areas.map(a => <span><i class="key-dye" style={`background-image: var(--mon-${a.mon}); --tile: ${tileW(a.mon)}`} aria-hidden="true"></i><T en={a.name} ja={JA_PLACE[a.name]} /></span>)}
+              </div>
+            )}
+          </div>
         </div>
         <div class="entries">{era.entries.map((e, i) => <Entry entry={e} first={i === 0} />)}</div>
       </section>

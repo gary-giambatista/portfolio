@@ -43,7 +43,7 @@ export type Era = {
 };
 
 export const JA_PLACE: Record<string, string> = {
-  "Japan": "日本", "New Jersey": "ニュージャージー", "Hoboken": "ホーボーケン", "Tokyo": "東京", "Nagoya": "名古屋",
+  "Japan": "日本", "New Jersey": "ニュージャージー", "Hoboken": "ホーボーケン", "New York City": "ニューヨーク", "Tokyo": "東京", "Nagoya": "名古屋",
   "Wyckoff": "ワイコフ", "Pompton Plains": "ポンプトン・プレインズ", "Montclair": "モントクレア",
 };
 export const PIN_COORDS: Record<string, string> = {

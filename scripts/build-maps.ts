@@ -27,12 +27,21 @@ type MapConfig = {
   /** Only features touching this lon/lat box are projected (keeps the build fast). */
   bbox: [number, number, number, number];
   pins: { name: string; lon: number; lat: number; side: Side }[];
+  /**
+   * Named areas: the land polygon containing `at` is drawn even if it's a ranked island (Manhattan is), and is also
+   * emitted on its own so the card can fill it with a pattern and letter its name along `axis` (two lon/lat points).
+   */
+  areas?: { name: string; at: [number, number]; axis: [[number, number], [number, number]]; /** Its fill (lib/patterns.ts MON). */ mon: string }[];
 };
 
 export const MAP_CONFIG: Record<string, MapConfig> = {
   "nj-now": {
-    scale: 21702.89, translate: [28131.597, 17015.345], bbox: [-74.6, 40.3, -73.4, 41.2],
+    // Most visitors know NYC, not Hoboken, so the island across the river is patterned (ichimatsu, for the street
+    // grid) and named. Zoomed in on the pair so the name fits inside Manhattan at a readable size; the island's north
+    // tip runs off the top. The blog's simplification demo pins pins[0].
+    scale: 38088.57, translate: [49279.398, 29802.241], bbox: [-74.6, 40.3, -73.4, 41.2],
     pins: [{ name: "Hoboken", lon: -74.0321, lat: 40.744, side: "l" }],
+    areas: [{ name: "New York City", at: [-73.975, 40.772], axis: [[-74.012, 40.705], [-73.928, 40.865]], mon: "marketing" }],
   },
   "japan": {
     scale: 2229.93, translate: [-5290.628, 1565.02], bbox: [134.5, 33.5, 142.5, 38],
@@ -80,6 +89,27 @@ const [land, lakes, rivers, riversNA] = await Promise.all([
  * unranked base polygons) and leave out the small ranked islands, which are noise at this size.
  */
 const isBaseLand = (f: Feature<Geometry | null>) => !(f.properties?.scalerank > 0);
+
+/** Ray-casting point-in-ring test, in lon/lat. */
+function inRing([x, y]: [number, number], ring: number[][]) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [xi, yi] = ring[i], [xj, yj] = ring[j];
+    if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside;
+  }
+  return inside;
+}
+/** The land polygon (of any rank) that contains a point, as its own feature. */
+function polygonAt(at: [number, number]): Feature {
+  for (const f of land.features) {
+    const g = f.geometry;
+    const polys = g?.type === "Polygon" ? [g.coordinates] : g?.type === "MultiPolygon" ? g.coordinates : [];
+    const hit = polys.find(p => inRing(at, p[0]));
+    if (hit) return { type: "Feature", properties: {}, geometry: { type: "Polygon", coordinates: hit } };
+  }
+  throw new Error(`No land polygon contains ${at}`);
+}
+
 function render(cfg: MapConfig, tol: number, fixed = false) {
   const proj = geoMercator().scale(cfg.scale).translate(cfg.translate).clipExtent([[-2, -2], [W + 2, H + 2]]);
   const path = geoPath(proj).digits(3);
@@ -87,11 +117,17 @@ function render(cfg: MapConfig, tol: number, fixed = false) {
     const features = fcs.flatMap(fc => fc.features.filter(f => touches(f, cfg.bbox) && (fc !== land || isBaseLand(f))));
     return simplifyPath(path({ type: "FeatureCollection", features } as GeoPermissibleObjects) || "", tol, fixed).d;
   };
+  const areas = (cfg.areas ?? []).map(a => ({ ...a, feature: polygonAt(a.at) }));
+  const areaFC = (fs: Feature[]): FeatureCollection => ({ type: "FeatureCollection", features: fs });
   return {
-    land: draw(land),
+    land: draw(land, areaFC(areas.map(a => a.feature))),
     lakes: draw(lakes),
     rivers: draw(rivers, riversNA),
     borders: "",
+    areas: areas.map(a => {
+      const [x, y] = proj(a.at)!, [x0, y0] = proj(a.axis[0])!, [x1, y1] = proj(a.axis[1])!;
+      return { name: a.name, mon: a.mon, d: draw(areaFC([a.feature])), x: +x.toFixed(1), y: +y.toFixed(1), angle: +(Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI).toFixed(1) };
+    }),
     pins: cfg.pins.map(p => {
       const [x, y] = proj([p.lon, p.lat])!;
       return { name: p.name, x: +x.toFixed(1), y: +y.toFixed(1), side: p.side };
