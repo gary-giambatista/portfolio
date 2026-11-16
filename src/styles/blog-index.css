@@ -3,6 +3,10 @@
 :root { --wrap-max: 900px; }
 body { font: 400 17px/1.7 var(--font-body); }
 main { padding-block: 64px 72px; }
+/* A short page: on tall screens the main column stretches so the footer sits at the bottom, not mid-screen.
+   (width: 100% because a flex item with auto side margins would otherwise shrink to its content.) */
+body { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
+main { flex: 1 0 auto; width: 100%; }
 
 .head { position: relative; z-index: 1; max-width: 680px; }
 /* The sea, sweeping in on load. On wide screens it rises into the header: the big wave fills the open space to the
